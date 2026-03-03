@@ -11,7 +11,11 @@ import {
   createTable,
   getApiError,
 } from "@/lib/api";
-import { fetchTableQr } from "@/lib/api/tables";
+import {
+  fetchTableQr,
+  updateTable,
+  deleteTable,
+} from "@/lib/api/tables";
 import { useForm } from "react-hook-form";
 import {
   MapPin,
@@ -35,6 +39,14 @@ interface BranchForm {
 interface TableForm {
   number: string;
   seats: string;
+  qr_code: string;
+}
+
+interface TableEditFormData {
+  number: string;
+  seats: string;
+  is_active: boolean;
+  qr_code: string;
 }
 
 export default function BranchesPage() {
@@ -43,6 +55,7 @@ export default function BranchesPage() {
   const [expandedBranch, setExpandedBranch] = useState<string | null>(null);
   const [editingBranch, setEditingBranch] = useState<string | null>(null);
   const [addingTableBranch, setAddingTableBranch] = useState<string | null>(null);
+  const [editingTableId, setEditingTableId] = useState<string | null>(null);
   const [qrTableId, setQrTableId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
@@ -95,12 +108,42 @@ export default function BranchesPage() {
   });
 
   const createTableMut = useMutation({
-    mutationFn: ({ branchId, body }: { branchId: string; body: { number: number; seats?: number; is_active?: boolean } }) =>
-      createTable(branchId, { ...body, is_active: true }),
+    mutationFn: ({
+      branchId,
+      body,
+    }: {
+      branchId: string;
+      body: { number: number; seats?: number; is_active?: boolean; qr_code?: string | null };
+    }) => createTable(branchId, { ...body, is_active: true }),
     onSuccess: (_, { branchId }) => {
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
       setAddingTableBranch(null);
       setMessage({ type: "ok", text: "Table created." });
+    },
+    onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
+  });
+
+  const updateTableMut = useMutation({
+    mutationFn: ({
+      tableId,
+      body,
+    }: {
+      tableId: string;
+      body: { number?: number; seats?: number; is_active?: boolean; qr_code?: string | null };
+    }) => updateTable(tableId, body),
+    onSuccess: (_, { tableId }) => {
+      queryClient.invalidateQueries({ queryKey: ["branchTables", expandedBranch] });
+      setEditingTableId(null);
+      setMessage({ type: "ok", text: "Table updated." });
+    },
+    onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
+  });
+
+  const deleteTableMut = useMutation({
+    mutationFn: deleteTable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["branchTables", expandedBranch] });
+      setMessage({ type: "ok", text: "Table deleted." });
     },
     onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
   });
@@ -213,10 +256,14 @@ export default function BranchesPage() {
                 </div>
                 {addingTableBranch === branch.id && (
                   <AddTableForm
-                    onAdd={(number, seats) =>
+                    onAdd={(number, seats, qrCode) =>
                       createTableMut.mutate({
                         branchId: branch.id,
-                        body: { number, seats: seats ? parseInt(seats, 10) : undefined },
+                        body: {
+                          number,
+                          seats: seats ? parseInt(seats, 10) : undefined,
+                          qr_code: qrCode || null,
+                        },
                       })
                     }
                     onCancel={() => setAddingTableBranch(null)}
@@ -230,17 +277,66 @@ export default function BranchesPage() {
                     {(tables ?? []).map((t) => (
                       <li
                         key={t.id}
-                        className="flex items-center justify-between rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2"
+                        className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2"
                       >
-                        <span className="font-medium">Table #{t.number}</span>
-                        <button
-                          type="button"
-                          onClick={() => setQrTableId(qrTableId === t.id ? null : t.id)}
-                          className="flex items-center gap-1 text-sm text-teal-600 hover:underline"
-                        >
-                          <QrCode className="h-4 w-4" />
-                          QR
-                        </button>
+                        {editingTableId === t.id ? (
+                          <TableEditForm
+                            table={t}
+                            onSave={(body) =>
+                              updateTableMut.mutate({ tableId: t.id, body })
+                            }
+                            onCancel={() => setEditingTableId(null)}
+                            isPending={updateTableMut.isPending}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-medium">Table #{t.number}</span>
+                              {t.seats != null && (
+                                <span className="text-sm text-zinc-500">
+                                  {t.seats} seats
+                                </span>
+                              )}
+                              {t.qr_code && (
+                                <span className="rounded bg-zinc-200 px-1.5 py-0.5 text-xs text-zinc-600">
+                                  {t.qr_code}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setQrTableId(qrTableId === t.id ? null : t.id)
+                                }
+                                className="flex items-center gap-1 rounded p-1.5 text-sm text-teal-600 hover:bg-teal-50"
+                                title="View QR code"
+                              >
+                                <QrCode className="h-4 w-4" />
+                                QR
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingTableId(t.id)}
+                                className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-teal-600"
+                                title="Edit table"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm("Delete this table?"))
+                                    deleteTableMut.mutate(t.id);
+                                }}
+                                className="rounded p-1.5 text-zinc-500 hover:bg-red-50 hover:text-red-600"
+                                title="Delete table"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </li>
                     ))}
                     {(!tables || tables.length === 0) && !addingTableBranch && (
@@ -267,18 +363,40 @@ export default function BranchesPage() {
           onClick={() => setQrTableId(null)}
         >
           <div
-            className="rounded-xl bg-white p-6 shadow-xl"
+            className="max-h-[90vh] w-full max-w-md overflow-auto rounded-xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="mb-2 font-medium text-zinc-800">Table QR</p>
-            <p className="mb-2 text-sm text-zinc-500">Code: {qrData.table_code}</p>
+            <p className="mb-2 font-medium text-zinc-800">Table QR code</p>
+            <p className="mb-3 text-sm text-zinc-500">
+              Code: {qrData.table_code || "—"}
+            </p>
+            {qrData.qr_svg ? (
+              <div
+                className="mx-auto mb-3 flex justify-center [&>svg]:h-48 [&>svg]:w-48"
+                dangerouslySetInnerHTML={{ __html: qrData.qr_svg }}
+              />
+            ) : (
+              <div className="mx-auto mb-3 flex h-48 w-48 items-center justify-center rounded border border-zinc-200 bg-zinc-50 text-sm text-zinc-500">
+                No QR image
+              </div>
+            )}
             {qrData.qr_url && (
-              <img src={qrData.qr_url} alt="QR" className="mx-auto h-48 w-48" />
+              <p className="mb-2 break-all text-xs text-zinc-500">
+                Link:{" "}
+                <a
+                  href={qrData.qr_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-teal-600 hover:underline"
+                >
+                  {qrData.qr_url}
+                </a>
+              </p>
             )}
             <button
               type="button"
               onClick={() => setQrTableId(null)}
-              className="mt-4 w-full rounded-lg border border-zinc-300 py-2 text-sm font-medium"
+              className="mt-4 w-full rounded-lg border border-zinc-300 py-2 text-sm font-medium hover:bg-zinc-50"
             >
               Close
             </button>
@@ -356,19 +474,111 @@ function BranchEditForm({
   );
 }
 
+function TableEditForm({
+  table,
+  onSave,
+  onCancel,
+  isPending,
+}: {
+  table: { id: string; number: number; seats?: number; is_active: boolean; qr_code?: string | null };
+  onSave: (body: {
+    number?: number;
+    seats?: number;
+    is_active?: boolean;
+    qr_code?: string | null;
+  }) => void;
+  onCancel: () => void;
+  isPending: boolean;
+}) {
+  const { register, handleSubmit } = useForm<TableEditFormData>({
+    defaultValues: {
+      number: String(table.number),
+      seats: table.seats != null ? String(table.seats) : "",
+      is_active: table.is_active,
+      qr_code: table.qr_code ?? "",
+    },
+  });
+  return (
+    <form
+      onSubmit={handleSubmit((d) =>
+        onSave({
+          number: parseInt(d.number, 10),
+          seats: d.seats ? parseInt(d.seats, 10) : undefined,
+          is_active: d.is_active,
+          qr_code: d.qr_code || null,
+        })
+      )}
+      className="space-y-2 py-1"
+    >
+      <div className="flex flex-wrap items-end gap-2">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">Number</label>
+          <input
+            type="number"
+            className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            {...register("number", { required: true })}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">Seats</label>
+          <input
+            type="number"
+            className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            {...register("seats")}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">QR code</label>
+          <input
+            className="w-28 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            placeholder="e.g. T1"
+            {...register("qr_code")}
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <input type="checkbox" {...register("is_active")} />
+          <label className="text-xs text-zinc-600">Active</label>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function AddTableForm({
   onAdd,
   onCancel,
   isPending,
 }: {
-  onAdd: (number: number, seats?: string) => void;
+  onAdd: (number: number, seats?: string, qrCode?: string) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
   const { register, handleSubmit } = useForm<TableForm>();
   return (
     <form
-      onSubmit={handleSubmit((d) => onAdd(parseInt(d.number, 10), d.seats || undefined))}
+      onSubmit={handleSubmit((d) =>
+        onAdd(
+          parseInt(d.number, 10),
+          d.seats || undefined,
+          d.qr_code?.trim() || undefined
+        )
+      )}
       className="mb-3 flex flex-wrap items-end gap-2 rounded-lg bg-teal-50 p-3"
     >
       <div>
@@ -385,6 +595,14 @@ function AddTableForm({
           type="number"
           className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
           {...register("seats")}
+        />
+      </div>
+      <div>
+        <label className="mb-1 block text-xs font-medium text-zinc-600">QR code</label>
+        <input
+          className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          placeholder="e.g. T1"
+          {...register("qr_code")}
         />
       </div>
       <button

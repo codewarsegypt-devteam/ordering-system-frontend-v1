@@ -22,14 +22,18 @@ export default function MenuPage() {
 
   const { totalItems } = useCart();
   const [query, setQuery] = React.useState("");
-  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(
+    null,
+  );
   const [cartOpen, setCartOpen] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
 
   if (!merchantId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <p className="text-center text-gray-600">Open with a menu link (e.g. ?merchantId=...)</p>
+        <p className="text-center text-gray-600">
+          Open with a menu link (e.g. ?merchantId=...)
+        </p>
       </div>
     );
   }
@@ -45,7 +49,9 @@ export default function MenuPage() {
   if (error || !data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <p className="text-center text-red-600">{error ? String(error) : "Failed to load menu"}</p>
+        <p className="text-center text-red-600">
+          {error ? String(error) : "Failed to load menu"}
+        </p>
       </div>
     );
   }
@@ -116,7 +122,8 @@ export default function MenuPage() {
               />
             </div>
           </div>
-
+          {/* add svg */}
+          
           {/* Category chips – horizontal scroll */}
           {catTabs.length > 0 && (
             <div className="mt-3 -mx-4 overflow-x-auto px-4 scrollbar-none">
@@ -147,7 +154,9 @@ export default function MenuPage() {
       {/* Content */}
       <main className="mx-auto max-w-2xl px-4 py-4">
         {filteredCategories.length === 0 ? (
-          <p className="py-12 text-center text-gray-500">No items match your search.</p>
+          <p className="py-12 text-center text-gray-500">
+            No items match your search.
+          </p>
         ) : (
           <div className="space-y-8">
             {filteredCategories.map((cat) => (
@@ -186,7 +195,9 @@ export default function MenuPage() {
         className="fixed bottom-0 left-0 right-0 z-30 mx-auto flex max-w-2xl items-center justify-between gap-4 bg-orange-500 px-4 py-4 text-white shadow-lg pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
         <span className="font-semibold">
-          {totalItems > 0 ? `View cart · ${totalItems} item${totalItems !== 1 ? "s" : ""}` : "View cart"}
+          {totalItems > 0
+            ? `View cart · ${totalItems} item${totalItems !== 1 ? "s" : ""}`
+            : "View cart"}
         </span>
         <ShoppingCart className="h-5 w-5" />
       </button>

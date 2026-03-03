@@ -33,7 +33,12 @@ export async function createMenu(body: {
   currency?: string;
   is_active?: boolean;
 }): Promise<MenuDto> {
-  const { data } = await apiClient.post<MenuDto>("/menus", body);
+  const { data } = await apiClient.post<MenuDto>("/menus", {
+    name_ar: body.name_ar,
+    name_en: body.name_en,
+    currancy: body.currency ?? "EGP",
+    is_active: body.is_active,
+  });
   return data;
 }
 
@@ -46,7 +51,12 @@ export async function updateMenu(
     is_active?: boolean;
   }
 ): Promise<MenuDto> {
-  const { data } = await apiClient.patch<MenuDto>(`/menus/${menuId}`, body);
+  const payload: Record<string, unknown> = {};
+  if (body.name_ar !== undefined) payload.name_ar = body.name_ar;
+  if (body.name_en !== undefined) payload.name_en = body.name_en;
+  if (body.currency !== undefined) payload.currancy = body.currency;
+  if (body.is_active !== undefined) payload.is_active = body.is_active;
+  const { data } = await apiClient.patch<MenuDto>(`/menus/${menuId}`, payload);
   return data;
 }
 

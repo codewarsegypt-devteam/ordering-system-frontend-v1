@@ -191,10 +191,18 @@ function CreateMenuForm({
     name_ar: string;
     name_en: string;
     currency: string;
-  }>({ defaultValues: { currency: "EGP" } });
+    is_active: boolean;
+  }>({ defaultValues: { currency: "EGP", is_active: true } });
   return (
     <form
-      onSubmit={handleSubmit((d) => onSubmit({ name_ar: d.name_ar, name_en: d.name_en, currency: d.currency }))}
+      onSubmit={handleSubmit((d) =>
+        onSubmit({
+          name_ar: d.name_ar.trim(),
+          name_en: d.name_en.trim(),
+          currency: d.currency || "EGP",
+          is_active: d.is_active,
+        })
+      )}
       className="card-flat mb-6 border-dashed p-6"
     >
       <h3 className="section-title mb-4">Create menu</h3>
@@ -204,12 +212,16 @@ function CreateMenuForm({
           <input className="input-base" placeholder="e.g. Main Menu" {...register("name_en", { required: true })} />
         </div>
         <div>
-          <label className="label">Name (AR)</label>
-          <input className="input-base" placeholder="القائمة الرئيسية" {...register("name_ar")} />
+          <label className="label">Name (AR) *</label>
+          <input className="input-base" placeholder="القائمة الرئيسية" {...register("name_ar", { required: true })} />
         </div>
         <div>
-          <label className="label">Currency</label>
-          <input className="input-base" {...register("currency")} />
+          <label className="label">Currency *</label>
+          <input className="input-base" placeholder="EGP" {...register("currency", { required: true })} />
+        </div>
+        <div className="flex items-center gap-2 sm:col-span-3">
+          <input type="checkbox" className="h-4 w-4 rounded border-zinc-300 text-teal-600" {...register("is_active")} />
+          <label className="text-sm font-medium text-zinc-700">Active</label>
         </div>
       </div>
       <button type="submit" disabled={isPending} className="btn-primary mt-4">
@@ -240,7 +252,14 @@ function MenuEditForm({
   });
   return (
     <form
-      onSubmit={handleSubmit((d) => onSave({ name_en: d.name_en, name_ar: d.name_ar, currency: d.currency, is_active: d.is_active }))}
+      onSubmit={handleSubmit((d) =>
+        onSave({
+          name_en: d.name_en?.trim(),
+          name_ar: d.name_ar?.trim(),
+          currency: d.currency || "EGP",
+          is_active: d.is_active,
+        })
+      )}
       className="border-t border-zinc-100 bg-zinc-50/50 p-5"
     >
       <div className="grid gap-4 sm:grid-cols-3">
