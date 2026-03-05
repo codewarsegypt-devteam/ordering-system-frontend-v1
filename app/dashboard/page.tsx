@@ -6,6 +6,7 @@ import Link from "next/link";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  console.log(user);
   return (
     <div>
       <h1 className="page-title mb-2 text-xl sm:text-2xl lg:text-3xl">

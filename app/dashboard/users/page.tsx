@@ -14,7 +14,13 @@ import {
 import { fetchBranches } from "@/lib/api";
 import type { UserRole } from "@/lib/types";
 import { useForm } from "react-hook-form";
-import { Users as UsersIcon, Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import {
+  Users as UsersIcon,
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 
 interface UserForm {
@@ -28,9 +34,16 @@ export default function UsersPage() {
   const { user: currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
-  const { data: users, isLoading, error } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
     enabled: !!currentUser?.merchant_id && currentUser?.role === "owner",
@@ -43,7 +56,12 @@ export default function UsersPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: (body: { name: string; password: string; role: UserRole; branch_id?: string | null }) =>
+    mutationFn: (body: {
+      name: string;
+      password: string;
+      role: UserRole;
+      branch_id?: string | null;
+    }) =>
       createUser({
         merchant_id: currentUser!.merchant_id,
         name: body.name,
@@ -75,8 +93,13 @@ export default function UsersPage() {
   });
 
   const statusMut = useMutation({
-    mutationFn: ({ userId, status }: { userId: string; status: "active" | "disabled" }) =>
-      updateUserStatus(userId, status),
+    mutationFn: ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: "active" | "disabled";
+    }) => updateUserStatus(userId, status),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
     onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
   });
@@ -127,7 +150,9 @@ export default function UsersPage() {
       {message && (
         <div
           className={`mb-4 rounded-lg px-3 py-2 text-sm ${
-            message.type === "ok" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+            message.type === "ok"
+              ? "bg-green-50 text-green-800"
+              : "bg-red-50 text-red-700"
           }`}
         >
           {message.text}
@@ -161,11 +186,15 @@ export default function UsersPage() {
                 {u.role}
               </span>
               {u.status !== "active" && (
-                <span className="ml-2 text-sm text-amber-600">({u.status})</span>
+                <span className="ml-2 text-sm text-amber-600">
+                  ({u.status})
+                </span>
               )}
               {u.branch_id && (
                 <span className="ml-2 text-sm text-zinc-500">
-                  Branch: {branches?.find((b) => b.id === u.branch_id)?.name ?? u.branch_id}
+                  Branch:{" "}
+                  {branches?.find((b) => b.id === u.branch_id)?.name ??
+                    u.branch_id}
                 </span>
               )}
             </div>
@@ -173,7 +202,9 @@ export default function UsersPage() {
               {u.status === "active" ? (
                 <button
                   type="button"
-                  onClick={() => statusMut.mutate({ userId: u.id, status: "disabled" })}
+                  onClick={() =>
+                    statusMut.mutate({ userId: u.id, status: "disabled" })
+                  }
                   className="text-sm text-amber-600 hover:underline"
                 >
                   Disable
@@ -181,7 +212,9 @@ export default function UsersPage() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => statusMut.mutate({ userId: u.id, status: "active" })}
+                  onClick={() =>
+                    statusMut.mutate({ userId: u.id, status: "active" })
+                  }
                   className="text-sm text-green-600 hover:underline"
                 >
                   Enable
@@ -191,7 +224,9 @@ export default function UsersPage() {
                 <>
                   <button
                     type="button"
-                    onClick={() => setEditingId(editingId === u.id ? null : u.id)}
+                    onClick={() =>
+                      setEditingId(editingId === u.id ? null : u.id)
+                    }
                     className="rounded p-2 text-zinc-500 hover:bg-zinc-100"
                   >
                     <Pencil className="h-4 w-4" />
@@ -244,14 +279,18 @@ function CreateUserForm({
       <h3 className="mb-3 font-medium text-zinc-800">Create user</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Name *</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Name *
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("name", { required: true })}
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Password *</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Password *
+          </label>
           <input
             type="password"
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
@@ -259,7 +298,9 @@ function CreateUserForm({
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Role *</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Role *
+          </label>
           <select
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("role", { required: true })}
@@ -270,7 +311,9 @@ function CreateUserForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Branch</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Branch
+          </label>
           <select
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("branch_id")}
@@ -304,7 +347,11 @@ function EditUserForm({
 }: {
   user: { name: string; role: UserRole; branch_id: string | null };
   branches: { id: string; name: string }[];
-  onSave: (body: { name?: string; role?: UserRole; branch_id?: string | null }) => void;
+  onSave: (body: {
+    name?: string;
+    role?: UserRole;
+    branch_id?: string | null;
+  }) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
@@ -323,20 +370,24 @@ function EditUserForm({
           name: d.name,
           role: d.role,
           branch_id: d.branch_id || null,
-        })
+        }),
       )}
       className="mt-3 w-full border-t border-zinc-100 pt-3"
     >
       <div className="grid gap-2 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">Name</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            Name
+          </label>
           <input
             className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
             {...register("name")}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">Role</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            Role
+          </label>
           <select
             className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
             {...register("role")}
@@ -347,7 +398,9 @@ function EditUserForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">Branch</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            Branch
+          </label>
           <select
             className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
             {...register("branch_id")}
@@ -369,7 +422,11 @@ function EditUserForm({
         >
           Save
         </button>
-        <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+        >
           Cancel
         </button>
       </div>

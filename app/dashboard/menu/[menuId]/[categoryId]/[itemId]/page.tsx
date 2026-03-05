@@ -246,7 +246,7 @@ function ItemEditSection({
             <button
               type="button"
               onClick={() => setEditForm(true)}
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium"
+              className="rounded-lg text-zinc-700 border border-zinc-300 px-3 py-1.5 text-sm font-medium"
             >
               Edit
             </button>
@@ -290,19 +290,19 @@ function ItemEditSection({
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm text-zinc-600">Name (EN)</label>
-          <input className="w-full rounded border border-zinc-300 px-3 py-2 text-sm" {...register("name_en")} />
+          <input className="w-full text-zinc-700 rounded border border-zinc-300 px-3 py-2 text-sm" {...register("name_en")} />
         </div>
         <div>
           <label className="mb-1 block text-sm text-zinc-600">Name (AR)</label>
-          <input className="w-full rounded border border-zinc-300 px-3 py-2 text-sm" {...register("name_ar")} />
+          <input className="w-full text-zinc-700 rounded border border-zinc-300 px-3 py-2 text-sm" {...register("name_ar")} />
         </div>
         <div>
           <label className="mb-1 block text-sm text-zinc-600">Base price</label>
-          <input type="number" step="0.01" className="w-full rounded border border-zinc-300 px-3 py-2 text-sm" {...register("base_price", { valueAsNumber: true })} />
+          <input type="number" step="0.01" className="w-full text-zinc-700 rounded border border-zinc-300 px-3 py-2 text-sm" {...register("base_price", { valueAsNumber: true })} />
         </div>
         <div>
           <label className="mb-1 block text-sm text-zinc-600">Status</label>
-          <select className="w-full rounded border border-zinc-300 px-3 py-2 text-sm" {...register("status")}>
+          <select className="w-full text-zinc-700 rounded border border-zinc-300 px-3 py-2 text-sm" {...register("status")}>
             <option value="active">Active</option>
             <option value="hidden">Hidden</option>
             <option value="out_of_stock">Out of stock</option>
@@ -313,7 +313,7 @@ function ItemEditSection({
         <button type="submit" disabled={updateMut.isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
           Save
         </button>
-        <button type="button" onClick={() => setEditForm(false)} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+        <button type="button" onClick={() => setEditForm(false)} className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm">
           Cancel
         </button>
       </div>
@@ -376,8 +376,8 @@ function VariantsSection({
         <ul className="space-y-2">
           {(variants ?? []).map((v) => (
             <li key={v.id} className="flex items-center justify-between rounded-lg bg-zinc-50 px-3 py-2">
-              <span>{v.name_en ?? v.name_ar}</span>
-              <span className="font-medium text-teal-600">{v.price.toFixed(2)} EGP</span>
+              <span className="text-zinc-700">{v.name_en ?? v.name_ar}</span>
+              <span className="font-medium text-zinc-700">{v.price.toFixed(2)} EGP</span>
               {editable && (
                 <button
                   type="button"
@@ -431,20 +431,20 @@ function AddVariantForm({
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 flex flex-wrap items-end gap-2 rounded-lg bg-teal-50 p-3">
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (EN) *</label>
-        <input className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_en", { required: true })} />
+        <input className="w-32 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_en", { required: true })} />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (AR)</label>
-        <input className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_ar")} />
+        <input className="w-32 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_ar")} />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Price *</label>
-        <input type="number" step="0.01" className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("price", { valueAsNumber: true })} />
+        <input type="number" step="0.01" className="w-24 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("price", { valueAsNumber: true })} />
       </div>
       <button type="submit" disabled={isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
         Add
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button type="button" onClick={onCancel} className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm">
         Cancel
       </button>
     </form>
@@ -630,16 +630,16 @@ function EditMinMaxForm({
     >
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Min select</label>
-        <input type="number" min={0} className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("min_select", { valueAsNumber: true })} />
+        <input type="number" min={0} className="w-20 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("min_select", { valueAsNumber: true })} />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Max select</label>
-        <input type="number" min={0} className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("max_select", { valueAsNumber: true })} />
+        <input type="number" min={0} className="w-20 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("max_select", { valueAsNumber: true })} />
       </div>
       <button type="submit" disabled={isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
         Save
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button type="button" onClick={onCancel} className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm">
         Cancel
       </button>
     </form>
@@ -667,7 +667,7 @@ function AttachModifierGroupForm({
     >
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Modifier group</label>
-        <select className="rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("modifier_group_id", { required: true })}>
+        <select className="rounded border text-zinc-700 border-zinc-300 px-2 py-1.5 text-sm" {...register("modifier_group_id", { required: true })}>
           <option value="">Select group&hellip;</option>
           {availableGroups.map((g) => (
             <option key={g.id} value={g.id}>
@@ -678,16 +678,16 @@ function AttachModifierGroupForm({
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Min</label>
-        <input type="number" min={0} className="w-16 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("min_select", { valueAsNumber: true })} />
+        <input type="number" min={0} className="w-16 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("min_select", { valueAsNumber: true })} />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Max</label>
-        <input type="number" min={0} className="w-16 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("max_select", { valueAsNumber: true })} />
+        <input type="number" min={0} className="w-16 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("max_select", { valueAsNumber: true })} />
       </div>
       <button type="submit" disabled={isPending || availableGroups.length === 0} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
         Attach
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button type="button" onClick={onCancel} className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm">
         Cancel
       </button>
       {availableGroups.length === 0 && (

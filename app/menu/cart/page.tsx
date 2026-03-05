@@ -10,20 +10,28 @@ import { ShoppingCart, Minus, Plus, Trash2, ChevronRight, ArrowLeft } from "luci
 export default function CartPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
-  const tableCode = searchParams.get("tableCode") ?? "";
-  const merchantId = user?.merchant_id ?? searchParams.get("merchantId") ?? "";
+  const token = searchParams.get("t") ?? undefined;
+  const tableCodeParam = searchParams.get("tableCode") ?? "";
+  const merchantIdParam = user?.merchant_id ?? searchParams.get("merchantId") ?? "";
 
   const { data: menuData } = useQuery({
-    queryKey: ["publicMenu", merchantId, tableCode],
-    queryFn: () => fetchPublicMenu(merchantId, tableCode),
-    enabled: !!merchantId,
+    queryKey: token ? ["publicMenu", "token", token] : ["publicMenu", merchantIdParam, tableCodeParam],
+    queryFn: () =>
+      token
+        ? fetchPublicMenu(undefined, undefined, token)
+        : fetchPublicMenu(merchantIdParam, tableCodeParam),
+    enabled: !!token || !!merchantIdParam,
   });
   const currency = menuData?.menu?.currancy ?? "EGP";
 
   const { entries, updateQuantity, removeItem, totalItems } = useCart();
 
-  const menuHref = `/menu?merchantId=${merchantId}&tableCode=${tableCode}`;
-  const checkoutHref = `/menu/checkout?merchantId=${merchantId}&tableCode=${tableCode}`;
+  const menuHref = token
+    ? `/menu?t=${token}`
+    : `/menu?merchantId=${merchantIdParam}&tableCode=${tableCodeParam}`;
+  const checkoutHref = token
+    ? `/menu/checkout?t=${token}`
+    : `/menu/checkout?merchantId=${merchantIdParam}&tableCode=${tableCodeParam}`;
 
   const subtotal = entries.reduce((sum, entry) => {
     const price = entry.variant ? entry.variant.price : entry.item.base_price;

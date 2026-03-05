@@ -11,11 +11,7 @@ import {
   createTable,
   getApiError,
 } from "@/lib/api";
-import {
-  fetchTableQr,
-  updateTable,
-  deleteTable,
-} from "@/lib/api/tables";
+import { fetchTableQr, updateTable, deleteTable } from "@/lib/api/tables";
 import { useForm } from "react-hook-form";
 import {
   MapPin,
@@ -54,12 +50,21 @@ export default function BranchesPage() {
   const queryClient = useQueryClient();
   const [expandedBranch, setExpandedBranch] = useState<string | null>(null);
   const [editingBranch, setEditingBranch] = useState<string | null>(null);
-  const [addingTableBranch, setAddingTableBranch] = useState<string | null>(null);
+  const [addingTableBranch, setAddingTableBranch] = useState<string | null>(
+    null,
+  );
   const [editingTableId, setEditingTableId] = useState<string | null>(null);
   const [qrTableId, setQrTableId] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
-  const { data: branches, isLoading, error } = useQuery({
+  const {
+    data: branches,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
     enabled: !!user?.merchant_id && user?.role === "owner",
@@ -87,8 +92,13 @@ export default function BranchesPage() {
   });
 
   const updateBranchMut = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateBranch>[1] }) =>
-      updateBranch(id, body),
+    mutationFn: ({
+      id,
+      body,
+    }: {
+      id: string;
+      body: Parameters<typeof updateBranch>[1];
+    }) => updateBranch(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["branches"] });
       setEditingBranch(null);
@@ -113,7 +123,12 @@ export default function BranchesPage() {
       body,
     }: {
       branchId: string;
-      body: { number: number; seats?: number; is_active?: boolean; qr_code?: string | null };
+      body: {
+        number: number;
+        seats?: number;
+        is_active?: boolean;
+        qr_code?: string | null;
+      };
     }) => createTable(branchId, { ...body, is_active: true }),
     onSuccess: (_, { branchId }) => {
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
@@ -129,10 +144,17 @@ export default function BranchesPage() {
       body,
     }: {
       tableId: string;
-      body: { number?: number; seats?: number; is_active?: boolean; qr_code?: string | null };
+      body: {
+        number?: number;
+        seats?: number;
+        is_active?: boolean;
+        qr_code?: string | null;
+      };
     }) => updateTable(tableId, body),
     onSuccess: (_, { tableId }) => {
-      queryClient.invalidateQueries({ queryKey: ["branchTables", expandedBranch] });
+      queryClient.invalidateQueries({
+        queryKey: ["branchTables", expandedBranch],
+      });
       setEditingTableId(null);
       setMessage({ type: "ok", text: "Table updated." });
     },
@@ -142,7 +164,9 @@ export default function BranchesPage() {
   const deleteTableMut = useMutation({
     mutationFn: deleteTable,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branchTables", expandedBranch] });
+      queryClient.invalidateQueries({
+        queryKey: ["branchTables", expandedBranch],
+      });
       setMessage({ type: "ok", text: "Table deleted." });
     },
     onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
@@ -182,7 +206,9 @@ export default function BranchesPage() {
       {message && (
         <div
           className={`mb-4 rounded-lg px-3 py-2 text-sm ${
-            message.type === "ok" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+            message.type === "ok"
+              ? "bg-green-50 text-green-800"
+              : "bg-red-50 text-red-700"
           }`}
         >
           {message.text}
@@ -199,7 +225,9 @@ export default function BranchesPage() {
               <button
                 type="button"
                 onClick={() =>
-                  setExpandedBranch(expandedBranch === branch.id ? null : branch.id)
+                  setExpandedBranch(
+                    expandedBranch === branch.id ? null : branch.id,
+                  )
                 }
                 className="flex items-center gap-2 text-left font-medium text-zinc-800"
               >
@@ -213,7 +241,11 @@ export default function BranchesPage() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setEditingBranch(editingBranch === branch.id ? null : branch.id)}
+                  onClick={() =>
+                    setEditingBranch(
+                      editingBranch === branch.id ? null : branch.id,
+                    )
+                  }
                   className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-teal-600"
                 >
                   <Pencil className="h-4 w-4" />
@@ -221,7 +253,8 @@ export default function BranchesPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm("Delete this branch?")) deleteBranchMut.mutate(branch.id);
+                    if (confirm("Delete this branch?"))
+                      deleteBranchMut.mutate(branch.id);
                   }}
                   className="rounded-lg p-2 text-zinc-500 hover:bg-red-50 hover:text-red-600"
                 >
@@ -233,7 +266,9 @@ export default function BranchesPage() {
             {editingBranch === branch.id && (
               <BranchEditForm
                 branch={branch}
-                onSave={(body) => updateBranchMut.mutate({ id: branch.id, body })}
+                onSave={(body) =>
+                  updateBranchMut.mutate({ id: branch.id, body })
+                }
                 onCancel={() => setEditingBranch(null)}
                 isPending={updateBranchMut.isPending}
               />
@@ -246,7 +281,9 @@ export default function BranchesPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setAddingTableBranch(addingTableBranch === branch.id ? null : branch.id)
+                      setAddingTableBranch(
+                        addingTableBranch === branch.id ? null : branch.id,
+                      )
                     }
                     className="flex items-center gap-1 rounded-lg bg-teal-600 px-2 py-1 text-sm font-medium text-white hover:bg-teal-700"
                   >
@@ -291,7 +328,9 @@ export default function BranchesPage() {
                         ) : (
                           <div className="flex items-center justify-between">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-medium">Table #{t.number}</span>
+                              <span className="font-medium">
+                                Table #{t.number}
+                              </span>
                               {t.seats != null && (
                                 <span className="text-sm text-zinc-500">
                                   {t.seats} seats
@@ -413,8 +452,18 @@ function BranchEditForm({
   onCancel,
   isPending,
 }: {
-  branch: { name: string; address?: string | null; phone?: string | null; is_active: boolean };
-  onSave: (body: { name?: string; address?: string | null; phone?: string | null; is_active?: boolean }) => void;
+  branch: {
+    name: string;
+    address?: string | null;
+    phone?: string | null;
+    is_active: boolean;
+  };
+  onSave: (body: {
+    name?: string;
+    address?: string | null;
+    phone?: string | null;
+    is_active?: boolean;
+  }) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
@@ -428,26 +477,39 @@ function BranchEditForm({
   });
   return (
     <form
-      onSubmit={handleSubmit((d) => onSave({ name: d.name, address: d.address || null, phone: d.phone || null, is_active: d.is_active }))}
+      onSubmit={handleSubmit((d) =>
+        onSave({
+          name: d.name,
+          address: d.address || null,
+          phone: d.phone || null,
+          is_active: d.is_active,
+        }),
+      )}
       className="border-t border-zinc-100 p-4"
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Name</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Name
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("name")}
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Phone</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Phone
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("phone")}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Address</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Address
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("address")}
@@ -466,7 +528,11 @@ function BranchEditForm({
         >
           Save
         </button>
-        <button type="button" onClick={onCancel} className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm"
+        >
           Cancel
         </button>
       </div>
@@ -480,7 +546,13 @@ function TableEditForm({
   onCancel,
   isPending,
 }: {
-  table: { id: string; number: number; seats?: number; is_active: boolean; qr_code?: string | null };
+  table: {
+    id: string;
+    number: number;
+    seats?: number;
+    is_active: boolean;
+    qr_code?: string | null;
+  };
   onSave: (body: {
     number?: number;
     seats?: number;
@@ -506,31 +578,37 @@ function TableEditForm({
           seats: d.seats ? parseInt(d.seats, 10) : undefined,
           is_active: d.is_active,
           qr_code: d.qr_code || null,
-        })
+        }),
       )}
       className="space-y-2 py-1"
     >
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">Number</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            Number
+          </label>
           <input
             type="number"
-            className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            className="w-20 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
             {...register("number", { required: true })}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">Seats</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            Seats
+          </label>
           <input
             type="number"
-            className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            className="w-20 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
             {...register("seats")}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-600">QR code</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-600">
+            QR code
+          </label>
           <input
-            className="w-28 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+            className="w-28 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
             placeholder="e.g. T1"
             {...register("qr_code")}
           />
@@ -544,14 +622,14 @@ function TableEditForm({
         <button
           type="submit"
           disabled={isPending}
-          className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className=" rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
         >
           Save
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+          className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm"
         >
           Cancel
         </button>
@@ -576,31 +654,37 @@ function AddTableForm({
         onAdd(
           parseInt(d.number, 10),
           d.seats || undefined,
-          d.qr_code?.trim() || undefined
-        )
+          d.qr_code?.trim() || undefined,
+        ),
       )}
       className="mb-3 flex flex-wrap items-end gap-2 rounded-lg bg-teal-50 p-3"
     >
       <div>
-        <label className="mb-1 block text-xs font-medium text-zinc-600">Number</label>
+        <label className="mb-1 block text-xs font-medium text-zinc-600">
+          Number
+        </label>
         <input
           type="number"
-          className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          className="w-24 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
           {...register("number", { required: true })}
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium text-zinc-600">Seats</label>
+        <label className="mb-1 block text-xs font-medium text-zinc-600">
+          Seats
+        </label>
         <input
           type="number"
-          className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          className="w-20 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
           {...register("seats")}
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium text-zinc-600">QR code</label>
+        <label className="mb-1 block text-xs font-medium text-zinc-600">
+          QR code
+        </label>
         <input
-          className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          className="w-24 text-zinc-700 rounded border border-zinc-300 px-2 py-1.5 text-sm"
           placeholder="e.g. T1"
           {...register("qr_code")}
         />
@@ -612,7 +696,11 @@ function AddTableForm({
       >
         Add
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button
+        type="button"
+        onClick={onCancel}
+        className="text-zinc-700 rounded border border-zinc-300 px-3 py-1.5 text-sm"
+      >
         Cancel
       </button>
     </form>
@@ -623,7 +711,12 @@ function CreateBranchForm({
   onSubmit,
   isPending,
 }: {
-  onSubmit: (data: { name: string; address?: string; phone?: string; is_active?: boolean }) => void;
+  onSubmit: (data: {
+    name: string;
+    address?: string;
+    phone?: string;
+    is_active?: boolean;
+  }) => void;
   isPending: boolean;
 }) {
   const { register, handleSubmit, reset } = useForm<BranchForm>();
@@ -643,21 +736,27 @@ function CreateBranchForm({
       <h3 className="mb-3 font-medium text-zinc-800">Create branch</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Name *</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Name *
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("name", { required: true })}
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Phone</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Phone
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("phone")}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Address</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Address
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("address")}

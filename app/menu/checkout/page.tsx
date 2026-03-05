@@ -4,11 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useCart } from "@/contexts";
-import {
-  fetchPublicMenu,
-  createOrder,
-  getApiError,
-} from "@/lib/api";
+import { fetchPublicMenu, createOrder, getApiError } from "@/lib/api";
 import type { OrderType } from "@/lib/types";
 import { useState } from "react";
 import Link from "next/link";
@@ -23,8 +19,9 @@ interface CheckoutForm {
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
-  const merchantId = searchParams.get("merchantId") ?? "";
-  const tableCode = searchParams.get("tableCode") ?? "";
+  const token = searchParams.get("t") ?? undefined;
+  const merchantIdParam = searchParams.get("merchantId") ?? "";
+  const tableCodeParam = searchParams.get("tableCode") ?? "";
 
   const { lineItems, clearCart, totalItems } = useCart();
   const [orderResult, setOrderResult] = useState<{
@@ -34,10 +31,18 @@ export default function CheckoutPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: menuData } = useQuery({
-    queryKey: ["publicMenu", merchantId, tableCode],
-    queryFn: () => fetchPublicMenu(merchantId, tableCode),
-    enabled: !!merchantId,
+    queryKey: token
+      ? ["publicMenu", "token", token]
+      : ["publicMenu", merchantIdParam, tableCodeParam],
+    queryFn: () =>
+      token
+        ? fetchPublicMenu(undefined, undefined, token)
+        : fetchPublicMenu(merchantIdParam, tableCodeParam),
+    enabled: !!token || !!merchantIdParam,
   });
+
+  const merchantId = menuData?.merchant_id ?? merchantIdParam;
+  const tableCode = menuData?.table_code ?? tableCodeParam;
 
   const {
     register,
@@ -61,14 +66,15 @@ export default function CheckoutPage() {
   }
 
   const branchId = menuData.branch_id;
-  if (!branchId) {
+  const hasTableContext = !!menuData.table_id || !!tableCode;
+  if (!hasTableContext && !branchId) {
     return (
       <div className="luxury-page flex min-h-screen flex-col items-center justify-center px-6">
         <p className="text-center text-[var(--luxury-text-muted)]">
           No branch set. Open the menu with a table code to place an order.
         </p>
         <Link
-          href={`/menu?merchantId=${merchantId}`}
+          href={token ? `/menu?t=${token}` : `/menu?merchantId=${merchantId}`}
           className="luxury-accent-btn mt-6 rounded-xl px-5 py-2.5 font-semibold"
         >
           Back to menu
@@ -77,12 +83,15 @@ export default function CheckoutPage() {
     );
   }
 
+  const menuLink = token
+    ? `/menu?t=${token}`
+    : `/menu?merchantId=${merchantId}&tableCode=${tableCode}`;
   if (totalItems === 0 && !orderResult) {
     return (
       <div className="luxury-page flex min-h-screen flex-col items-center justify-center px-6">
         <p className="text-[var(--luxury-text-muted)]">Your cart is empty.</p>
         <Link
-          href={`/menu?merchantId=${merchantId}&tableCode=${tableCode}`}
+          href={menuLink}
           className="luxury-accent-btn mt-6 rounded-xl px-5 py-2.5 font-semibold"
         >
           Back to menu
@@ -108,7 +117,7 @@ export default function CheckoutPage() {
             Total: {orderResult.total_price.toFixed(2)} {menuData.menu.currancy}
           </p>
           <Link
-            href={`/menu?merchantId=${merchantId}&tableCode=${tableCode}`}
+            href={menuLink}
             className="luxury-accent-btn mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold shadow-lg"
           >
             Back to menu
@@ -123,8 +132,7 @@ export default function CheckoutPage() {
     try {
       const res = await createOrder({
         merchant_id: merchantId,
-        branch_id: branchId,
-        table_id: menuData.table_id ?? null,
+        table_code: tableCode || undefined,
         order_type: form.order_type,
         customer_name: form.customer_name || undefined,
         customer_phone: form.customer_phone || undefined,
@@ -146,7 +154,11 @@ export default function CheckoutPage() {
       <header className="sticky top-0 z-10 border-b border-[var(--luxury-border)] bg-[var(--luxury-surface)]/98 shadow-[var(--luxury-shadow)] backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-lg items-center px-4 sm:px-6">
           <Link
-            href={`/menu/cart?merchantId=${merchantId}&tableCode=${tableCode}`}
+            href={
+              token
+                ? `/menu/cart?t=${token}`
+                : `/menu/cart?merchantId=${merchantId}&tableCode=${tableCode}`
+            }
             className="flex items-center gap-1.5 text-sm font-medium text-[var(--luxury-text-muted)] transition-colors hover:text-[var(--luxury-accent)]"
           >
             <ArrowLeft className="h-4 w-4" />

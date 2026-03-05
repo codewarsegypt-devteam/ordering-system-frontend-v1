@@ -86,6 +86,8 @@ export interface PublicMenuResponse {
   merchant_id: string;
   branch_id: string | null;
   table_id: string | null;
+  /** Table code (qr_code). Required for create order when opening via ?t=TOKEN — backend getMenu should set this when a table is resolved. */
+  table_code?: string | null;
   menu: PublicMenuData;
   categories: PublicMenuCategory[];
 }
@@ -122,8 +124,8 @@ export type OrderStatus =
 
 export interface CreateOrderRequest {
   merchant_id: string;
-  branch_id: string;
-  table_id?: string | null;
+  /** Table code (e.g. from QR). Backend infers branch_id and table_id from it. Omit for pickup/delivery without table. */
+  table_code?: string | null;
   order_type: OrderType;
   customer_name?: string;
   customer_phone?: string;

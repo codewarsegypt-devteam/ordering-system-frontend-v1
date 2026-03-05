@@ -3,37 +3,151 @@
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPublicMenu } from "@/lib/api";
+import Link from "next/link";
+import { fetchPublicMenu, fetchPublicMenuById, fetchPublicScan, getApiError } from "@/lib/api";
 import { useCart } from "@/contexts";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, UtensilsCrossed, MapPin, Hash } from "lucide-react";
 import { MenuItemCard } from "./MenuItemCard";
 import { CartDrawer } from "./CartDrawer";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
-  const tableCode = searchParams.get("tableCode") ?? undefined;
-  const merchantId = searchParams.get("merchantId") ?? "";
+  const token = searchParams.get("t") ?? undefined;
+  const menuIdParam = searchParams.get("menuId") ?? undefined;
+  const merchantIdParam = searchParams.get("merchantId") ?? "";
+  const tableCodeParam = searchParams.get("tableCode") ?? undefined;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["publicMenu", merchantId, tableCode],
-    queryFn: () => fetchPublicMenu(merchantId, tableCode),
-    enabled: !!merchantId,
+  const isTokenFlow = !!token;
+  const showScanFirst = isTokenFlow && !menuIdParam;
+
+  const { data: scanData, isLoading: scanLoading, error: scanError } = useQuery({
+    queryKey: ["publicScan", token],
+    queryFn: () => fetchPublicScan(token!),
+    enabled: (showScanFirst || (!!token && !!menuIdParam)) && !!token,
   });
+
+  const { data: menuByIdData, isLoading: menuByIdLoading, error: menuByIdError } = useQuery({
+    queryKey: ["publicMenuById", token, menuIdParam],
+    queryFn: () => fetchPublicMenuById(menuIdParam!, token!),
+    enabled: isTokenFlow && !!menuIdParam && !!token,
+  });
+
+  const { data: legacyMenuData, isLoading: legacyLoading, error: legacyError } = useQuery({
+    queryKey: ["publicMenu", merchantIdParam, tableCodeParam],
+    queryFn: () => fetchPublicMenu(merchantIdParam, tableCodeParam),
+    enabled: !isTokenFlow && !!merchantIdParam,
+  });
+
+  const data = React.useMemo(() => {
+    if (isTokenFlow && menuIdParam && scanData && menuByIdData) {
+      return {
+        merchant_id: String(scanData.merchant_id),
+        branch_id: scanData.branch_id != null ? String(scanData.branch_id) : null,
+        table_id: scanData.table_id != null ? String(scanData.table_id) : null,
+        table_code: scanData.table_code ?? undefined,
+        menu: menuByIdData.menu,
+        categories: menuByIdData.categories ?? [],
+      };
+    }
+    return legacyMenuData ?? null;
+  }, [isTokenFlow, menuIdParam, scanData, menuByIdData, legacyMenuData]);
+
+  const isLoading = showScanFirst
+    ? scanLoading
+    : isTokenFlow && menuIdParam
+      ? scanLoading || menuByIdLoading
+      : legacyLoading;
+  const error = showScanFirst ? scanError : isTokenFlow && menuIdParam ? scanError || menuByIdError : legacyError;
 
   const { totalItems } = useCart();
   const [query, setQuery] = React.useState("");
-  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(
-    null,
-  );
+  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(null);
   const [cartOpen, setCartOpen] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
 
-  if (!merchantId) {
+  if (!token && !merchantIdParam) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <p className="text-center text-gray-600">
-          Open with a menu link (e.g. ?merchantId=...)
+          Open with a menu link (e.g. ?merchantId=... or scan the table QR)
         </p>
+      </div>
+    );
+  }
+
+  if (showScanFirst) {
+    if (scanLoading) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+        </div>
+      );
+    }
+    if (scanError || !scanData) {
+      const message = scanError ? getApiError(scanError) : "Failed to load scan";
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+          <div className="max-w-md text-center">
+            <p className="text-red-600 font-medium">{message}</p>
+            <p className="mt-2 text-sm text-gray-500">Please scan the table QR again.</p>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-screen bg-gray-50 px-4 py-8 pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto max-w-lg">
+          <div className="rounded-2xl bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center gap-4">
+              {scanData.merchant_logo ? (
+                <img
+                  src={scanData.merchant_logo}
+                  alt=""
+                  className="h-14 w-14 rounded-xl object-cover"
+                />
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                  <UtensilsCrossed className="h-7 w-7" />
+                </div>
+              )}
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  {scanData.merchant_name ?? "Menu"}
+                </h1>
+                {scanData.branch_name && (
+                  <p className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <MapPin className="h-4 w-4" />
+                    {scanData.branch_name}
+                  </p>
+                )}
+                {scanData.table_name != null && (
+                  <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                    <Hash className="h-4 w-4" />
+                    Table {scanData.table_name}
+                  </p>
+                )}
+              </div>
+            </div>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              Choose a menu
+            </h2>
+            <ul className="space-y-2">
+              {(scanData.menus ?? []).map((menu) => (
+                <li key={String(menu.id)}>
+                  <Link
+                    href={`/menu?t=${encodeURIComponent(token!)}&menuId=${menu.id}`}
+                    className="block rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 text-left font-medium text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50"
+                  >
+                    {menu.name_en || menu.name_ar || `Menu ${menu.id}`}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {(scanData.menus ?? []).length === 0 && (
+              <p className="py-4 text-center text-sm text-gray-500">No menus available.</p>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
@@ -47,11 +161,20 @@ export default function MenuPage() {
   }
 
   if (error || !data) {
+    const message = error ? getApiError(error) : "Failed to load menu";
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <p className="text-center text-red-600">
-          {error ? String(error) : "Failed to load menu"}
-        </p>
+        <div className="max-w-md text-center">
+          <p className="text-red-600 font-medium">{message}</p>
+          {token && (
+            <Link
+              href={`/menu?t=${encodeURIComponent(token)}`}
+              className="mt-3 inline-block text-sm text-orange-600 hover:underline"
+            >
+              ← Back to menu selection
+            </Link>
+          )}
+        </div>
       </div>
     );
   }
@@ -82,18 +205,33 @@ export default function MenuPage() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const cartHref = `/menu/cart?merchantId=${merchantId}&tableCode=${tableCode ?? ""}`;
-  const checkoutHref = `/menu/checkout?merchantId=${merchantId}&tableCode=${tableCode ?? ""}`;
+  const cartHref = token
+    ? `/menu/cart?t=${token}`
+    : `/menu/cart?merchantId=${data.merchant_id}&tableCode=${tableCodeParam ?? ""}`;
+  const checkoutHref = token
+    ? `/menu/checkout?t=${token}`
+    : `/menu/checkout?merchantId=${data.merchant_id}&tableCode=${tableCodeParam ?? ""}`;
+
+  const backToMenusHref = token ? `/menu?t=${encodeURIComponent(token)}` : null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 pt-[env(safe-area-inset-top)]">
-      {/* Header – Talabat/8 Orders style */}
       <header className="sticky top-0 z-20 bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-3">
-          <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold text-gray-900 truncate">
-              {menu.name_en || menu.name_ar}
-            </h1>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              {backToMenusHref && (
+                <Link
+                  href={backToMenusHref}
+                  className="mb-0.5 block text-xs font-medium text-orange-600 hover:underline"
+                >
+                  ← All menus
+                </Link>
+              )}
+              <h1 className="truncate text-lg font-bold text-gray-900">
+                {menu.name_en || menu.name_ar}
+              </h1>
+            </div>
             <button
               type="button"
               onClick={() => setCartOpen(true)}
@@ -176,7 +314,7 @@ export default function MenuPage() {
                       key={item.id}
                       item={item}
                       currency={menu.currancy}
-                      merchantId={merchantId}
+                      merchantId={data.merchant_id}
                       branchId={data.branch_id}
                       tableId={data.table_id}
                     />

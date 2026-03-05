@@ -126,7 +126,9 @@ body {
   .luxury-accent-btn {
     background: var(--luxury-accent);
     color: #fff;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+      background 0.2s,
+      transform 0.1s;
   }
   .luxury-accent-btn:hover {
     background: var(--luxury-accent-hover);
@@ -181,7 +183,9 @@ body {
   .menu-btn-orange {
     background: #e85d04 !important;
     color: #fff !important;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+      background 0.2s,
+      transform 0.1s;
   }
   .menu-btn-orange:hover {
     background: #d54d02 !important;
@@ -192,7 +196,9 @@ body {
   .menu-btn-blue {
     background: #1e6f9e !important;
     color: #fff !important;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+      background 0.2s,
+      transform 0.1s;
   }
   .menu-btn-blue:hover {
     background: #155d85 !important;
@@ -203,7 +209,8 @@ body {
   /* Wavy divider (orange wave) */
   .menu-wavy-divider {
     height: 10px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 5 Q10 0 20 5 T40 5' fill='none' stroke='%23e85d04' stroke-width='2.5'/%3E%3C/svg%3E") repeat-x;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 5 Q10 0 20 5 T40 5' fill='none' stroke='%23e85d04' stroke-width='2.5'/%3E%3C/svg%3E")
+      repeat-x;
     background-size: 40px 10px;
   }
 }

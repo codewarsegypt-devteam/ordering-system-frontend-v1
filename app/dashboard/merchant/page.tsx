@@ -18,9 +18,16 @@ interface MerchantForm {
 export default function MerchantPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
-  const { data: merchants, isLoading, error } = useQuery({
+  const {
+    data: merchants,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["merchants"],
     queryFn: fetchMerchants,
     enabled: !!user?.merchant_id,
@@ -96,7 +103,9 @@ export default function MerchantPage() {
         {message && (
           <div
             className={`rounded-lg px-3 py-2 text-sm ${
-              message.type === "ok" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+              message.type === "ok"
+                ? "bg-green-50 text-green-800"
+                : "bg-red-50 text-red-700"
             }`}
           >
             {message.text}
@@ -108,7 +117,7 @@ export default function MerchantPage() {
           </label>
           <input
             type="text"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="w-full text-zinc-700 rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
             {...register("name")}
           />
         </div>
@@ -118,7 +127,7 @@ export default function MerchantPage() {
           </label>
           <input
             type="url"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="w-full text-zinc-700 rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
             {...register("logo")}
           />
         </div>
@@ -130,7 +139,7 @@ export default function MerchantPage() {
             <input
               type="text"
               placeholder="#0f766e"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="w-full text-zinc-700 rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
               {...register("has_color_1")}
             />
           </div>
@@ -141,12 +150,12 @@ export default function MerchantPage() {
             <input
               type="text"
               placeholder="#14b8a6"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="w-full text-zinc-700 rounded-lg border border-zinc-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
               {...register("has_color_2")}
             />
           </div>
         </div>
-        <div>
+        {/* <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700">
             Status
           </label>
@@ -157,7 +166,7 @@ export default function MerchantPage() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </div>
+        </div> */}
         <button
           type="submit"
           disabled={update.isPending}

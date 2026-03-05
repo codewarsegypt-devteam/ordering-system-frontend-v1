@@ -25,11 +25,20 @@ export default function ModifiersPage() {
   const queryClient = useQueryClient();
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
-  const [addingModifierGroupId, setAddingModifierGroupId] = useState<string | null>(null);
+  const [addingModifierGroupId, setAddingModifierGroupId] = useState<
+    string | null
+  >(null);
   const [addingModifierGroup, setAddingModifierGroup] = useState(false);
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
-  const { data: groups, isLoading, error } = useQuery({
+  const {
+    data: groups,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["modifierGroups"],
     queryFn: fetchModifierGroups,
     enabled: !!user?.merchant_id,
@@ -52,8 +61,13 @@ export default function ModifiersPage() {
   });
 
   const updateGroupMut = useMutation({
-    mutationFn: ({ groupId, body }: { groupId: string; body: Parameters<typeof updateModifierGroup>[1] }) =>
-      updateModifierGroup(groupId, body),
+    mutationFn: ({
+      groupId,
+      body,
+    }: {
+      groupId: string;
+      body: Parameters<typeof updateModifierGroup>[1];
+    }) => updateModifierGroup(groupId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["modifierGroups"] });
       setEditingGroupId(null);
@@ -72,11 +86,18 @@ export default function ModifiersPage() {
     onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
   });
 
-  const [editingModifierId, setEditingModifierId] = useState<string | null>(null);
+  const [editingModifierId, setEditingModifierId] = useState<string | null>(
+    null,
+  );
 
   const createModifierMut = useMutation({
-    mutationFn: ({ groupId, body }: { groupId: string; body: Parameters<typeof createModifier>[1] }) =>
-      createModifier(groupId, body),
+    mutationFn: ({
+      groupId,
+      body,
+    }: {
+      groupId: string;
+      body: Parameters<typeof createModifier>[1];
+    }) => createModifier(groupId, body),
     onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({ queryKey: ["modifiers", groupId] });
       setAddingModifierGroupId(null);
@@ -86,10 +107,17 @@ export default function ModifiersPage() {
   });
 
   const updateModifierMut = useMutation({
-    mutationFn: ({ modifierId, body }: { modifierId: string; body: Parameters<typeof updateModifier>[1] }) =>
-      updateModifier(modifierId, body),
+    mutationFn: ({
+      modifierId,
+      body,
+    }: {
+      modifierId: string;
+      body: Parameters<typeof updateModifier>[1];
+    }) => updateModifier(modifierId, body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["modifiers", expandedGroupId] });
+      queryClient.invalidateQueries({
+        queryKey: ["modifiers", expandedGroupId],
+      });
       setEditingModifierId(null);
       setMessage({ type: "ok", text: "Modifier updated." });
     },
@@ -98,7 +126,10 @@ export default function ModifiersPage() {
 
   const deleteModifierMut = useMutation({
     mutationFn: deleteModifier,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["modifiers", expandedGroupId] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["modifiers", expandedGroupId],
+      }),
     onError: (e) => setMessage({ type: "err", text: getApiError(e) }),
   });
 
@@ -134,13 +165,17 @@ export default function ModifiersPage() {
         Modifier groups
       </h1>
       <p className="mb-6 text-sm text-zinc-500">
-        Create groups (e.g. &quot;Add-ons&quot;, &quot;Extras&quot;), add modifiers with names and prices, then attach groups to items from the item detail page (Menu → Category → Item).
+        Create groups (e.g. &quot;Add-ons&quot;, &quot;Extras&quot;), add
+        modifiers with names and prices, then attach groups to items from the
+        item detail page (Menu → Category → Item).
       </p>
 
       {message && (
         <div
           className={`mb-4 rounded-lg px-3 py-2 text-sm ${
-            message.type === "ok" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+            message.type === "ok"
+              ? "bg-green-50 text-green-800"
+              : "bg-red-50 text-red-700"
           }`}
         >
           {message.text}
@@ -168,7 +203,10 @@ export default function ModifiersPage() {
 
       <ul className="space-y-2">
         {groups?.map((g) => (
-          <li key={g.id} className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+          <li
+            key={g.id}
+            className="rounded-xl border border-zinc-200 bg-white shadow-sm"
+          >
             <div className="flex items-center justify-between p-4">
               <button
                 type="button"
@@ -183,7 +221,9 @@ export default function ModifiersPage() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setEditingGroupId(editingGroupId === g.id ? null : g.id)}
+                    onClick={() =>
+                      setEditingGroupId(editingGroupId === g.id ? null : g.id)
+                    }
                     className="rounded p-2 text-zinc-500 hover:bg-zinc-100"
                   >
                     <Pencil className="h-4 w-4" />
@@ -204,7 +244,9 @@ export default function ModifiersPage() {
             {editingGroupId === g.id && (
               <EditGroupForm
                 group={g}
-                onSave={(body) => updateGroupMut.mutate({ groupId: g.id, body })}
+                onSave={(body) =>
+                  updateGroupMut.mutate({ groupId: g.id, body })
+                }
                 onCancel={() => setEditingGroupId(null)}
                 isPending={updateGroupMut.isPending}
               />
@@ -212,12 +254,16 @@ export default function ModifiersPage() {
             {expandedGroupId === g.id && (
               <div className="border-t border-zinc-100 p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-zinc-600">Modifiers</h3>
+                  <h3 className="text-sm font-medium text-zinc-600">
+                    Modifiers
+                  </h3>
                   {editable && (
                     <button
                       type="button"
                       onClick={() =>
-                        setAddingModifierGroupId(addingModifierGroupId === g.id ? null : g.id)
+                        setAddingModifierGroupId(
+                          addingModifierGroupId === g.id ? null : g.id,
+                        )
                       }
                       className="flex items-center gap-1 rounded bg-teal-600 px-2 py-1 text-sm font-medium text-white hover:bg-teal-700"
                     >
@@ -228,7 +274,9 @@ export default function ModifiersPage() {
                 </div>
                 {addingModifierGroupId === g.id && (
                   <AddModifierForm
-                    onAdd={(body) => createModifierMut.mutate({ groupId: g.id, body })}
+                    onAdd={(body) =>
+                      createModifierMut.mutate({ groupId: g.id, body })
+                    }
                     onCancel={() => setAddingModifierGroupId(null)}
                     isPending={createModifierMut.isPending}
                   />
@@ -239,14 +287,18 @@ export default function ModifiersPage() {
                       {editingModifierId === m.id ? (
                         <EditModifierForm
                           modifier={m}
-                          onSave={(body) => updateModifierMut.mutate({ modifierId: m.id, body })}
+                          onSave={(body) =>
+                            updateModifierMut.mutate({ modifierId: m.id, body })
+                          }
                           onCancel={() => setEditingModifierId(null)}
                           isPending={updateModifierMut.isPending}
                         />
                       ) : (
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <span>{m.name_en ?? m.name_ar}</span>
-                          <span className="font-medium text-teal-600">{m.price.toFixed(2)} EGP</span>
+                          <span className="font-medium text-teal-600">
+                            {m.price.toFixed(2)} EGP
+                          </span>
                           {editable && (
                             <div className="flex gap-2">
                               <button
@@ -273,9 +325,10 @@ export default function ModifiersPage() {
                     </li>
                   ))}
                 </ul>
-                {(!modifiers || modifiers.length === 0) && !addingModifierGroupId && (
-                  <p className="text-sm text-zinc-500">No modifiers</p>
-                )}
+                {(!modifiers || modifiers.length === 0) &&
+                  !addingModifierGroupId && (
+                    <p className="text-sm text-zinc-500">No modifiers</p>
+                  )}
               </div>
             )}
           </li>
@@ -294,7 +347,10 @@ function CreateGroupForm({
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit } = useForm<{ name_ar: string; name_en: string }>();
+  const { register, handleSubmit } = useForm<{
+    name_ar: string;
+    name_en: string;
+  }>();
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -302,14 +358,18 @@ function CreateGroupForm({
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Name (EN) *</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Name (EN) *
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("name_en", { required: true })}
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Name (AR)</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-700">
+            Name (AR)
+          </label>
           <input
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             {...register("name_ar")}
@@ -317,10 +377,18 @@ function CreateGroupForm({
         </div>
       </div>
       <div className="mt-3 flex gap-2">
-        <button type="submit" disabled={isPending} className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
           Create group
         </button>
-        <button type="button" onClick={onCancel} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm"
+        >
           Cancel
         </button>
       </div>
@@ -340,7 +408,10 @@ function EditGroupForm({
   isPending: boolean;
 }) {
   const { register, handleSubmit } = useForm({
-    defaultValues: { name_en: group.name_en ?? "", name_ar: group.name_ar ?? "" },
+    defaultValues: {
+      name_en: group.name_en ?? "",
+      name_ar: group.name_ar ?? "",
+    },
   });
   return (
     <form
@@ -348,14 +419,30 @@ function EditGroupForm({
       className="border-t border-zinc-100 p-4"
     >
       <div className="grid gap-2 sm:grid-cols-2">
-        <input className="rounded border px-2 py-1.5 text-sm" placeholder="Name EN" {...register("name_en")} />
-        <input className="rounded border px-2 py-1.5 text-sm" placeholder="Name AR" {...register("name_ar")} />
+        <input
+          className="rounded border px-2 py-1.5 text-sm"
+          placeholder="Name EN"
+          {...register("name_en")}
+        />
+        <input
+          className="rounded border px-2 py-1.5 text-sm"
+          placeholder="Name AR"
+          {...register("name_ar")}
+        />
       </div>
       <div className="mt-2 flex gap-2">
-        <button type="submit" disabled={isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+        >
           Save
         </button>
-        <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+        >
           Cancel
         </button>
       </div>
@@ -370,7 +457,11 @@ function EditModifierForm({
   isPending,
 }: {
   modifier: { name_ar?: string; name_en?: string; price: number };
-  onSave: (body: { name_ar?: string; name_en?: string; price?: number }) => void;
+  onSave: (body: {
+    name_ar?: string;
+    name_en?: string;
+    price?: number;
+  }) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
@@ -383,25 +474,50 @@ function EditModifierForm({
   });
   return (
     <form
-      onSubmit={handleSubmit((d) => onSave({ name_en: d.name_en, name_ar: d.name_ar, price: Number(d.price) }))}
+      onSubmit={handleSubmit((d) =>
+        onSave({
+          name_en: d.name_en,
+          name_ar: d.name_ar,
+          price: Number(d.price),
+        }),
+      )}
       className="flex flex-wrap items-end gap-2"
     >
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (EN)</label>
-        <input className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_en")} />
+        <input
+          className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("name_en")}
+        />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (AR)</label>
-        <input className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_ar")} />
+        <input
+          className="w-32 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("name_ar")}
+        />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Price</label>
-        <input type="number" step="0.01" className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("price", { valueAsNumber: true })} />
+        <input
+          type="number"
+          step="0.01"
+          className="w-20 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("price", { valueAsNumber: true })}
+        />
       </div>
-      <button type="submit" disabled={isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
+      <button
+        type="submit"
+        disabled={isPending}
+        className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+      >
         Save
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button
+        type="button"
+        onClick={onCancel}
+        className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+      >
         Cancel
       </button>
     </form>
@@ -417,30 +533,59 @@ function AddModifierForm({
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit } = useForm<{ name_ar: string; name_en: string; price: number }>({
+  const { register, handleSubmit } = useForm<{
+    name_ar: string;
+    name_en: string;
+    price: number;
+  }>({
     defaultValues: { price: 0 },
   });
   return (
     <form
-      onSubmit={handleSubmit((d) => onAdd({ name_ar: d.name_ar, name_en: d.name_en, price: Number(d.price) }))}
+      onSubmit={handleSubmit((d) =>
+        onAdd({
+          name_ar: d.name_ar,
+          name_en: d.name_en,
+          price: Number(d.price),
+        }),
+      )}
       className="mb-3 flex flex-wrap items-end gap-2 rounded-lg bg-teal-50 p-3"
     >
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (EN) *</label>
-        <input className="w-36 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_en", { required: true })} />
+        <input
+          className="w-36 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("name_en", { required: true })}
+        />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Name (AR)</label>
-        <input className="w-36 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("name_ar")} />
+        <input
+          className="w-36 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("name_ar")}
+        />
       </div>
       <div>
         <label className="mb-1 block text-xs text-zinc-600">Price *</label>
-        <input type="number" step="0.01" className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm" {...register("price", { valueAsNumber: true })} />
+        <input
+          type="number"
+          step="0.01"
+          className="w-24 rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          {...register("price", { valueAsNumber: true })}
+        />
       </div>
-      <button type="submit" disabled={isPending} className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">
+      <button
+        type="submit"
+        disabled={isPending}
+        className="rounded bg-teal-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+      >
         Add
       </button>
-      <button type="button" onClick={onCancel} className="rounded border border-zinc-300 px-3 py-1.5 text-sm">
+      <button
+        type="button"
+        onClick={onCancel}
+        className="rounded border border-zinc-300 px-3 py-1.5 text-sm"
+      >
         Cancel
       </button>
     </form>

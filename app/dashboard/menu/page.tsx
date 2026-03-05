@@ -148,7 +148,7 @@ export default function DashboardMenuPage() {
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => {
                       if (confirm("Delete this menu and all its categories/items?")) deleteMenuMut.mutate(menu.id);
@@ -156,7 +156,7 @@ export default function DashboardMenuPage() {
                     className="btn-ghost rounded-xl p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>

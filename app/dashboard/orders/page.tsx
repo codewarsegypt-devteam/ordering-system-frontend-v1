@@ -43,8 +43,13 @@ export default function DashboardOrdersPage() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: ({ orderId, status }: { orderId: string; status: OrderStatus }) =>
-      updateOrderStatus(orderId, status),
+    mutationFn: ({
+      orderId,
+      status,
+    }: {
+      orderId: string;
+      status: OrderStatus;
+    }) => updateOrderStatus(orderId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
@@ -71,7 +76,9 @@ export default function DashboardOrdersPage() {
   return (
     <div>
       <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-semibold text-zinc-800 sm:text-2xl">Orders</h1>
+        <h1 className="text-xl font-semibold text-zinc-800 sm:text-2xl">
+          Orders
+        </h1>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
