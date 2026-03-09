@@ -29,7 +29,9 @@ export interface PublicScanResponse {
   }>;
 }
 
-export async function fetchPublicScan(token: string): Promise<PublicScanResponse> {
+export async function fetchPublicScan(
+  token: string,
+): Promise<PublicScanResponse> {
   const { data } = await apiClient.get<PublicScanResponse>("/public/scan", {
     params: { t: token },
   });
@@ -45,15 +47,14 @@ export async function fetchPublicMenu(
   merchantId?: string,
   tableCode?: string,
   _token?: string,
-  _menuId?: string | number
+  _menuId?: string | number,
 ): Promise<PublicMenuResponse> {
   const params: Record<string, string> = {};
   if (merchantId) params.merchantId = merchantId;
   if (tableCode) params.tableCode = tableCode;
-  const { data } = await apiClient.get<PublicMenuResponse>(
-    `/public/menu`,
-    { params }
-  );
+  const { data } = await apiClient.get<PublicMenuResponse>(`/public/menu`, {
+    params,
+  });
   return data;
 }
 
@@ -73,14 +74,14 @@ export interface PublicMenuByIdResponse {
 
 export async function fetchPublicMenuById(
   menuId: string | number,
-  token: string
+  token: string,
 ): Promise<PublicMenuByIdResponse> {
   const { data } = await apiClient.get<PublicMenuByIdResponse>(
     `/public/menu/${menuId}`,
-    { params: { t: token } }
+    { params: { t: token } },
   );
   return data;
-} 
+}
 
 /**
  * Request body for POST /orders.
@@ -98,7 +99,9 @@ export type CreateOrderRequestBody = {
   }>;
 };
 
-function buildCreateOrderBody(lineItems: CartLineItem[]): CreateOrderRequestBody {
+function buildCreateOrderBody(
+  lineItems: CartLineItem[],
+): CreateOrderRequestBody {
   return {
     items: lineItems.map((line) => {
       const item: CreateOrderRequestBody["items"][0] = {
@@ -127,11 +130,9 @@ export async function createOrder(
   items: CartLineItem[],
 ): Promise<CreateOrderResponse> {
   const body = buildCreateOrderBody(items);
-  const { data } = await apiClient.post<CreateOrderResponse>(
-    "/orders",
-    body,
-    { params: { t: token } },
-  );
+  const { data } = await apiClient.post<CreateOrderResponse>("/orders", body, {
+    params: { t: token },
+  });
   return data;
 }
 
@@ -144,10 +145,10 @@ export interface PublicTableQrcodeResponse {
 }
 
 export async function fetchPublicTableQrcode(
-  tableId: string
+  tableId: string,
 ): Promise<PublicTableQrcodeResponse> {
   const { data } = await apiClient.get<PublicTableQrcodeResponse>(
-    `/public/table/${tableId}/qrcode`
+    `/public/table/${tableId}/qrcode`,
   );
   return data;
 }
