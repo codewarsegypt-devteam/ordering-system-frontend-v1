@@ -22,16 +22,41 @@ import {
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const NAV_ITEMS = [
-  { href: "/dashboard",                   label: "Overview",        icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/orders",            label: "Orders",          icon: ClipboardList },
-  { href: "/dashboard/menu",              label: "Menu",            icon: UtensilsCrossed },
-  { href: "/dashboard/menu/modifiers",    label: "Modifier Groups", icon: Layers,    roles: ["owner","manager"] },
-  { href: "/dashboard/merchant",          label: "Merchant",        icon: Store,     roles: ["owner"] },
-  { href: "/dashboard/branches",          label: "Branches",        icon: MapPin,    roles: ["owner"] },
-  { href: "/dashboard/users",             label: "Users",           icon: Users,     roles: ["owner"] },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/orders", label: "Orders", icon: ClipboardList },
+  { href: "/dashboard/menu", label: "Menu", icon: UtensilsCrossed },
+  {
+    href: "/dashboard/menu/modifiers",
+    label: "Modifier Groups",
+    icon: Layers,
+    roles: ["owner", "manager"],
+  },
+  {
+    href: "/dashboard/merchant",
+    label: "Merchant",
+    icon: Store,
+    roles: ["owner"],
+  },
+  {
+    href: "/dashboard/branches",
+    label: "Branches",
+    icon: MapPin,
+    roles: ["owner"],
+  },
+  { href: "/dashboard/users", label: "Users", icon: Users, roles: ["owner"] },
 ] as const;
 
-function NavItem({ href, label, icon: Icon, active }: { href: string; label: string; icon: React.ElementType; active: boolean }) {
+function NavItem({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  active: boolean;
+}) {
   return (
     <Link
       href={href}
@@ -48,7 +73,15 @@ function NavItem({ href, label, icon: Icon, active }: { href: string; label: str
   );
 }
 
-function Sidebar({ user, path, onClose }: { user: { role: string; name: string; merchant_name?: string | null } | null; path: string | null; onClose?: () => void }) {
+function Sidebar({
+  user,
+  path,
+  onClose,
+}: {
+  user: { role: string; name: string; merchant_name?: string | null } | null;
+  path: string | null;
+  onClose?: () => void;
+}) {
   const role = user?.role ?? "";
   const visibleNav = NAV_ITEMS.filter((item) => {
     if (!("roles" in item)) return true;
@@ -64,14 +97,22 @@ function Sidebar({ user, path, onClose }: { user: { role: string; name: string; 
             {/* {user?.merchant_name?.charAt(0)?.toUpperCase() ?? "T"} */}T
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-white leading-tight">Tably </p>
-            <p className="truncate text-sm font-bold text-white leading-tight">Dashboard</p>
+            <p className="truncate text-sm font-bold text-white leading-tight">
+              Tably{" "}
+            </p>
+            <p className="truncate text-sm font-bold text-white leading-tight">
+              Dashboard
+            </p>
             {/* <p className="truncate text-sm font-bold text-white leading-tight">{user?.merchant_name ?? "Dashboard"}</p>
             <p className="text-xs text-slate-400 capitalize leading-tight">{role}</p> */}
           </div>
         </div>
         {onClose && (
-          <button type="button" onClick={onClose} className="shrink-0 rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white md:hidden">
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white md:hidden"
+          >
             <X className="h-4 w-4" />
           </button>
         )}
@@ -79,14 +120,27 @@ function Sidebar({ user, path, onClose }: { user: { role: string; name: string; 
 
       {/* Nav label */}
       <div className="px-4 pt-5 pb-2">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Navigation</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          Navigation
+        </span>
       </div>
 
       {/* Nav items */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
         {visibleNav.map((item) => {
-          const active = "exact" in item && item.exact ? path === item.href : !!path?.startsWith(item.href);
-          return <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={active} />;
+          const active =
+            "exact" in item && item.exact
+              ? path === item.href
+              : !!path?.startsWith(item.href);
+          return (
+            <NavItem
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={active}
+            />
+          );
         })}
       </nav>
 
@@ -97,7 +151,9 @@ function Sidebar({ user, path, onClose }: { user: { role: string; name: string; 
             {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-slate-200">{user?.name}</p>
+            <p className="truncate text-sm font-medium text-slate-200">
+              {user?.name}
+            </p>
             <p className="text-xs text-slate-500 capitalize">{role}</p>
           </div>
         </div>
@@ -114,14 +170,20 @@ function PageBreadcrumb({ path }: { path: string | null }) {
       {parts.map((part, i) => {
         const isLast = i === parts.length - 1;
         const href = "/" + parts.slice(0, i + 1).join("/");
-        const label = part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, " ");
+        const label =
+          part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, " ");
         return (
           <React.Fragment key={href}>
             {i > 0 && <span className="breadcrumb-sep">/</span>}
             {isLast ? (
               <span className="font-medium text-slate-700">{label}</span>
             ) : (
-              <Link href={href} className="hover:text-teal-600 transition-colors">{label}</Link>
+              <Link
+                href={href}
+                className="hover:text-teal-600 transition-colors"
+              >
+                {label}
+              </Link>
             )}
           </React.Fragment>
         );
@@ -137,7 +199,10 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
-  React.useEffect(() => { setSidebarOpen(false); setUserMenuOpen(false); }, [path]);
+  React.useEffect(() => {
+    setSidebarOpen(false);
+    setUserMenuOpen(false);
+  }, [path]);
 
   if (isLoading) {
     return (
@@ -170,12 +235,18 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Sidebar — fixed on desktop so it stays while page scrolls */}
-      <aside className={`
+      <aside
+        className={`
         fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-200 ease-out
         md:sticky md:top-0 md:z-auto md:h-screen md:w-60 md:translate-x-0 md:shrink-0
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      `}>
-        <Sidebar user={user} path={path} onClose={() => setSidebarOpen(false)} />
+      `}
+      >
+        <Sidebar
+          user={user}
+          path={path}
+          onClose={() => setSidebarOpen(false)}
+        />
       </aside>
 
       {/* Main column */}
@@ -218,24 +289,46 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </div>
                 <div className="hidden text-left sm:block">
-                  <p className="text-sm font-semibold leading-tight text-slate-800">{user?.name}</p>
-                  <p className="text-[11px] capitalize leading-tight text-teal-600">{user?.role}</p>
+                  <p className="text-sm font-semibold leading-tight text-slate-800">
+                    {user?.name}
+                  </p>
+                  <p className="text-[11px] capitalize leading-tight text-teal-600">
+                    {user?.role}
+                  </p>
                 </div>
-                <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  className={`h-3.5 w-3.5 text-slate-400 transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+                />
               </button>
 
               {userMenuOpen && (
                 <>
-                  <button type="button" onClick={() => setUserMenuOpen(false)} className="fixed inset-0 z-10" aria-label="Close" />
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="fixed inset-0 z-10"
+                    aria-label="Close"
+                  />
                   <div className="absolute right-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
                     <div className="border-b border-slate-100 px-4 py-3">
-                      <p className="font-semibold text-slate-800">{user?.name}</p>
-                      <p className="text-xs capitalize text-teal-600">{user?.role}</p>
-                      {user?.merchant_name && <p className="mt-0.5 text-xs text-slate-500">{user.merchant_name}</p>}
+                      <p className="font-semibold text-slate-800">
+                        {user?.name}
+                      </p>
+                      <p className="text-xs capitalize text-teal-600">
+                        {user?.role}
+                      </p>
+                      {user?.merchant_name && (
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {user.merchant_name}
+                        </p>
+                      )}
                     </div>
                     <button
                       type="button"
-                      onClick={() => { setUserMenuOpen(false); logout(); }}
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        logout();
+                      }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
                     >
                       <LogOut className="h-4 w-4" />
@@ -257,7 +350,11 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <QueryProvider>
       <AuthProvider>
