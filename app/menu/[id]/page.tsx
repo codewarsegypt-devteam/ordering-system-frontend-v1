@@ -4,9 +4,10 @@ import * as React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { fetchPublicMenuById, getApiError } from "@/lib/api";
+import { fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
 import { useCart } from "@/contexts";
-import { Search, ShoppingBag, Hash, ChevronLeft, X } from "lucide-react";
+import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt } from "lucide-react";
+import { toast } from "sonner";
 import { MenuItemCard } from "../MenuItemCard";
 import { CartDrawer } from "../CartDrawer";
 
@@ -27,7 +28,24 @@ export default function MenuByIdPage() {
     null,
   );
   const [cartOpen, setCartOpen] = React.useState(false);
+  const [serviceSending, setServiceSending] = React.useState<"call_waiter" | "request_bill" | null>(null);
+  const [serviceCooldown, setServiceCooldown] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
+
+  const sendTableService = async (type: "call_waiter" | "request_bill") => {
+    if (!token || serviceCooldown) return;
+    setServiceSending(type);
+    try {
+      await createTableServiceRequest(token, type);
+      toast.success(type === "call_waiter" ? "تم إرسال طلب الويتر" : "تم إرسال طلب الفاتورة");
+      setServiceCooldown(true);
+      setTimeout(() => setServiceCooldown(false), 8000);
+    } catch (err) {
+      toast.error(getApiError(err));
+    } finally {
+      setServiceSending(null);
+    }
+  };
 
   if (!id || !token) {
     return (
@@ -180,11 +198,13 @@ export default function MenuByIdPage() {
               <h1 className="truncate text-lg font-bold text-gray-900">
                 {menu.name_en || menu.name_ar}
               </h1>
-              {table_code && (
-                <p className="flex items-center gap-1 text-xs text-gray-400">
-                  <Hash className="h-3 w-3" /> Table {table_code}
+              {table_code ? (
+                <p className="flex items-center gap-1 text-xs text-gray-500">
+                  <Hash className="h-3 w-3" />
+                  <span className="text-orange-500 font-medium">Welcome</span>
+                  {" — "}Table {table_code}
                 </p>
-              )}
+              ) : null}
             </div>
             <button
               type="button"
@@ -198,6 +218,36 @@ export default function MenuByIdPage() {
                   {totalItems > 99 ? "99+" : totalItems}
                 </span>
               )}
+            </button>
+          </div>
+
+          {/* Call Waiter / Request Bill */}
+          <div className="flex gap-2 px-4 pb-2">
+            <button
+              type="button"
+              onClick={() => sendTableService("call_waiter")}
+              disabled={serviceSending !== null || serviceCooldown}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {serviceSending === "call_waiter" ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+              ) : (
+                <UserCircle2 className="h-4 w-4 text-orange-500" />
+              )}
+              {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب ويتر"}
+            </button>
+            <button
+              type="button"
+              onClick={() => sendTableService("request_bill")}
+              disabled={serviceSending !== null || serviceCooldown}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {serviceSending === "request_bill" ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+              ) : (
+                <Receipt className="h-4 w-4 text-orange-500" />
+              )}
+              {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب الفاتورة"}
             </button>
           </div>
 

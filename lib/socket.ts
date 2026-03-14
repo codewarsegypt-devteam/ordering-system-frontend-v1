@@ -18,6 +18,15 @@ export interface OrderCreatedPayload {
   table_number?: string | null;
 }
 
+export interface TableServiceCreatedPayload {
+  id: string;
+  table_id: string;
+  branch_id: string | number;
+  type: string;
+  status: string;
+  created_at: string;
+}
+
 /**
  * عميل Socket.io للاتصال بالباكند.
  * الـ path الافتراضي /socket.io (مطابق للـ Server).

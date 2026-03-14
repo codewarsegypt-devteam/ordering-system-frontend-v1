@@ -3,10 +3,11 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { fetchPublicScan, getApiError } from "@/lib/api";
+import { useEffect, useRef, useState } from "react";
+import { fetchPublicScan, createTableServiceRequest, getApiError } from "@/lib/api";
 import Image from "next/image";
-import { UtensilsCrossed, MapPin, Hash, ChevronLeft } from "lucide-react";
+import { UtensilsCrossed, MapPin, Hash, ChevronLeft, UserCircle2, Receipt } from "lucide-react";
+import { toast } from "sonner";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
@@ -89,6 +90,23 @@ export default function MenuPage() {
   }
 
   const menus = scanData.menus ?? [];
+  const [serviceSending, setServiceSending] = useState<"call_waiter" | "request_bill" | null>(null);
+  const [serviceCooldown, setServiceCooldown] = useState(false);
+
+  const sendTableService = async (type: "call_waiter" | "request_bill") => {
+    if (!token || serviceCooldown) return;
+    setServiceSending(type);
+    try {
+      await createTableServiceRequest(token, type);
+      toast.success(type === "call_waiter" ? "تم إرسال طلب الويتر" : "تم إرسال طلب الفاتورة");
+      setServiceCooldown(true);
+      setTimeout(() => setServiceCooldown(false), 8000);
+    } catch (err) {
+      toast.error(getApiError(err));
+    } finally {
+      setServiceSending(null);
+    }
+  };
 
   if (menus.length === 1) {
     return (
@@ -98,59 +116,114 @@ export default function MenuPage() {
     );
   }
 
+  const merchantName = scanData.merchant_name ?? "our place";
+  const branchName = scanData.branch_name;
+  const tableName = scanData.table_name;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-orange-500 px-6 pb-10 pt-16 text-white">
+    <div className="min-h-screen bg-linear-to-b from-orange-50 to-gray-50 pb-10">
+      {/* Welcome header */}
+      <div className="bg-linear-to-br from-orange-500 rounded-b-4xl via-orange-600 to-amber-600 px-6 pt-10 pb-12 text-white shadow-lg">
         <div className="mx-auto max-w-lg">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-4">
             {scanData.merchant_logo ? (
               <Image
                 src={scanData.merchant_logo}
-                alt={scanData.merchant_name ?? ""}
-                width={64}
-                height={64}
-                className="h-16 w-16 rounded-2xl border-2 border-white/30 object-cover shadow"
-                sizes="64px"
+                alt=""
+                width={72}
+                height={72}
+                className="h-20 w-20 shrink-0 rounded-2xl border-2 border-white/30 object-cover shadow-lg"
+                sizes="72px"
                 priority
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
-                <UtensilsCrossed className="h-8 w-8 text-white" />
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/20 shadow-inner">
+                <UtensilsCrossed className="h-10 w-10 text-white" />
               </div>
             )}
-            <div>
-              <h1 className="text-2xl font-bold">{scanData.merchant_name ?? "Menu"}</h1>
-              {scanData.branch_name && (
-                <p className="mt-0.5 flex items-center gap-1.5 text-sm text-orange-100">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {scanData.branch_name}
-                </p>
-              )}
-              {scanData.table_name != null && (
-                <p className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold text-white">
-                  <Hash className="h-3.5 w-3.5" />
-                  Table {scanData.table_name}
-                </p>
-              )}
+            <div className="min-w-0 flex-1 pt-0.5">
+              {/* <p className="text-sm font-medium uppercase tracking-wider text-orange-100">
+                Welcome
+              </p> */}
+              <h1 className="mt-1 text-2xl font-bold leading-tight">
+                Welcome to {merchantName}
+              </h1>
+              <p className="mt-3 text-orange-100/95 leading-relaxed">
+                {branchName != null && tableName != null ? (
+                  <>
+                    You&apos;re at <span className="font-semibold text-white">{branchName}</span>, sitting at{" "}
+                    <span className="font-semibold text-white">Table {tableName}</span>. We&apos;re glad you&apos;re here take a look at the menu and enjoy your time.
+                  </>
+                ) : branchName ? (
+                  <>
+                    You&apos;re at <span className="font-semibold text-white">{branchName}</span>. We&apos;re glad you&apos;re here — browse the menu below and enjoy.
+                  </>
+                ) : tableName != null ? (
+                  <>
+                    You&apos;re at <span className="font-semibold text-white">Table {tableName}</span>. We&apos;re glad you&apos;re here — browse the menu and enjoy.
+                  </>
+                ) : (
+                  "We're glad you're here — browse the menu below and enjoy."
+                )}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-lg px-4 -mt-5">
-        <div className="rounded-3xl bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-gray-400">
+      <div className="mx-auto max-w-lg px-4 -mt-6 space-y-4">
+        {/* Service shortcuts */}
+        <div className="rounded-2xl border border-orange-100 bg-white p-4 shadow-sm">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Need something?
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => sendTableService("call_waiter")}
+              disabled={serviceSending !== null || serviceCooldown}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50/80 py-3 text-sm font-medium text-orange-800 transition-colors hover:bg-orange-100 disabled:opacity-60"
+            >
+              {serviceSending === "call_waiter" ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+              ) : (
+                <UserCircle2 className="h-4 w-4 text-orange-600" />
+              )}
+              {serviceCooldown && !serviceSending ? "تم الإرسال" : "طلب ويتر"}
+            </button>
+            <button
+              type="button"
+              onClick={() => sendTableService("request_bill")}
+              disabled={serviceSending !== null || serviceCooldown}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50/80 py-3 text-sm font-medium text-orange-800 transition-colors hover:bg-orange-100 disabled:opacity-60"
+            >
+              {serviceSending === "request_bill" ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+              ) : (
+                <Receipt className="h-4 w-4 text-orange-600" />
+              )}
+              {serviceCooldown && !serviceSending ? "تم الإرسال" : "طلب الفاتورة"}
+            </button>
+          </div>
+        </div>
+
+        {/* Choose menu */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-1 text-base font-bold text-gray-900">
             Choose a menu
           </h2>
+          <p className="mb-4 text-sm text-gray-500">
+            Select a menu to start ordering
+          </p>
           {menus.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">No menus available.</p>
+            <p className="py-8 text-center text-sm text-gray-400">No menus available at the moment.</p>
           ) : (
             <ul className="space-y-2.5">
               {menus.map((menu) => (
                 <li key={String(menu.id)}>
                   <Link
                     href={`/menu/${menu.id}?t=${encodeURIComponent(token)}`}
-                    className="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 font-semibold text-gray-900 transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+                    className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/80 px-5 py-4 font-semibold text-gray-900 transition-all hover:border-orange-200 hover:bg-orange-50/50 hover:text-orange-700 active:scale-[0.99]"
                   >
                     {menu.name_en || menu.name_ar || `Menu ${menu.id}`}
                     <ChevronLeft className="h-5 w-5 rotate-180 text-gray-400" />

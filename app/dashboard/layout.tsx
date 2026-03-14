@@ -18,12 +18,14 @@ import {
   ChevronDown,
   ChevronRight,
   Bell,
+  UserCircle2,
 } from "lucide-react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ClipboardList },
+  { href: "/dashboard/table-services", label: "Table Services", icon: UserCircle2 },
   { href: "/dashboard/menu", label: "Menu", icon: UtensilsCrossed },
   {
     href: "/dashboard/menu/modifiers",

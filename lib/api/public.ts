@@ -136,6 +136,34 @@ export async function createOrder(
   return data;
 }
 
+/**
+ * Request table service (call waiter / request bill) — من واجهة العميل بعد سكان الـ QR.
+ * POST /public/table-services
+ * Body: { t: token, type: "call_waiter" | "request_bill" | "other" }
+ */
+export type TableServiceType = "call_waiter" | "request_bill" | "other";
+
+export interface TableServiceCreatedResponse {
+  id: string;
+  merchant_id: string;
+  branch_id: string | null;
+  table_id: string;
+  type: string;
+  status: string;
+  created_at: string;
+}
+
+export async function createTableServiceRequest(
+  token: string,
+  type: TableServiceType,
+): Promise<TableServiceCreatedResponse> {
+  const { data } = await apiClient.post<TableServiceCreatedResponse>(
+    "/public/table-services",
+    { t: token, type },
+  );
+  return data;
+}
+
 /** Public endpoint: get stored table QR by table id (no auth). */
 export interface PublicTableQrcodeResponse {
   id: string;

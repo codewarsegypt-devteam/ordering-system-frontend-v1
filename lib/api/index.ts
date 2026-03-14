@@ -64,3 +64,13 @@ export * from "./merchants";
 export * from "./branches";
 export * from "./tables";
 export * from "./users";
+
+// Table services (call waiter / request bill)
+export {
+  listTableServices,
+  updateTableServiceStatus,
+  type TableServiceRow,
+  type TableServiceStatus,
+  type TableServicesListResponse,
+  type TableServicesListParams,
+} from "./tableServices";
