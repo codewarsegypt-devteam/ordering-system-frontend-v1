@@ -7,6 +7,7 @@ import {
   fetchMenus, fetchMenuCategories, fetchItem, updateItem, updateItemStatus,
   fetchItemVariants, createVariant, updateVariant, deleteVariant,
   fetchItemModifierGroups, attachModifierGroup, updateItemModifierGroup, detachModifierGroup,
+  uploadItemImages,
   getApiError,
 } from "@/lib/api";
 import { fetchModifierGroups } from "@/lib/api/modifiers";
@@ -15,10 +16,10 @@ import type { ModifierGroupDto } from "@/lib/api/modifiers";
 import { useForm } from "react-hook-form";
 import {
   Loader2, Plus, Trash2, Package, ChevronRight,
-  Pencil, Check, X, Layers, Tag, DollarSign, Settings2,
+  Pencil, Check, X, Layers, Tag, DollarSign, Settings2, ImageIcon, Upload,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -146,6 +147,15 @@ export default function ItemDetailPage() {
         )}
       </div>
 
+      {/* ── Item images ── */}
+      <ItemImagesCard
+        itemId={itemId}
+        categoryId={categoryId}
+        images={item.images ?? { img_url_1: null, img_url_2: null }}
+        editable={editable}
+        onToast={showToast}
+      />
+
       {/* ── Variants card ── */}
       <VariantsCard
         itemId={itemId}
@@ -165,6 +175,123 @@ export default function ItemDetailPage() {
         setAddModGrp={setAddModGrp}
         onToast={showToast}
       />
+    </div>
+  );
+}
+
+/* ─── Item images card ─── */
+function ItemImagesCard({
+  itemId,
+  categoryId,
+  images,
+  editable,
+  onToast,
+}: {
+  itemId: string;
+  categoryId: string;
+  images: { img_url_1: string | null; img_url_2: string | null };
+  editable: boolean;
+  onToast: (t: "ok" | "err", m: string) => void;
+}) {
+  const queryClient = useQueryClient();
+  const [uploading, setUploading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const uploadMut = useMutation({
+    mutationFn: (formData: FormData) => uploadItemImages(itemId, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["item", itemId] });
+      queryClient.invalidateQueries({ queryKey: ["categoryItems", categoryId] });
+      onToast("ok", "Images updated.");
+      setUploading(false);
+      formRef.current?.reset();
+    },
+    onError: (e) => {
+      onToast("err", getApiError(e));
+      setUploading(false);
+    },
+  });
+
+  const handleUpload = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const input1 = form.querySelector<HTMLInputElement>('input[name="image1"]');
+    const input2 = form.querySelector<HTMLInputElement>('input[name="image2"]');
+    const file1 = input1?.files?.[0];
+    const file2 = input2?.files?.[0];
+    if (!file1 && !file2) {
+      onToast("err", "Choose at least one image.");
+      return;
+    }
+    const formData = new FormData();
+    if (file1) formData.append("image1", file1);
+    if (file2) formData.append("image2", file2);
+    setUploading(true);
+    uploadMut.mutate(formData);
+  };
+
+  return (
+    <div className="form-card">
+      <div className="mb-4 flex items-center gap-2">
+        <ImageIcon className="h-4 w-4 text-slate-400" />
+        <h2 className="section-title">Item images</h2>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 text-xs font-medium text-slate-500">Image 1</p>
+          {images.img_url_1 ? (
+            <img
+              src={images.img_url_1}
+              alt="Item 1"
+              className="h-40 w-full rounded-lg object-cover"
+            />
+          ) : (
+            <div className="flex h-40 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+              <ImageIcon className="h-10 w-10" />
+            </div>
+          )}
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 text-xs font-medium text-slate-500">Image 2</p>
+          {images.img_url_2 ? (
+            <img
+              src={images.img_url_2}
+              alt="Item 2"
+              className="h-40 w-full rounded-lg object-cover"
+            />
+          ) : (
+            <div className="flex h-40 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+              <ImageIcon className="h-10 w-10" />
+            </div>
+          )}
+        </div>
+      </div>
+      {editable && (
+        <form ref={formRef} onSubmit={handleUpload} className="mt-4 flex flex-wrap items-end gap-4">
+          <div>
+            <label className="label text-xs">Image 1</label>
+            <input
+              type="file"
+              name="image1"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="block w-full text-sm text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-teal-700 hover:file:bg-teal-100"
+            />
+          </div>
+          <div>
+            <label className="label text-xs">Image 2</label>
+            <input
+              type="file"
+              name="image2"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="block w-full text-sm text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-teal-700 hover:file:bg-teal-100"
+            />
+          </div>
+          <button type="submit" disabled={uploading} className="btn-primary">
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? "Uploading…" : "Upload"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

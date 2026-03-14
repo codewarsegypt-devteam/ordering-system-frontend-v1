@@ -1,20 +1,32 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { fetchPublicScan, getApiError } from "@/lib/api";
 import { UtensilsCrossed, MapPin, Hash, ChevronLeft } from "lucide-react";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get("t") ?? undefined;
+  const redirected = useRef(false);
 
   const { data: scanData, isLoading, error } = useQuery({
     queryKey: ["publicScan", token],
     queryFn: () => fetchPublicScan(token!),
     enabled: !!token,
   });
+
+  useEffect(() => {
+    if (!scanData || redirected.current) return;
+    const menus = scanData.menus ?? [];
+    if (menus.length === 1) {
+      redirected.current = true;
+      router.replace(`/menu/${menus[0].id}?t=${encodeURIComponent(token!)}`);
+    }
+  }, [scanData, token, router]);
 
   if (!token) {
     return (
@@ -32,8 +44,31 @@ export default function MenuPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-orange-500 border-t-transparent" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-orange-500 px-6 pb-10 pt-16 text-white">
+          <div className="mx-auto max-w-lg">
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 animate-pulse rounded-2xl bg-white/20" />
+              <div className="flex-1 space-y-2">
+                <div className="h-6 w-36 animate-pulse rounded bg-white/25" />
+                <div className="h-4 w-24 animate-pulse rounded bg-white/15" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mx-auto max-w-lg px-4 -mt-5">
+          <div className="rounded-3xl bg-white p-6 shadow-md">
+            <div className="mb-4 h-4 w-28 animate-pulse rounded bg-gray-200" />
+            <div className="space-y-2.5">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="h-14 animate-pulse rounded-2xl bg-gray-100"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -48,6 +83,16 @@ export default function MenuPage() {
           {error ? getApiError(error) : "Failed to load scan"}
         </p>
         <p className="mt-1.5 text-sm text-gray-500">Please scan the table QR again.</p>
+      </div>
+    );
+  }
+
+  const menus = scanData.menus ?? [];
+
+  if (menus.length === 1) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-orange-500 border-t-transparent" />
       </div>
     );
   }
@@ -92,11 +137,11 @@ export default function MenuPage() {
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-gray-400">
             Choose a menu
           </h2>
-          {(scanData.menus ?? []).length === 0 ? (
+          {menus.length === 0 ? (
             <p className="py-6 text-center text-sm text-gray-400">No menus available.</p>
           ) : (
             <ul className="space-y-2.5">
-              {(scanData.menus ?? []).map((menu) => (
+              {menus.map((menu) => (
                 <li key={String(menu.id)}>
                   <Link
                     href={`/menu/${menu.id}?t=${encodeURIComponent(token)}`}

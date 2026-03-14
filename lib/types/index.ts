@@ -64,6 +64,7 @@ export interface PublicMenuItem {
   status: string;
   variants?: PublicMenuVariant[];
   modifier_groups?: PublicMenuModifierGroupRule[];
+  images?: { img_url_1: string | null; img_url_2: string | null };
 }
 
 export interface PublicMenuCategory {
@@ -138,10 +139,11 @@ export interface CreateOrderRequest {
 }
 
 export interface Order {
-  id: string;
-  merchant_id: string;
-  branch_id: string;
-  table_id: string | null;
+  id: string | number;
+  merchant_id?: string | number | null;
+  merchent_id?: string | number | null;
+  branch_id: string | number | null;
+  table_id: string | number | null;
   order_number: string;
   status: OrderStatus;
   order_type?: OrderType;
@@ -150,6 +152,16 @@ export interface Order {
   notes?: string | null;
   total_price: number;
   created_at: string;
+  branch_name?: string | null;
+  table_number?: string | null;
+  branch?: {
+    id: string | number;
+    name: string;
+  } | null;
+  table?: {
+    id: string | number;
+    number: string | number;
+  } | null;
   items?: OrderItem[];
 }
 
@@ -181,8 +193,18 @@ export interface CreateOrderResponse {
 }
 
 // Dashboard – list response
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+}
+
 export interface OrdersListResponse {
   data: Order[];
+  pagination?: PaginationMeta;
   next_cursor: string | null;
 }
 

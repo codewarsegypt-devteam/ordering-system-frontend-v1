@@ -4,7 +4,15 @@ import * as React from "react";
 import Link from "next/link";
 import { useCart } from "@/contexts";
 import { createOrder, getApiError } from "@/lib/api";
-import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
+import {
+  X,
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 interface CartDrawerProps {
@@ -14,14 +22,28 @@ interface CartDrawerProps {
   cartLink: string;
 }
 
-export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProps) {
-  const { entries, updateQuantity, removeItem, totalItems, lineItems, clearCart } = useCart();
+export function CartDrawer({
+  open,
+  onClose,
+  currency,
+  cartLink,
+}: CartDrawerProps) {
+  const {
+    entries,
+    updateQuantity,
+    removeItem,
+    totalItems,
+    lineItems,
+    clearCart,
+  } = useCart();
   const searchParams = useSearchParams();
   const token = searchParams.get("t") ?? undefined;
 
   const [placing, setPlacing] = React.useState(false);
   const [orderError, setOrderError] = React.useState<string | null>(null);
-  const [orderSuccess, setOrderSuccess] = React.useState<{ order_number: string } | null>(null);
+  const [orderSuccess, setOrderSuccess] = React.useState<{
+    order_number: string;
+  } | null>(null);
 
   const subtotal = entries.reduce((sum, entry) => {
     const price = entry.variant ? entry.variant.price : entry.item.base_price;
@@ -102,12 +124,16 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                   <ShoppingBag className="h-8 w-8 text-gray-300" />
                 </div>
                 <p className="font-medium text-gray-600">Your cart is empty</p>
-                <p className="mt-1 text-sm text-gray-400">Add some items to get started</p>
+                <p className="mt-1 text-sm text-gray-400">
+                  Add some items to get started
+                </p>
               </div>
             ) : (
               <ul className="space-y-2.5">
                 {entries.map((entry, index) => {
-                  const price = entry.variant ? entry.variant.price : entry.item.base_price;
+                  const price = entry.variant
+                    ? entry.variant.price
+                    : entry.item.base_price;
                   const modTotal = entry.selectedModifiers.reduce(
                     (s, m) => s + m.modifier.price * m.quantity,
                     0,
@@ -137,7 +163,9 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                         <p className="font-semibold text-gray-900 leading-snug">
                           {name}
                           {variantLabel && (
-                            <span className="font-normal text-gray-500">{variantLabel}</span>
+                            <span className="font-normal text-gray-500">
+                              {variantLabel}
+                            </span>
                           )}
                         </p>
                         {addOns && (
@@ -147,7 +175,9 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                         )}
                         <p className="mt-1.5 text-sm font-bold text-orange-500">
                           {lineTotal.toFixed(2)}{" "}
-                          <span className="text-xs font-medium text-gray-400">{currency}</span>
+                          <span className="text-xs font-medium text-gray-400">
+                            {currency}
+                          </span>
                         </p>
                       </div>
 
@@ -164,7 +194,9 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                         <div className="flex items-center overflow-hidden rounded-lg border border-gray-200 bg-white">
                           <button
                             type="button"
-                            onClick={() => updateQuantity(index, entry.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(index, entry.quantity - 1)
+                            }
                             className="flex h-7 w-7 items-center justify-center text-gray-600 hover:bg-gray-50"
                           >
                             <Minus className="h-3 w-3" />
@@ -174,7 +206,9 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                           </span>
                           <button
                             type="button"
-                            onClick={() => updateQuantity(index, entry.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(index, entry.quantity + 1)
+                            }
                             className="flex h-7 w-7 items-center justify-center text-gray-600 hover:bg-gray-50"
                           >
                             <Plus className="h-3 w-3" />
@@ -200,7 +234,9 @@ export function CartDrawer({ open, onClose, currency, cartLink }: CartDrawerProp
                 <span className="text-sm text-gray-500">Subtotal</span>
                 <span className="text-lg font-bold text-gray-900">
                   {subtotal.toFixed(2)}{" "}
-                  <span className="text-sm font-medium text-gray-400">{currency}</span>
+                  <span className="text-sm font-medium text-gray-400">
+                    {currency}
+                  </span>
                 </span>
               </div>
 

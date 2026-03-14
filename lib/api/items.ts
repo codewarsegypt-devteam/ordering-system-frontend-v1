@@ -2,6 +2,11 @@ import { apiClient, getApiError } from "./client";
 
 export type ItemStatus = "active" | "hidden" | "out_of_stock";
 
+export interface ItemImagesDto {
+  img_url_1: string | null;
+  img_url_2: string | null;
+}
+
 export interface ItemDto {
   id: string;
   category_id: string;
@@ -12,6 +17,7 @@ export interface ItemDto {
   description_en?: string | null;
   status: ItemStatus;
   created_at?: string;
+  images?: ItemImagesDto;
 }
 
 export interface ItemVariantDto {
@@ -32,6 +38,7 @@ export interface ItemModifierGroupLinkDto {
 export interface ItemDetailDto extends ItemDto {
   variants?: ItemVariantDto[];
   modifier_groups?: ItemModifierGroupLinkDto[];
+  images?: ItemImagesDto;
 }
 
 export async function fetchCategoryItems(categoryId: string): Promise<ItemDto[]> {
@@ -92,6 +99,28 @@ export async function updateItemStatus(
 
 export async function deleteItem(itemId: string): Promise<void> {
   await apiClient.delete(`/items/${itemId}`);
+}
+
+export interface UploadItemImagesResponse {
+  images: ItemImagesDto;
+}
+
+/**
+ * Upload one or two images for an item. Backend expects multipart fields "image1" and/or "image2".
+ * Use FormData and append File(s) with these keys.
+ */
+export async function uploadItemImages(
+  itemId: string,
+  formData: FormData
+): Promise<UploadItemImagesResponse> {
+  const { data } = await apiClient.post<UploadItemImagesResponse>(
+    `/items/${itemId}/images`,
+    formData,
+    {
+      headers: { "Content-Type": (false as unknown) as string },
+    }
+  );
+  return data;
 }
 
 export async function fetchItemVariants(itemId: string): Promise<ItemVariantDto[]> {

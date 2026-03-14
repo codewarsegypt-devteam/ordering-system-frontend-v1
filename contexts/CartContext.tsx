@@ -7,7 +7,12 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import type { CartLineItem, PublicMenuItem, PublicMenuVariant, PublicMenuModifier } from "@/lib/types";
+import type {
+  CartLineItem,
+  PublicMenuItem,
+  PublicMenuVariant,
+  PublicMenuModifier,
+} from "@/lib/types";
 
 export interface CartEntry {
   item: PublicMenuItem;
@@ -61,7 +66,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return [...prev, newEntry];
       });
     },
-    []
+    [],
   );
 
   const updateQuantity = useCallback((index: number, quantity: number) => {
@@ -79,14 +84,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = useCallback(() => setEntries([]), []);
 
-  const lineItems = useMemo(
-    () => entries.map(toCartLineItem),
-    [entries]
-  );
+  const lineItems = useMemo(() => entries.map(toCartLineItem), [entries]);
 
   const totalItems = useMemo(
     () => entries.reduce((s, e) => s + e.quantity, 0),
-    [entries]
+    [entries],
   );
 
   const value: CartContextValue = useMemo(
@@ -99,12 +101,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       lineItems,
       totalItems,
     }),
-    [entries, addItem, updateQuantity, removeItem, clearCart, lineItems, totalItems]
+    [
+      entries,
+      addItem,
+      updateQuantity,
+      removeItem,
+      clearCart,
+      lineItems,
+      totalItems,
+    ],
   );
 
-  return (
-    <CartContext.Provider value={value}>{children}</CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {

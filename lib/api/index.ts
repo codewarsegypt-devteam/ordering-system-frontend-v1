@@ -3,6 +3,7 @@ export { apiClient, getApiError } from "./client";
 export * from "./auth";
 export * from "./public";
 export * from "./orders";
+export * from "./stats";
 
 // Menus & categories
 export {
@@ -27,6 +28,7 @@ export {
   updateItem,
   updateItemStatus,
   deleteItem,
+  uploadItemImages,
   fetchItemVariants,
   createVariant,
   updateVariant,
@@ -37,6 +39,7 @@ export {
   detachModifierGroup,
   type ItemStatus,
   type ItemDto,
+  type ItemImagesDto,
   type ItemVariantDto,
   type ItemModifierGroupLinkDto,
   type ItemDetailDto,

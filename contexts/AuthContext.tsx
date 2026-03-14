@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // انتظر تحديث الـ state قبل الانتقال عشان الـ dashboard يلاقي الـ user
       queueMicrotask(() => router.push("/dashboard"));
     },
-    [router]
+    [router],
   );
 
   const logout = useCallback(async () => {
@@ -90,9 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refetchUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

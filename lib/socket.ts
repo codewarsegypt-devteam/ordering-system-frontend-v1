@@ -12,8 +12,10 @@ export interface OrderCreatedPayload {
   order_number: string;
   status: string;
   total_price: number;
-  branch_id: string;
-  table_id: string | null;
+  branch_id: string | number;
+  table_id: string | number | null;
+  branch_name?: string | null;
+  table_number?: string | null;
 }
 
 /**

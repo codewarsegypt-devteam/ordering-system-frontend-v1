@@ -138,6 +138,7 @@ export default function CategoryItemsPage() {
           <table className="data-table">
             <thead>
               <tr>
+                <th className="w-14">Image</th>
                 <th>Item</th>
                 <th className="hidden sm:table-cell">Base price</th>
                 <th>Status</th>
@@ -147,6 +148,19 @@ export default function CategoryItemsPage() {
             <tbody>
               {items.map((item) => (
                 <tr key={item.id}>
+                  <td className="w-14">
+                    {item.images?.img_url_1 ? (
+                      <img
+                        src={item.images.img_url_1}
+                        alt=""
+                        className="h-10 w-10 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                        <Package className="h-4 w-4 text-slate-400" />
+                      </div>
+                    )}
+                  </td>
                   <td>
                     <Link
                       href={`/dashboard/menu/${menuId}/${categoryId}/${item.id}`}

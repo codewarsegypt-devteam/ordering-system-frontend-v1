@@ -21,10 +21,11 @@ export default function MenuByIdPage() {
     queryFn: () => fetchPublicMenuById(id!, token!),
     enabled: !!id && !!token,
   });
-
   const { totalItems } = useCart();
   const [query, setQuery] = React.useState("");
-  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(
+    null,
+  );
   const [cartOpen, setCartOpen] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
 
@@ -67,7 +68,14 @@ export default function MenuByIdPage() {
     );
   }
 
-  const { menu, categories = [], merchant_id, branch_id, table_id, table_code } = data;
+  const {
+    menu,
+    categories = [],
+    merchant_id,
+    branch_id,
+    table_id,
+    table_code,
+  } = data;
   const merchantId = merchant_id != null ? String(merchant_id) : "";
   const branchId = branch_id != null ? String(branch_id) : null;
   const tableId = table_id != null ? String(table_id) : null;
@@ -93,7 +101,10 @@ export default function MenuByIdPage() {
 
   const scrollToCategory = (id: string) => {
     setActiveCategoryId(id);
-    sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    sectionRefs.current[id]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   const backHref = `/menu?t=${encodeURIComponent(token)}`;
@@ -194,14 +205,18 @@ export default function MenuByIdPage() {
           <div className="flex flex-col items-center py-20 text-center">
             <Search className="mb-3 h-10 w-10 text-gray-300" />
             <p className="font-medium text-gray-500">No dishes found</p>
-            <p className="mt-1 text-sm text-gray-400">Try a different search term</p>
+            <p className="mt-1 text-sm text-gray-400">
+              Try a different search term
+            </p>
           </div>
         ) : (
           <div className="space-y-8">
             {filteredCategories.map((cat) => (
               <section
                 key={cat.id}
-                ref={(el) => { sectionRefs.current[cat.id] = el; }}
+                ref={(el) => {
+                  sectionRefs.current[cat.id] = el;
+                }}
                 className="scroll-mt-44"
               >
                 <h2 className="mb-3 text-base font-bold text-gray-900 after:mt-1 after:block after:h-0.5 after:w-8 after:rounded-full after:bg-orange-400 after:content-['']">

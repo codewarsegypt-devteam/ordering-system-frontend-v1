@@ -49,6 +49,10 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
   const nameEn = item.name_en;
   const basePrice = variant ? variant.price : item.base_price;
   const grad = avatarGradient(displayName);
+  const img1 = item.images?.img_url_1 ?? null;
+  const img2 = item.images?.img_url_2 ?? null;
+  const primaryImage = img1 ?? img2 ?? null;
+  const hasTwoImages = Boolean(img1 && img2);
 
   const selectedCountForGroup = (groupId: string) =>
     (modifierSelections[groupId] ?? []).reduce((s, x) => s + x.qty, 0);
@@ -58,7 +62,10 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
       (x) => String(x.modifier.id) === String(modId),
     );
 
-  const toggleModifier = (g: PublicMenuModifierGroupRule, mod: PublicMenuModifier) => {
+  const toggleModifier = (
+    g: PublicMenuModifierGroupRule,
+    mod: PublicMenuModifier,
+  ) => {
     const key = String(g.group.id);
     const list = modifierSelections[key] ?? [];
     const idx = list.findIndex((x) => String(x.modifier.id) === String(mod.id));
@@ -74,7 +81,11 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
     setModifierSelections((prev) => ({ ...prev, [key]: next }));
   };
 
-  const bumpModifierQty = (g: PublicMenuModifierGroupRule, mod: PublicMenuModifier, delta: number) => {
+  const bumpModifierQty = (
+    g: PublicMenuModifierGroupRule,
+    mod: PublicMenuModifier,
+    delta: number,
+  ) => {
     const key = String(g.group.id);
     const list = modifierSelections[key] ?? [];
     const idx = list.findIndex((x) => String(x.modifier.id) === String(mod.id));
@@ -143,9 +154,17 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
         <div
           className={`relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-linear-to-br ${grad} flex items-center justify-center shadow-sm`}
         >
-          <span className="text-3xl font-bold text-white/75 select-none">
-            {displayName.charAt(0).toUpperCase()}
-          </span>
+          {primaryImage ? (
+            <img
+              src={primaryImage}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="text-3xl font-bold text-white/75 select-none">
+              {displayName.charAt(0).toUpperCase()}
+            </span>
+          )}
         </div>
 
         {/* Info */}
@@ -154,7 +173,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
             {nameEn && nameAr ? (
               <>
                 {nameEn}
-                <span className="block text-xs font-normal text-gray-400">{nameAr}</span>
+                <span className="block text-xs font-normal text-gray-400">
+                  {nameAr}
+                </span>
               </>
             ) : (
               displayName
@@ -165,7 +186,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
           )}
           <p className="mt-1.5 text-sm font-bold text-orange-500">
             {basePrice.toFixed(2)}{" "}
-            <span className="text-xs font-medium text-gray-400">{currency}</span>
+            <span className="text-xs font-medium text-gray-400">
+              {currency}
+            </span>
           </p>
         </div>
 
@@ -197,13 +220,38 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
             style={{ maxHeight: "92dvh" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Image / banner */}
+            {/* Image / banner — show both images from response when available */}
             <div
-              className={`relative h-44 w-full bg-linear-to-br ${grad} flex items-center justify-center`}
+              className={`relative w-full bg-linear-to-br ${grad} flex flex-col overflow-hidden ${hasTwoImages ? "min-h-44" : "h-44"}`}
             >
-              <span className="text-8xl font-bold text-white/60 select-none">
-                {displayName.charAt(0).toUpperCase()}
-              </span>
+              {primaryImage ? (
+                hasTwoImages ? (
+                  <div className="flex flex-1 gap-0.5">
+                    <img
+                      src={img1!}
+                      alt=""
+                      className="h-44 flex-1 object-cover"
+                    />
+                    <img
+                      src={img2!}
+                      alt=""
+                      className="h-44 flex-1 object-cover"
+                    />
+                  </div>
+                ) : (
+                  <img
+                    src={primaryImage}
+                    alt=""
+                    className="h-44 w-full object-cover"
+                  />
+                )
+              ) : (
+                <div className="flex h-44 w-full items-center justify-center">
+                  <span className="text-8xl font-bold text-white/60 select-none">
+                    {displayName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -225,7 +273,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
               )}
               <p className="mt-1.5 text-lg font-bold text-orange-500">
                 {unitTotal.toFixed(2)}{" "}
-                <span className="text-sm font-medium text-gray-400">{currency}</span>
+                <span className="text-sm font-medium text-gray-400">
+                  {currency}
+                </span>
               </p>
             </div>
 
@@ -241,7 +291,8 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
                     <span className="font-bold">
                       {firstInvalid.group.name_en || firstInvalid.group.name_ar}
                     </span>{" "}
-                    ({firstInvalid.rule.min_select}–{firstInvalid.rule.max_select})
+                    ({firstInvalid.rule.min_select}–
+                    {firstInvalid.rule.max_select})
                   </span>
                 </div>
               )}
@@ -267,7 +318,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
                           }`}
                         >
                           <span>{v.name_en || v.name_ar}</span>
-                          <span className="font-bold">{v.price.toFixed(2)}</span>
+                          <span className="font-bold">
+                            {v.price.toFixed(2)}
+                          </span>
                         </button>
                       );
                     })}
@@ -329,7 +382,12 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
                                     : "border-gray-300 bg-white"
                                 }`}
                               >
-                                {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                                {selected && (
+                                  <Check
+                                    className="h-3 w-3 text-white"
+                                    strokeWidth={3}
+                                  />
+                                )}
                               </div>
                               <span className="text-sm text-gray-800">
                                 {m.name_en || m.name_ar}

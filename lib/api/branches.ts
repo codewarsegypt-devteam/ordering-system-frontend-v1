@@ -14,7 +14,7 @@ export interface TableDto {
   id: string;
   merchant_id: string;
   branch_id: string;
-  number: number;
+  number: string | number;
   seats?: number;
   is_active: boolean;
   qr_code?: string | null;
@@ -66,7 +66,7 @@ export async function fetchBranchTables(branchId: string): Promise<TableDto[]> {
 export async function createTable(
   branchId: string,
   body: {
-    number: number;
+    number: string | number;
     seats?: number;
     is_active?: boolean;
     qr_code?: string | null;
