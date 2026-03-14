@@ -96,7 +96,7 @@ export async function exportOrdersExcel(
   Object.entries(params).forEach(([k, v]) => {
     if (v != null && v !== "") search.set(k, String(v));
   });
-  let response: { data: Blob; headers: Record<string, string> };
+  let response: Awaited<ReturnType<typeof apiClient.get<Blob>>>;
   try {
     response = await apiClient.get<Blob>(
       `/orders/export/excel?${search.toString()}`,
@@ -121,7 +121,13 @@ export async function exportOrdersExcel(
     throw err;
   }
   const { data, headers } = response;
-  const disposition = headers["content-disposition"];
+  const rawDisposition = headers["content-disposition"];
+  const disposition =
+    typeof rawDisposition === "string"
+      ? rawDisposition
+      : Array.isArray(rawDisposition)
+        ? rawDisposition[0]
+        : undefined;
   const match = disposition?.match(/filename="?([^";\n]+)"?/);
   const filename =
     match?.[1]?.trim() || `orders_${new Date().toISOString().slice(0, 16).replace("T", "_")}.xlsx`;
