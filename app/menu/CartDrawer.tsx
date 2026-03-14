@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   ArrowRight,
   Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
@@ -62,7 +63,6 @@ export function CartDrawer({
       const res = await createOrder(token, lineItems);
       setOrderSuccess({ order_number: res.order_number });
       clearCart();
-      onClose();
     } catch (err) {
       setOrderError(getApiError(err));
     } finally {
@@ -70,14 +70,22 @@ export function CartDrawer({
     }
   };
 
+  const handleCloseAfterSuccess = () => {
+    setOrderSuccess(null);
+    onClose();
+  };
+
   const canPlaceOrder = !!token && lineItems.length > 0;
 
   if (!open) return null;
+
+  const closeHandler = orderSuccess ? handleCloseAfterSuccess : onClose;
+
   return (
     <>
       <div
         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
-        onClick={onClose}
+        onClick={closeHandler}
         aria-hidden="true"
       />
 
@@ -90,34 +98,59 @@ export function CartDrawer({
           <div className="h-1 w-10 rounded-full bg-gray-200" />
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 pb-3 pt-1">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">
-              <ShoppingBag className="h-4.5 w-4.5 text-orange-600" />
+        {/* Thank you screen */}
+        {orderSuccess ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
+              <CheckCircle2 className="h-12 w-12 text-emerald-600" />
             </div>
-            <div>
-              <h2 className="font-bold text-gray-900">Your order</h2>
-              {totalItems > 0 && (
-                <p className="text-xs text-gray-400">
-                  {totalItems} item{totalItems !== 1 ? "s" : ""}
-                </p>
-              )}
-            </div>
+            <h2 className="text-xl font-bold text-gray-900">Thank you!</h2>
+            <p className="mt-2 text-gray-600">
+              Your order has been received. Our team will prepare it shortly.
+            </p>
+            {orderSuccess.order_number && (
+              <p className="mt-3 rounded-xl bg-gray-100 px-4 py-2 font-mono text-sm font-semibold text-gray-800">
+                Order #{orderSuccess.order_number}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleCloseAfterSuccess}
+              className="mt-8 w-full max-w-xs rounded-2xl bg-orange-500 py-3.5 font-bold text-white hover:bg-orange-600 transition-colors"
+            >
+              Done
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200"
-            aria-label="Close cart"
-          >
-            <X className="h-4.5 w-4.5" />
-          </button>
-        </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pb-3 pt-1">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">
+                  <ShoppingBag className="h-4.5 w-4.5 text-orange-600" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-gray-900">Your order</h2>
+                  {totalItems > 0 && (
+                    <p className="text-xs text-gray-400">
+                      {totalItems} item{totalItems !== 1 ? "s" : ""}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200"
+                aria-label="Close cart"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {/* Items */}
-          <div className="flex-1 overflow-y-auto px-5 pb-2">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              {/* Items */}
+              <div className="flex-1 overflow-y-auto px-5 pb-2">
             {totalItems === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
@@ -268,6 +301,8 @@ export function CartDrawer({
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </>
   );
