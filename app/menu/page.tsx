@@ -15,6 +15,10 @@ export default function MenuPage() {
   const token = searchParams.get("t") ?? undefined;
   const redirected = useRef(false);
 
+  // ── all hooks must be declared before any conditional returns ──
+  const [serviceSending, setServiceSending] = useState<"call_waiter" | "request_bill" | null>(null);
+  const [serviceCooldown, setServiceCooldown] = useState(false);
+
   const { data: scanData, isLoading, error } = useQuery({
     queryKey: ["publicScan", token],
     queryFn: () => fetchPublicScan(token!),
@@ -90,8 +94,6 @@ export default function MenuPage() {
   }
 
   const menus = scanData.menus ?? [];
-  const [serviceSending, setServiceSending] = useState<"call_waiter" | "request_bill" | null>(null);
-  const [serviceCooldown, setServiceCooldown] = useState(false);
 
   const sendTableService = async (type: "call_waiter" | "request_bill") => {
     if (!token || serviceCooldown) return;
