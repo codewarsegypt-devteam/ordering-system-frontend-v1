@@ -12,8 +12,10 @@ import {
   Loader2, Plus, Pencil, Trash2, ChevronRight,
   Package, X, Check, DollarSign,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -31,11 +33,6 @@ export default function CategoryItemsPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text }); setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: menus } = useQuery({ queryKey: ["menus", user?.merchant_id], queryFn: fetchMenus, enabled: !!user?.merchant_id });
   const { data: categories } = useQuery({ queryKey: ["menuCategories", menuId], queryFn: () => fetchMenuCategories(menuId), enabled: !!menuId });
@@ -53,13 +50,13 @@ export default function CategoryItemsPage() {
       setAdding(false);
       router.push(`/dashboard/menu/${menuId}/${categoryId}/${data.id}`);
     },
-    onError: (e) => showToast("err", getApiError(e)),
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const deleteMut = useMutation({
     mutationFn: deleteItem,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["categoryItems", categoryId] }); showToast("ok", "Item deleted."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["categoryItems", categoryId] }); toast.success("Item deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const editable = canEdit(user?.role ?? "");
@@ -74,13 +71,6 @@ export default function CategoryItemsPage() {
 
   return (
     <div className="space-y-5">
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          {toast.text}
-        </div>
-      )}
-
       {/* Header */}
       <div className="page-header">
         <div>
@@ -150,10 +140,13 @@ export default function CategoryItemsPage() {
                 <tr key={item.id}>
                   <td className="w-14">
                     {item.images?.img_url_1 ? (
-                      <img
+                      <Image
                         src={item.images.img_url_1}
-                        alt=""
+                        alt={item.name_en ?? item.name_ar ?? "Item"}
+                        width={40}
+                        height={40}
                         className="h-10 w-10 rounded-lg object-cover"
+                        sizes="40px"
                       />
                     ) : (
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">

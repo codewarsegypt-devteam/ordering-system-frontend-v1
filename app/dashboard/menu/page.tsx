@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -28,12 +29,6 @@ export default function DashboardMenuPage() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: menus, isLoading, error } = useQuery({
     queryKey: ["menus", user?.merchant_id],
@@ -43,14 +38,14 @@ export default function DashboardMenuPage() {
 
   const createMut = useMutation({
     mutationFn: createMenu,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menus"] }); setCreating(false); showToast("ok", "Menu created."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menus"] }); setCreating(false); toast.success("Menu created."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ menuId, body }: { menuId: string; body: Parameters<typeof updateMenu>[1] }) => updateMenu(menuId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menus"] }); setEditingId(null); showToast("ok", "Menu updated."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menus"] }); setEditingId(null); toast.success("Menu updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const editable = canEdit(user?.role ?? "");
@@ -66,14 +61,6 @@ export default function DashboardMenuPage() {
 
   return (
     <div className="space-y-5">
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          {toast.text}
-        </div>
-      )}
-
       {/* Header */}
       <div className="page-header">
         <div className="flex items-center gap-3">

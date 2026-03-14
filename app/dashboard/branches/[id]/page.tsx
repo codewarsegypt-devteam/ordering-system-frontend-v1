@@ -31,6 +31,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface BranchFormData {
   name: string;
@@ -50,27 +51,6 @@ interface TableEditFormData {
   is_active: boolean;
 }
 
-interface ToastState {
-  type: "ok" | "err";
-  text: string;
-}
-
-function Toast({ toast }: { toast: ToastState | null }) {
-  if (!toast) return null;
-
-  return (
-    <div
-      role="alert"
-      className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full px-5 py-3 text-sm font-medium shadow-lg ring-2 ring-white/20 ${
-        toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
-      }`}
-    >
-      {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-      {toast.text}
-    </div>
-  );
-}
-
 export default function BranchTablesPage() {
   const params = useParams();
   const router = useRouter();
@@ -79,16 +59,10 @@ export default function BranchTablesPage() {
 
   const branchId = String(params?.id ?? "");
 
-  const [toast, setToast] = useState<ToastState | null>(null);
   const [editingBranch, setEditingBranch] = useState(false);
   const [addingTable, setAddingTable] = useState(false);
   const [editingTableId, setEditingTableId] = useState<string | null>(null);
   const [qrTableId, setQrTableId] = useState<string | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: branches, isLoading: branchesLoading, error: branchesError } = useQuery({
     queryKey: ["branches"],
@@ -126,9 +100,9 @@ console.log(tables);
       );
       setEditingBranch(false);
       queryClient.invalidateQueries({ queryKey: ["branches"] });
-      showToast("ok", "Branch updated.");
+      toast.success("Branch updated.");
     },
-    onError: (error) => showToast("err", getApiError(error)),
+    onError: (error) => toast.error(getApiError(error)),
   });
 
   const deleteBranchMut = useMutation({
@@ -136,10 +110,10 @@ console.log(tables);
     onSuccess: (_, deletedId) => {
       setBranchesCache((current) => current?.filter((item) => String(item.id) !== String(deletedId)) ?? current);
       queryClient.removeQueries({ queryKey: ["branchTables", String(deletedId)] });
-      showToast("ok", "Branch deleted.");
+      toast.success("Branch deleted.");
       router.push("/dashboard/branches");
     },
-    onError: (error) => showToast("err", getApiError(error)),
+    onError: (error) => toast.error(getApiError(error)),
   });
 
   const createTableMut = useMutation({
@@ -159,9 +133,9 @@ console.log(tables);
       setTablesCache((current) => (current ? [...current, createdTable] : [createdTable]));
       setAddingTable(false);
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
-      showToast("ok", "Table created.");
+      toast.success("Table created.");
     },
-    onError: (error) => showToast("err", getApiError(error)),
+    onError: (error) => toast.error(getApiError(error)),
   });
 
   const updateTableMut = useMutation({
@@ -183,9 +157,9 @@ console.log(tables);
       );
       setEditingTableId(null);
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
-      showToast("ok", "Table updated.");
+      toast.success("Table updated.");
     },
-    onError: (error) => showToast("err", getApiError(error)),
+    onError: (error) => toast.error(getApiError(error)),
   });
 
   const deleteTableMut = useMutation({
@@ -195,9 +169,9 @@ console.log(tables);
       setEditingTableId((current) => (String(current) === String(deletedId) ? null : current));
       setQrTableId((current) => (String(current) === String(deletedId) ? null : current));
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
-      showToast("ok", "Table deleted.");
+      toast.success("Table deleted.");
     },
-    onError: (error) => showToast("err", getApiError(error)),
+    onError: (error) => toast.error(getApiError(error)),
   });
 
   if (user?.role !== "owner") {
@@ -237,8 +211,6 @@ console.log(tables);
 
   return (
     <div className="space-y-8">
-      <Toast toast={toast} />
-
       <Link
         href="/dashboard/branches"
         className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-teal-600"

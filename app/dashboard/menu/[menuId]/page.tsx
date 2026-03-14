@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -25,12 +26,6 @@ export default function MenuDetailPage() {
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: menus } = useQuery({
     queryKey: ["menus", user?.merchant_id],
@@ -46,20 +41,20 @@ export default function MenuDetailPage() {
 
   const createMut = useMutation({
     mutationFn: (body: Parameters<typeof createCategory>[1]) => createCategory(menuId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); setAdding(false); showToast("ok", "Category created."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); setAdding(false); toast.success("Category created."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ categoryId, body }: { categoryId: string; body: Parameters<typeof updateCategory>[1] }) => updateCategory(categoryId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); setEditingId(null); showToast("ok", "Category updated."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); setEditingId(null); toast.success("Category updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const deleteMut = useMutation({
     mutationFn: deleteCategory,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); showToast("ok", "Category deleted."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["menuCategories", menuId] }); toast.success("Category deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const editable = canEdit(user?.role ?? "");
@@ -76,13 +71,6 @@ export default function MenuDetailPage() {
 
   return (
     <div className="space-y-5">
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          {toast.text}
-        </div>
-      )}
-
       {/* Header */}
       <div className="page-header">
         <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { Plus, Minus, X, Check } from "lucide-react";
 import { useCart } from "@/contexts";
 import type {
@@ -155,10 +156,13 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
           className={`relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-linear-to-br ${grad} flex items-center justify-center shadow-sm`}
         >
           {primaryImage ? (
-            <img
+            <Image
               src={primaryImage}
-              alt=""
+              alt={displayName}
+              width={72}
+              height={72}
               className="h-full w-full object-cover"
+              sizes="72px"
             />
           ) : (
             <span className="text-3xl font-bold text-white/75 select-none">
@@ -227,22 +231,34 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
               {primaryImage ? (
                 hasTwoImages ? (
                   <div className="flex flex-1 gap-0.5">
-                    <img
+                    <Image
                       src={img1!}
-                      alt=""
+                      alt={displayName}
+                      width={270}
+                      height={176}
                       className="h-44 flex-1 object-cover"
+                      sizes="50vw"
+                      priority
                     />
-                    <img
+                    <Image
                       src={img2!}
-                      alt=""
+                      alt={displayName}
+                      width={270}
+                      height={176}
                       className="h-44 flex-1 object-cover"
+                      sizes="50vw"
+                      priority
                     />
                   </div>
                 ) : (
-                  <img
+                  <Image
                     src={primaryImage}
-                    alt=""
+                    alt={displayName}
+                    width={540}
+                    height={176}
                     className="h-44 w-full object-cover"
+                    sizes="(max-width: 540px) 100vw, 540px"
+                    priority
                   />
                 )
               ) : (

@@ -15,35 +15,15 @@ import {
   Building2,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface BranchForm { name: string; address: string; phone: string; is_active: boolean; }
-
-function Toast({ toast }: { toast: { type: "ok" | "err"; text: string } | null }) {
-  if (!toast) return null;
-  return (
-    <div
-      role="alert"
-      className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full px-5 py-3 text-sm font-medium shadow-lg ring-2 ring-white/20 ${
-        toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
-      }`}
-    >
-      {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-      {toast.text}
-    </div>
-  );
-}
 
 export default function BranchesPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [editingBranch, setEditingBranch] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: branches, isLoading, error } = useQuery({
     queryKey: ["branches"],
@@ -56,9 +36,9 @@ export default function BranchesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["branches"] });
       setCreating(false);
-      showToast("ok", "Branch created.");
+      toast.success("Branch created.");
     },
-    onError: (e) => showToast("err", getApiError(e)),
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const updateBranchMut = useMutation({
@@ -66,18 +46,18 @@ export default function BranchesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["branches"] });
       setEditingBranch(null);
-      showToast("ok", "Branch updated.");
+      toast.success("Branch updated.");
     },
-    onError: (e) => showToast("err", getApiError(e)),
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const deleteBranchMut = useMutation({
     mutationFn: deleteBranch,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["branches"] });
-      showToast("ok", "Branch deleted.");
+      toast.success("Branch deleted.");
     },
-    onError: (e) => showToast("err", getApiError(e)),
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   if (user?.role !== "owner") {
@@ -105,8 +85,6 @@ export default function BranchesPage() {
 
   return (
     <div className="space-y-8">
-      <Toast toast={toast} />
-
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-teal-600 via-teal-600 to-teal-700 px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

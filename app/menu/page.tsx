@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { fetchPublicScan, getApiError } from "@/lib/api";
+import Image from "next/image";
 import { UtensilsCrossed, MapPin, Hash, ChevronLeft } from "lucide-react";
 
 export default function MenuPage() {
@@ -103,10 +104,14 @@ export default function MenuPage() {
         <div className="mx-auto max-w-lg">
           <div className="flex items-center gap-4">
             {scanData.merchant_logo ? (
-              <img
+              <Image
                 src={scanData.merchant_logo}
                 alt={scanData.merchant_name ?? ""}
+                width={64}
+                height={64}
                 className="h-16 w-16 rounded-2xl border-2 border-white/30 object-cover shadow"
+                sizes="64px"
+                priority
               />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20">

@@ -15,6 +15,7 @@ import {
   ToggleLeft, ToggleRight, KeyRound,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface UserForm {
   name: string;
@@ -37,26 +38,11 @@ const roleAvatar: Record<string, string> = {
   kitchen: "bg-orange-500",
 };
 
-function Toast({ toast }: { toast: { type: "ok" | "err"; text: string } | null }) {
-  if (!toast) return null;
-  return (
-    <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-      {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-      {toast.text}
-    </div>
-  );
-}
-
 export default function UsersPage() {
   const { user: currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text }); setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["users"],
@@ -73,27 +59,27 @@ export default function UsersPage() {
   const createMut = useMutation({
     mutationFn: (body: { name: string; password: string; role: UserRole; branch_id?: string | null }) =>
       createUser({ merchant_id: String(currentUser!.merchant_id), name: body.name, password: body.password, role: body.role, branch_id: body.branch_id || null }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setCreating(false); showToast("ok", "User created."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setCreating(false); toast.success("User created."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ userId, body }: { userId: number; body: { name?: string; role?: UserRole; branch_id?: string | null } }) =>
       updateUser(String(userId), body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setEditingId(null); showToast("ok", "User updated."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setEditingId(null); toast.success("User updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const statusMut = useMutation({
     mutationFn: ({ userId, status }: { userId: string; status: "active" | "disabled" }) => updateUserStatus(userId, status),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
-    onError: (e) => showToast("err", getApiError(e)),
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const deleteMut = useMutation({
     mutationFn: deleteUser,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setEditingId(null); showToast("ok", "User deleted."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setEditingId(null); toast.success("User deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   if (currentUser?.role !== "owner") {
@@ -115,8 +101,6 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-5">
-      <Toast toast={toast} />
-
       {/* Header */}
       <div className="page-header">
         <div className="flex items-center gap-3">

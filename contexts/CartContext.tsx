@@ -4,7 +4,9 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type {
@@ -33,6 +35,31 @@ function toCartLineItem(entry: CartEntry): CartLineItem {
   };
 }
 
+const CART_STORAGE_KEY = "menu_cart";
+
+function loadCartFromStorage(): CartEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCartToStorage(entries: CartEntry[]) {
+  if (typeof window === "undefined") return;
+  try {
+    if (entries.length === 0) {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } else {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(entries));
+    }
+  } catch { /* quota exceeded — silent */ }
+}
+
 interface CartContextValue {
   entries: CartEntry[];
   addItem: (entry: Omit<CartEntry, "quantity"> & { quantity?: number }) => void;
@@ -45,9 +72,20 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-/** Cart is state-only (in-memory); no localStorage or API. Clears on refresh. */
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [entries, setEntries] = useState<CartEntry[]>([]);
+  const hydrated = useRef(false);
+
+  useEffect(() => {
+    setEntries(loadCartFromStorage());
+    hydrated.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (hydrated.current) {
+      saveCartToStorage(entries);
+    }
+  }, [entries]);
 
   const addItem = useCallback(
     (entry: Omit<CartEntry, "quantity"> & { quantity?: number }) => {

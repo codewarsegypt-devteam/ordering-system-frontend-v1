@@ -18,8 +18,10 @@ import {
   Loader2, Plus, Trash2, Package, ChevronRight,
   Pencil, Check, X, Layers, Tag, DollarSign, Settings2, ImageIcon, Upload,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -39,11 +41,6 @@ export default function ItemDetailPage() {
   const [editForm, setEditForm] = useState(false);
   const [addVariant, setAddVariant] = useState(false);
   const [addModGrp, setAddModGrp] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text }); setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: menus } = useQuery({ queryKey: ["menus", user?.merchant_id], queryFn: fetchMenus, enabled: !!user?.merchant_id });
   const { data: categories } = useQuery({ queryKey: ["menuCategories", menuId], queryFn: () => fetchMenuCategories(menuId), enabled: !!menuId });
@@ -66,13 +63,6 @@ export default function ItemDetailPage() {
 
   return (
     <div className="space-y-5">
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          {toast.text}
-        </div>
-      )}
-
       {/* Breadcrumb + title */}
       <div>
         <nav className="breadcrumb mb-1.5">
@@ -132,7 +122,7 @@ export default function ItemDetailPage() {
                 </span>
               </div>
               {editable && (
-                <ItemStatusButtons item={item} onToast={showToast} queryClient={queryClient} />
+                <ItemStatusButtons item={item} queryClient={queryClient} />
               )}
             </div>
           </div>
@@ -140,9 +130,9 @@ export default function ItemDetailPage() {
           /* Edit form */
           <ItemEditForm
             item={item}
-            onSave={() => { queryClient.invalidateQueries({ queryKey: ["item", itemId] }); setEditForm(false); showToast("ok", "Item updated."); }}
+            onSave={() => { queryClient.invalidateQueries({ queryKey: ["item", itemId] }); setEditForm(false); toast.success("Item updated."); }}
             onCancel={() => setEditForm(false)}
-            onError={(e) => showToast("err", getApiError(e))}
+            onError={(e) => toast.error(getApiError(e))}
           />
         )}
       </div>
@@ -153,7 +143,6 @@ export default function ItemDetailPage() {
         categoryId={categoryId}
         images={item.images ?? { img_url_1: null, img_url_2: null }}
         editable={editable}
-        onToast={showToast}
       />
 
       {/* ── Variants card ── */}
@@ -162,7 +151,6 @@ export default function ItemDetailPage() {
         editable={editable}
         addVariant={addVariant}
         setAddVariant={setAddVariant}
-        onToast={showToast}
       />
 
       {/* ── Modifier groups card ── */}
@@ -173,7 +161,6 @@ export default function ItemDetailPage() {
         editable={editable}
         addModGrp={addModGrp}
         setAddModGrp={setAddModGrp}
-        onToast={showToast}
       />
     </div>
   );
@@ -185,13 +172,11 @@ function ItemImagesCard({
   categoryId,
   images,
   editable,
-  onToast,
 }: {
   itemId: string;
   categoryId: string;
   images: { img_url_1: string | null; img_url_2: string | null };
   editable: boolean;
-  onToast: (t: "ok" | "err", m: string) => void;
 }) {
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
@@ -202,12 +187,12 @@ function ItemImagesCard({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["item", itemId] });
       queryClient.invalidateQueries({ queryKey: ["categoryItems", categoryId] });
-      onToast("ok", "Images updated.");
+      toast.success("Images updated.");
       setUploading(false);
       formRef.current?.reset();
     },
     onError: (e) => {
-      onToast("err", getApiError(e));
+      toast.error(getApiError(e));
       setUploading(false);
     },
   });
@@ -220,7 +205,7 @@ function ItemImagesCard({
     const file1 = input1?.files?.[0];
     const file2 = input2?.files?.[0];
     if (!file1 && !file2) {
-      onToast("err", "Choose at least one image.");
+      toast.error("Choose at least one image.");
       return;
     }
     const formData = new FormData();
@@ -240,10 +225,13 @@ function ItemImagesCard({
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <p className="mb-2 text-xs font-medium text-slate-500">Image 1</p>
           {images.img_url_1 ? (
-            <img
+            <Image
               src={images.img_url_1}
               alt="Item 1"
+              width={400}
+              height={160}
               className="h-40 w-full rounded-lg object-cover"
+              sizes="(max-width: 640px) 100vw, 50vw"
             />
           ) : (
             <div className="flex h-40 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
@@ -254,10 +242,13 @@ function ItemImagesCard({
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <p className="mb-2 text-xs font-medium text-slate-500">Image 2</p>
           {images.img_url_2 ? (
-            <img
+            <Image
               src={images.img_url_2}
               alt="Item 2"
+              width={400}
+              height={160}
               className="h-40 w-full rounded-lg object-cover"
+              sizes="(max-width: 640px) 100vw, 50vw"
             />
           ) : (
             <div className="flex h-40 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
@@ -297,11 +288,11 @@ function ItemImagesCard({
 }
 
 /* ─── Quick status buttons ─── */
-function ItemStatusButtons({ item, onToast, queryClient }: { item: ItemDto; onToast: (t: "ok"|"err", m: string) => void; queryClient: ReturnType<typeof useQueryClient> }) {
+function ItemStatusButtons({ item, queryClient }: { item: ItemDto; queryClient: ReturnType<typeof useQueryClient> }) {
   const mut = useMutation({
     mutationFn: (status: "active" | "hidden" | "out_of_stock") => updateItemStatus(item.id, status),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["item", item.id] }); onToast("ok", "Status updated."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["item", item.id] }); toast.success("Status updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   return (
     <div className="flex flex-wrap gap-2">
@@ -378,10 +369,9 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
 }
 
 /* ─── Variants card ─── */
-function VariantsCard({ itemId, editable, addVariant, setAddVariant, onToast }: {
+function VariantsCard({ itemId, editable, addVariant, setAddVariant }: {
   itemId: string; editable: boolean;
   addVariant: boolean; setAddVariant: (v: boolean) => void;
-  onToast: (t: "ok"|"err", m: string) => void;
 }) {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -394,20 +384,20 @@ function VariantsCard({ itemId, editable, addVariant, setAddVariant, onToast }: 
 
   const createMut = useMutation({
     mutationFn: (body: { name_ar: string; name_en: string; price: number }) => createVariant(itemId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); setAddVariant(false); onToast("ok", "Variant added."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); setAddVariant(false); toast.success("Variant added."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, body }: { id: string; body: Partial<{ name_en: string; name_ar: string; price: number }> }) => updateVariant(id, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); setEditingId(null); onToast("ok", "Variant updated."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); setEditingId(null); toast.success("Variant updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const deleteMut = useMutation({
     mutationFn: deleteVariant,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); onToast("ok", "Variant deleted."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["itemVariants", itemId] }); toast.success("Variant deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   return (
@@ -530,14 +520,13 @@ function VariantForm({ defaultValues, onSubmit, onCancel, isPending }: {
 }
 
 /* ─── Modifier groups card ─── */
-function ModifierGroupsCard({ itemId, links, allGroups, editable, addModGrp, setAddModGrp, onToast }: {
+function ModifierGroupsCard({ itemId, links, allGroups, editable, addModGrp, setAddModGrp }: {
   itemId: string;
   links: ItemModifierGroupLinkDto[];
   allGroups: ModifierGroupDto[];
   editable: boolean;
   addModGrp: boolean;
   setAddModGrp: (v: boolean) => void;
-  onToast: (t: "ok"|"err", m: string) => void;
 }) {
   const queryClient = useQueryClient();
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
@@ -549,18 +538,18 @@ function ModifierGroupsCard({ itemId, links, allGroups, editable, addModGrp, set
 
   const attachMut = useMutation({
     mutationFn: (body: { modifier_group_id: string; min_select: number; max_select: number }) => attachModifierGroup(itemId, body),
-    onSuccess: () => { inv(); setAddModGrp(false); onToast("ok", "Modifier group attached."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { inv(); setAddModGrp(false); toast.success("Modifier group attached."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const updateLinkMut = useMutation({
     mutationFn: ({ groupId, body }: { groupId: string; body: { min_select: number; max_select: number } }) => updateItemModifierGroup(itemId, groupId, body),
-    onSuccess: () => { inv(); setEditingLinkId(null); onToast("ok", "Updated."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { inv(); setEditingLinkId(null); toast.success("Updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const detachMut = useMutation({
     mutationFn: (groupId: string) => detachModifierGroup(itemId, groupId),
-    onSuccess: () => { inv(); onToast("ok", "Detached."); },
-    onError: (e) => onToast("err", getApiError(e)),
+    onSuccess: () => { inv(); toast.success("Detached."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const groupById = new Map(allGroups.map((g) => [g.id, g]));

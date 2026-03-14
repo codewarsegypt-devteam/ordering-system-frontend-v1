@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts";
 import { getApiError } from "@/lib/api";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -13,6 +14,9 @@ interface LoginForm {
 
 export default function DashboardLoginPage() {
   const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const [error, setError] = useState<string | null>(null);
   const [showPw, setShowPw] = useState(false);
 
@@ -26,6 +30,7 @@ export default function DashboardLoginPage() {
     setError(null);
     try {
       await login(data.name, data.password);
+      router.push(redirectTo);
     } catch (err) {
       setError(getApiError(err));
     }

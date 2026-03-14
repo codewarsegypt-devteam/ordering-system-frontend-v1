@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -26,11 +27,6 @@ export default function ModifiersPage() {
   const [addingModForGroup, setAddingModForGroup] = useState<string | null>(null);
   const [creatingGroup, setCreatingGroup] = useState(false);
   const [editingModId, setEditingModId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-
-  const showToast = (type: "ok" | "err", text: string) => {
-    setToast({ type, text }); setTimeout(() => setToast(null), 3500);
-  };
 
   const { data: groups, isLoading, error } = useQuery({
     queryKey: ["modifierGroups"],
@@ -46,33 +42,33 @@ export default function ModifiersPage() {
 
   const createGroupMut = useMutation({
     mutationFn: createModifierGroup,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setCreatingGroup(false); showToast("ok", "Group created."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setCreatingGroup(false); toast.success("Group created."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const updateGroupMut = useMutation({
     mutationFn: ({ groupId, body }: { groupId: string; body: Parameters<typeof updateModifierGroup>[1] }) => updateModifierGroup(groupId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setEditingGroupId(null); showToast("ok", "Group updated."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setEditingGroupId(null); toast.success("Group updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const deleteGroupMut = useMutation({
     mutationFn: deleteModifierGroup,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setExpandedId(null); showToast("ok", "Group deleted."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifierGroups"] }); setExpandedId(null); toast.success("Group deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const createModMut = useMutation({
     mutationFn: ({ groupId, body }: { groupId: string; body: Parameters<typeof createModifier>[1] }) => createModifier(groupId, body),
-    onSuccess: (_, { groupId }) => { queryClient.invalidateQueries({ queryKey: ["modifiers", groupId] }); setAddingModForGroup(null); showToast("ok", "Modifier added."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: (_, { groupId }) => { queryClient.invalidateQueries({ queryKey: ["modifiers", groupId] }); setAddingModForGroup(null); toast.success("Modifier added."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const updateModMut = useMutation({
     mutationFn: ({ modifierId, body }: { modifierId: string; body: Parameters<typeof updateModifier>[1] }) => updateModifier(modifierId, body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifiers", expandedId] }); setEditingModId(null); showToast("ok", "Modifier updated."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifiers", expandedId] }); setEditingModId(null); toast.success("Modifier updated."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
   const deleteModMut = useMutation({
     mutationFn: deleteModifier,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifiers", expandedId] }); showToast("ok", "Modifier deleted."); },
-    onError: (e) => showToast("err", getApiError(e)),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["modifiers", expandedId] }); toast.success("Modifier deleted."); },
+    onError: (e) => toast.error(getApiError(e)),
   });
 
   const editable = canEdit(user?.role ?? "");
@@ -86,13 +82,6 @@ export default function ModifiersPage() {
 
   return (
     <div className="space-y-5">
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.type === "ok" ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          {toast.text}
-        </div>
-      )}
-
       {/* Header */}
       <div className="page-header">
         <div>

@@ -45,8 +45,61 @@ export default function MenuByIdPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-orange-500 border-t-transparent" />
+      <div className="min-h-screen bg-gray-50 pb-28">
+        {/* Header skeleton */}
+        <div className="bg-white shadow-sm">
+          <div className="mx-auto max-w-2xl">
+            {/* Top bar */}
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-gray-200" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-5 w-36 animate-pulse rounded-md bg-gray-200" />
+                <div className="h-3 w-20 animate-pulse rounded bg-gray-100" />
+              </div>
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-orange-100" />
+            </div>
+            {/* Search bar */}
+            <div className="px-4 pb-2">
+              <div className="h-10 w-full animate-pulse rounded-xl bg-gray-100" />
+            </div>
+            {/* Category tabs */}
+            <div className="flex gap-2 px-4 pb-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-8 shrink-0 animate-pulse rounded-full bg-gray-100"
+                  style={{ width: `${60 + i * 12}px` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Items skeleton */}
+        <div className="mx-auto max-w-2xl px-4 py-5 space-y-7">
+          {[1, 2].map((section) => (
+            <div key={section} className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="h-4 w-28 animate-pulse rounded bg-gray-200" />
+                <div className="h-0.5 w-8 rounded-full bg-orange-200" />
+              </div>
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-3.5"
+                >
+                  <div className="h-[72px] w-[72px] shrink-0 animate-pulse rounded-xl bg-gray-200" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                    <div className="h-3 w-20 animate-pulse rounded bg-gray-100" />
+                    <div className="h-4 w-16 animate-pulse rounded bg-orange-100" />
+                  </div>
+                  <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-orange-100" />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
