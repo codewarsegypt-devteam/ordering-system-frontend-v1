@@ -174,19 +174,19 @@ export default function MenuPage() {
                     You&apos;re at{" "}
                     <span className="font-semibold text-white">{branchName}</span>, sitting at{" "}
                     <span className="font-semibold text-white">Table {tableName}</span>.{" "}
-                    We&apos;re glad you&apos;re here — take a look at the menu and enjoy your time.
+                    We&apos;re glad you&apos;re here, take a look at the menu and enjoy your time.
                   </>
                 ) : branchName ? (
                   <>
                     You&apos;re at{" "}
                     <span className="font-semibold text-white">{branchName}</span>.{" "}
-                    We&apos;re glad you&apos;re here — browse the menu below and enjoy.
+                    We&apos;re glad you&apos;re here, browse the menu below and enjoy.
                   </>
                 ) : tableName != null ? (
                   <>
                     You&apos;re at{" "}
                     <span className="font-semibold text-white">Table {tableName}</span>.{" "}
-                    We&apos;re glad you&apos;re here — browse the menu and enjoy.
+                    We&apos;re glad you&apos;re here, browse the menu and enjoy.
                   </>
                 ) : (
                   "We're glad you're here — browse the menu below and enjoy."
