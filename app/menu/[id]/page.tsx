@@ -4,7 +4,7 @@ import * as React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
+import { fetchPublicScan, fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
 import { useCart } from "@/contexts";
 import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +22,16 @@ export default function MenuByIdPage() {
     queryFn: () => fetchPublicMenuById(id!, token!),
     enabled: !!id && !!token,
   });
+
+  // Pull brand colors from the scan response (served from React Query cache — no extra request).
+  const { data: scanData } = useQuery({
+    queryKey: ["publicScan", token],
+    queryFn: () => fetchPublicScan(token!),
+    enabled: !!token,
+    staleTime: 60_000,
+  });
+  const primary = scanData?.hexa_color_1 || "#f97316";     // orange-500 fallback
+  const secondary = scanData?.hexa_color_2 || scanData?.hexa_color_1 || "#ea580c";
   const { totalItems } = useCart();
   const [query, setQuery] = React.useState("");
   const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(
@@ -209,12 +219,16 @@ export default function MenuByIdPage() {
             <button
               type="button"
               onClick={() => setCartOpen(true)}
-              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-600 transition-colors hover:bg-orange-100"
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
+              style={{ backgroundColor: `${primary}15`, color: primary }}
               aria-label="Open cart"
             >
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow">
+                <span
+                  className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow"
+                  style={{ backgroundColor: primary }}
+                >
                   {totalItems > 99 ? "99+" : totalItems}
                 </span>
               )}
@@ -230,9 +244,12 @@ export default function MenuByIdPage() {
               className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {serviceSending === "call_waiter" ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                />
               ) : (
-                <UserCircle2 className="h-4 w-4 text-orange-500" />
+                <UserCircle2 className="h-4 w-4" style={{ color: primary }} />
               )}
               {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب ويتر"}
             </button>
@@ -243,9 +260,12 @@ export default function MenuByIdPage() {
               className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {serviceSending === "request_bill" ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                />
               ) : (
-                <Receipt className="h-4 w-4 text-orange-500" />
+                <Receipt className="h-4 w-4" style={{ color: primary }} />
               )}
               {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب الفاتورة"}
             </button>
@@ -288,10 +308,9 @@ export default function MenuByIdPage() {
                         scrollToCategory(t.id);
                       }}
                       className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                        active
-                          ? "bg-orange-500 text-white shadow-sm"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        active ? "text-white shadow-sm" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
+                      style={active ? { backgroundColor: primary } : {}}
                     >
                       {t.label}
                     </button>
@@ -322,8 +341,21 @@ export default function MenuByIdPage() {
                 }}
                 className="scroll-mt-44"
               >
-                <h2 className="mb-3 text-base font-bold text-gray-900 after:mt-1 after:block after:h-0.5 after:w-8 after:rounded-full after:bg-orange-400 after:content-['']">
-                  {cat.name_en || cat.name_ar}
+                <h2
+                  className="mb-3 text-base font-bold text-gray-900"
+                  style={
+                    {
+                      "--tw-after-bg": primary,
+                    } as React.CSSProperties
+                  }
+                >
+                  <span className="flex flex-col gap-1">
+                    {cat.name_en || cat.name_ar}
+                    <span
+                      className="block h-0.5 w-8 rounded-full"
+                      style={{ backgroundColor: primary }}
+                    />
+                  </span>
                 </h2>
                 <div className="space-y-3">
                   {(cat.items ?? []).map((item) => (
@@ -345,10 +377,11 @@ export default function MenuByIdPage() {
 
       {totalItems > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-          <button
+        <button
             type="button"
             onClick={() => setCartOpen(true)}
-            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-2xl bg-orange-500 px-5 py-4 text-white shadow-lg hover:bg-orange-600 transition-colors"
+            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-2xl px-5 py-4 text-white shadow-lg transition-colors"
+            style={{ backgroundColor: primary }}
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/25 text-sm font-bold">
               {totalItems}

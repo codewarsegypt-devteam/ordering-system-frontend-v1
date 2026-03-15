@@ -4,8 +4,8 @@ export interface MerchantDto {
   id: string;
   name: string;
   logo?: string | null;
-  has_color_1?: string | null;
-  has_color_2?: string | null;
+  hexa_color_1?: string | null;
+  hexa_color_2?: string | null;
   status?: string;
   created_at?: string;
 }
@@ -30,8 +30,8 @@ export async function updateMerchant(
   body: {
     name?: string;
     logo?: string | null;
-    has_color_1?: string | null;
-    has_color_2?: string | null;
+    hexa_color_1?: string | null;
+    hexa_color_2?: string | null;
     status?: string;
   }
 ): Promise<MerchantDto> {

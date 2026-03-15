@@ -3,16 +3,24 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts";
 import { fetchMerchants, updateMerchant, getApiError } from "@/lib/api";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Store, Loader2, Save, Palette, Link2, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 
 interface MerchantForm {
   name: string;
   logo: string;
-  has_color_1: string;
-  has_color_2: string;
+  hexa_color_1: string;
+  hexa_color_2: string;
   status: string;
+}
+
+/** Normalize to #rrggbb for native color input; fallback for empty. */
+function toColorInputValue(hex: string | undefined, fallback = "#e2e8f0"): string {
+  const raw = (hex || "").trim();
+  if (!raw) return fallback;
+  const normalized = raw.startsWith("#") ? raw : `#${raw}`;
+  return /^#[0-9A-Fa-f]{6}$/.test(normalized) ? normalized : fallback;
 }
 
 export default function MerchantPage() {
@@ -38,20 +46,20 @@ export default function MerchantPage() {
     onError: (err) => setMessage({ type: "err", text: getApiError(err) }),
   });
 
-  const { register, handleSubmit, watch } = useForm<MerchantForm>({
+  const { register, handleSubmit, watch, control } = useForm<MerchantForm>({
     values: merchant
       ? {
           name: merchant.name ?? "",
           logo: merchant.logo ?? "",
-          has_color_1: merchant.has_color_1 ?? "",
-          has_color_2: merchant.has_color_2 ?? "",
+          hexa_color_1: merchant.hexa_color_1 ?? "",
+          hexa_color_2: merchant.hexa_color_2 ?? "",
           status: merchant.status ?? "active",
         }
       : undefined,
   });
 
-  const color1 = watch("has_color_1");
-  const color2 = watch("has_color_2");
+  const color1 = watch("hexa_color_1");
+  const color2 = watch("hexa_color_2");
 
   if (user?.role !== "owner") {
     return (
@@ -96,8 +104,8 @@ export default function MerchantPage() {
           update.mutate({
             name: data.name || undefined,
             logo: data.logo || null,
-            has_color_1: data.has_color_1 || null,
-            has_color_2: data.has_color_2 || null,
+            hexa_color_1: data.hexa_color_1 || null,
+            hexa_color_2: data.hexa_color_2 || null,
             status: data.status || undefined,
           });
         })}
@@ -153,36 +161,48 @@ export default function MerchantPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="label">Primary color</label>
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-10 w-10 shrink-0 rounded-lg border border-slate-200 shadow-sm"
-                  style={{ backgroundColor: color1 || "#e2e8f0" }}
+              <div className="flex items-center gap-3">
+                <Controller
+                  name="hexa_color_1"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="color"
+                      value={toColorInputValue(field.value)}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="h-10 w-14 cursor-pointer rounded-lg border border-slate-200 bg-slate-100 p-1 shadow-sm"
+                      title="Primary color"
+                    />
+                  )}
                 />
-                <input
-                  type="text"
-                  className="input-base"
-                  placeholder="#0f766e"
-                  {...register("has_color_1")}
-                />
+                <span className="font-mono text-sm text-slate-600 tabular-nums">
+                  {toColorInputValue(color1)}
+                </span>
               </div>
             </div>
             <div>
               <label className="label">Secondary color</label>
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-10 w-10 shrink-0 rounded-lg border border-slate-200 shadow-sm"
-                  style={{ backgroundColor: color2 || "#e2e8f0" }}
+              <div className="flex items-center gap-3">
+                <Controller
+                  name="hexa_color_2"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="color"
+                      value={toColorInputValue(field.value, "#cbd5e1")}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="h-10 w-14 cursor-pointer rounded-lg border border-slate-200 bg-slate-100 p-1 shadow-sm"
+                      title="Secondary color"
+                    />
+                  )}
                 />
-                <input
-                  type="text"
-                  className="input-base"
-                  placeholder="#14b8a6"
-                  {...register("has_color_2")}
-                />
+                <span className="font-mono text-sm text-slate-600 tabular-nums">
+                  {toColorInputValue(color2, "#cbd5e1")}
+                </span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-400">Enter hex values (e.g. #0f766e). Used for your customer-facing menu.</p>
+          <p className="text-xs text-slate-400">Used for your customer-facing menu theme.</p>
         </div>
 
         {/* Save */}

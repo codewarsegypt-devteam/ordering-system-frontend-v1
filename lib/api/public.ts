@@ -13,6 +13,8 @@ export interface PublicScanResponse {
   merchant_id: string | number;
   merchant_name: string | null;
   merchant_logo: string | null;
+  hexa_color_1: string | null;
+  hexa_color_2: string | null;
   branch_id: string | number;
   branch_name: string | null;
   table_id: string | number;
