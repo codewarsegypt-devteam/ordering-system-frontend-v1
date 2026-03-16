@@ -218,7 +218,7 @@ console.log(tables);
         <ArrowLeft className="h-4 w-4" /> Back to branches
       </Link>
 
-      <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-teal-600 via-teal-600 to-teal-700 px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
+      <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-system-green to-system-green  px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
@@ -322,7 +322,7 @@ console.log(tables);
 
         {tablesLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-system-green" />
           </div>
         ) : tablesError ? (
           <div className="px-6 py-8">
@@ -375,7 +375,7 @@ console.log(tables);
                       <button
                         type="button"
                         onClick={() => setQrTableId((current) => (String(current) === String(table.id) ? null : String(table.id)))}
-                        className="rounded-lg p-2.5 text-teal-600 transition-colors hover:bg-teal-50"
+                        className="rounded-lg p-2.5 text-system-green transition-colors hover:bg-teal-50"
                         title="View QR"
                       >
                         <QrCode className="h-5 w-5" />
@@ -421,7 +421,7 @@ console.log(tables);
             <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100">
-                  <QrCode className="h-5 w-5 text-teal-600" />
+                  <QrCode className="h-5 w-5 text-system-green" />
                 </div>
                 <h2 className="font-semibold text-slate-800">Table QR Code</h2>
               </div>
@@ -458,7 +458,7 @@ console.log(tables);
                     href={qrData.qr_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-teal-600 hover:underline"
+                    className="text-system-green hover:underline"
                   >
                     {qrData.qr_url}
                   </a>

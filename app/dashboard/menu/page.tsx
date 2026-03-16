@@ -74,7 +74,7 @@ export default function DashboardMenuPage() {
         </div>
         <div className="flex items-center gap-2">
           {editable && (
-            <Link href="/dashboard/menu/modifiers" className="btn-secondary">
+            <Link href="/dashboard/modifiers" className="btn-secondary">
               <Layers className="h-4 w-4" />
               Modifier groups
             </Link>

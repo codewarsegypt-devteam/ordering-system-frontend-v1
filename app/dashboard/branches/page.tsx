@@ -86,7 +86,7 @@ export default function BranchesPage() {
   return (
     <div className="space-y-8">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-teal-600 via-teal-600 to-teal-700 px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
+      <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-system-green to-system-green  px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">

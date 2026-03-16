@@ -572,7 +572,7 @@ function ModifierGroupsCard({ itemId, links, allGroups, editable, addModGrp, set
       </div>
       <p className="mb-4 text-xs text-slate-500">
         Attach modifier groups so customers can add extras (e.g. sauce, toppings).{" "}
-        <Link href="/dashboard/menu/modifiers" className="font-medium text-teal-600 hover:underline">
+        <Link href="/dashboard/modifiers" className="font-medium text-teal-600 hover:underline">
           Manage groups →
         </Link>
       </p>
@@ -581,7 +581,7 @@ function ModifierGroupsCard({ itemId, links, allGroups, editable, addModGrp, set
         <div className="mb-4 rounded-lg border border-teal-100 bg-teal-50 p-4">
           <h3 className="mb-3 text-sm font-semibold text-teal-800">Attach modifier group</h3>
           {available.length === 0 ? (
-            <p className="text-sm text-amber-600">All groups are already attached. <Link href="/dashboard/menu/modifiers" className="underline">Create more groups.</Link></p>
+            <p className="text-sm text-amber-600">All groups are already attached. <Link href="/dashboard/modifiers" className="underline">Create more groups.</Link></p>
           ) : (
             <AttachForm available={available} onAttach={(b) => attachMut.mutate(b)} onCancel={() => setAddModGrp(false)} isPending={attachMut.isPending} />
           )}

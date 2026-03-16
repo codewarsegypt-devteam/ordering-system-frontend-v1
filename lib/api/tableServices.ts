@@ -34,20 +34,25 @@ export interface TableServicesListParams {
   branch_id?: string;
   table_id?: string;
   status?: string;
+  from?: string;
+  to?: string;
   page?: number;
   limit?: number;
 }
 
 /**
  * قائمة طلبات الخدمة (للستاف) مع فلترة.
- * GET /table-services?branch_id=&status=pending&page=&limit=
+ * GET /table-services?branch_id=&status=&from=&to=&table_id=&page=&limit=
  */
 export async function listTableServices(
   params: TableServicesListParams = {},
 ): Promise<TableServicesListResponse> {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v != null && v !== "") search.set(k, String(v));
+  });
   const { data } = await apiClient.get<TableServicesListResponse>(
-    "/table-services",
-    { params },
+    `/table-services?${search.toString()}`
   );
   return data;
 }

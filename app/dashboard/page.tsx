@@ -234,7 +234,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-teal-100 bg-linear-to-r from-teal-600 via-teal-600 to-emerald-500 p-5 text-white shadow-sm shadow-teal-200">
+      <div className="overflow-hidden rounded-2xl border border-teal-100 bg-linear-to-r from-system-green to-system-green  p-5 text-white shadow-sm shadow-teal-200">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
             <div>
@@ -318,7 +318,7 @@ export default function DashboardPage() {
           />
           {canViewStats && (
             <QuickLink
-              href="/dashboard/menu/modifiers"
+              href="/dashboard/modifiers"
               icon={Layers}
               label="Modifiers"
               description="Modifier groups and options"
@@ -551,7 +551,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-3">
                 <div className="card p-5 xl:col-span-2">
                   <div className="mb-4 flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4 text-teal-600" />
+                    <BarChart3 className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Daily sales</h2>
                   </div>
                   <div className="space-y-3">
@@ -572,7 +572,7 @@ export default function DashboardPage() {
                           </div>
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                             <div
-                              className="h-full rounded-full bg-teal-600"
+                              className="h-full rounded-full bg-system-green"
                               style={{
                                 width: `${Math.max((item.total_sales / maxDailySales) * 100, item.total_sales > 0 ? 6 : 0)}%`,
                               }}
@@ -589,7 +589,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-teal-600" />
+                    <TrendingUp className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Highlights</h2>
                   </div>
                   <div className="space-y-4 text-sm">
@@ -640,7 +640,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-2">
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-teal-600" />
+                    <MapPin className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Branch performance</h2>
                   </div>
                   <div className="space-y-3">
@@ -673,7 +673,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <Table2 className="h-4 w-4 text-teal-600" />
+                    <Table2 className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Table activity</h2>
                   </div>
                   <div className="space-y-3">
@@ -709,7 +709,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-2">
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <UtensilsCrossed className="h-4 w-4 text-teal-600" />
+                    <UtensilsCrossed className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Top menu items</h2>
                   </div>
                   <div className="space-y-3">
@@ -751,7 +751,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <Store className="h-4 w-4 text-teal-600" />
+                      <Store className="h-4 w-4 text-system-green" />
                     <h2 className="section-title">Operations snapshot</h2>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">

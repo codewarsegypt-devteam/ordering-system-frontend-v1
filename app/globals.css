@@ -3,7 +3,7 @@
 :root {
   --background: #fafafa;
   --foreground: #18181b;
-  /* Primary: teal */
+  /* Primary: teal (legacy) */
   --primary: #0d9488;
   --primary-hover: #0f766e;
   --primary-light: #ccfbf1;
@@ -13,12 +13,24 @@
   --surface-elevated: #ffffff;
   --border: #e4e4e7;
   --border-light: #f4f4f5;
-  /* Sidebar (dashboard) */
+
+  /* Dashboard system colors (palette) */
+  --system-red: #A82323;
+  --system-red-hover: #8b1c1c;
+  --system-red-soft: rgba(168, 35, 35, 0.1);
+  --system-cream: #feffd2;
+  --system-sage: #cce2b9;
+  --system-sage-soft: rgba(188, 217, 162, 0.3);
+  --system-green: #6D9E51;
+  --system-green-hover: #5a8545;
+  --system-green-soft: rgba(109, 158, 81, 0.15);
+
+  /* Sidebar (dashboard) – uses system green */
   --sidebar-bg: #1e293b;
   --sidebar-fg: #e2e8f0;
   --sidebar-muted: #94a3b8;
-  --sidebar-active: #0d9488;
-  --sidebar-active-bg: rgba(13, 148, 136, 0.15);
+  --sidebar-active: var(--system-green);
+  --sidebar-active-bg: var(--system-green-soft);
 
   /* Luxury client menu theme */
   --luxury-bg: #f8f6f3;
@@ -55,6 +67,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Dashboard system colors */
+  --color-system-red: #A82323;
+  --color-system-cream: #FEFFD3;
+  --color-system-sage: #BCD9A2;
+  --color-system-green: #6D9E51;
   /* Menu theme (always use these for /menu) */
   --color-menu-bg: #f1f0ed;
   --color-menu-orange: #e85d04;
@@ -80,18 +97,38 @@ body {
 
 /* ─── Dashboard design system ─────────────────────────────────── */
 @layer components {
-  /* Buttons */
+  /* Buttons – system green primary, system red danger */
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-teal-700 hover:shadow active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    background-color: var(--system-green);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--system-green-hover);
   }
   .btn-secondary {
-    @apply inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98];
+    @apply inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium shadow-sm transition-all active:scale-[0.98];
+    border-color: var(--system-sage);
+    background-color: var(--system-cream);
+    color: #374151;
+  }
+  .btn-secondary:hover {
+    background-color: var(--system-sage-soft);
+    border-color: var(--system-green);
   }
   .btn-ghost {
-    @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900;
+    @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+    color: #4b5563;
+  }
+  .btn-ghost:hover {
+    background-color: var(--system-sage-soft);
+    color: #1f2937;
   }
   .btn-danger {
-    @apply inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    background-color: var(--system-red);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--system-red-hover);
   }
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
@@ -99,28 +136,44 @@ body {
 
   /* Cards */
   .card {
-    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    @apply rounded-xl shadow-sm;
+    border: 1px solid var(--system-sage);
+    background-color: #fff;
   }
   .card-flat {
-    @apply rounded-xl border border-slate-200 bg-white;
+    @apply rounded-xl;
+    border: 1px solid var(--system-sage);
+    background-color: #fff;
   }
-  /* Stat card */
   .stat-card {
-    @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm;
+    @apply rounded-xl p-5 shadow-sm;
+    border: 1px solid var(--system-sage);
+    background-color: #fff;
   }
 
   /* Form */
   .input-base {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20;
+    @apply w-full rounded-lg bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2;
+    border: 1px solid #cbd5e1;
+  }
+  .input-base:focus {
+    border-color: var(--system-green);
+    box-shadow: 0 0 0 2px var(--system-green-soft);
   }
   .input-error {
-    @apply border-red-400 focus:border-red-500 focus:ring-red-500/20;
+    border-color: var(--system-red);
+  }
+  .input-error:focus {
+    box-shadow: 0 0 0 2px var(--system-red-soft);
   }
   .label {
-    @apply mb-1.5 block text-sm font-medium text-slate-700;
+    @apply mb-1.5 block text-sm font-medium;
+    color: #374151;
   }
   .form-card {
-    @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
+    @apply rounded-xl p-6 shadow-sm;
+    border: 1px solid var(--system-sage);
+    background-color: #fff;
   }
 
   /* Table */
@@ -128,16 +181,23 @@ body {
     @apply w-full text-left text-sm;
   }
   .data-table thead tr {
-    @apply border-b border-slate-200 bg-slate-50;
+    background-color: var(--system-cream);
+    border-bottom: 1px solid var(--system-sage);
   }
   .data-table thead th {
-    @apply px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500;
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-wide;
+    color: #4b5563;
   }
   .data-table tbody tr {
-    @apply border-b border-slate-100 transition-colors hover:bg-slate-50/60;
+    @apply border-b transition-colors;
+    border-color: rgba(188, 217, 162, 0.4);
+  }
+  .data-table tbody tr:hover {
+    background-color: var(--system-sage-soft);
   }
   .data-table tbody td {
-    @apply px-4 py-3 text-slate-700;
+    @apply px-4 py-3;
+    color: #374151;
   }
 
   /* Status badges */
@@ -145,30 +205,40 @@ body {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
   .badge-success {
-    @apply bg-emerald-100 text-emerald-700;
+    background-color: var(--system-sage-soft);
+    color: var(--system-green);
   }
   .badge-warning {
     @apply bg-amber-100 text-amber-700;
   }
   .badge-info {
-    @apply bg-sky-100 text-sky-700;
+    background-color: var(--system-sage-soft);
+    color: var(--system-green);
   }
   .badge-error {
-    @apply bg-red-100 text-red-700;
+    background-color: var(--system-red-soft);
+    color: var(--system-red);
   }
   .badge-neutral {
     @apply bg-slate-100 text-slate-600;
   }
   .badge-teal {
-    @apply bg-teal-100 text-teal-700;
+    background-color: var(--system-sage-soft);
+    color: var(--system-green);
   }
 
   /* Alert / feedback banners */
   .alert-success {
-    @apply rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800;
+    @apply rounded-lg px-4 py-3 text-sm;
+    border: 1px solid var(--system-sage);
+    background-color: var(--system-sage-soft);
+    color: #374151;
   }
   .alert-error {
-    @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800;
+    @apply rounded-lg px-4 py-3 text-sm;
+    border: 1px solid var(--system-red);
+    background-color: var(--system-red-soft);
+    color: var(--system-red-hover);
   }
   .alert-warning {
     @apply rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800;

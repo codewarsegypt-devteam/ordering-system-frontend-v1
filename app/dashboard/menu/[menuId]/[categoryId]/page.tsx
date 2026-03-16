@@ -167,7 +167,7 @@ export default function CategoryItemsPage() {
                   </td>
                   <td className="hidden sm:table-cell">
                     <span className="flex items-center gap-1 font-semibold text-teal-700">
-                      <DollarSign className="h-3.5 w-3.5" />
+                      {/* <DollarSign className="h-3.5 w-3.5" /> */}
                       {item.base_price.toFixed(2)} EGP
                     </span>
                   </td>

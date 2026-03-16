@@ -13,6 +13,14 @@ apiClient.interceptors.request.use((config) => {
     const token = getToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
+  if (config.data instanceof FormData) {
+    // Let the browser set Content-Type with boundary for multipart
+    if (typeof config.headers.delete === "function") {
+      config.headers.delete("Content-Type");
+    } else {
+      delete (config.headers as Record<string, unknown>)["Content-Type"];
+    }
+  }
   return config;
 });
 
