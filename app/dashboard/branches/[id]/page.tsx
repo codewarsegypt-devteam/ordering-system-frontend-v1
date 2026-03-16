@@ -19,6 +19,7 @@ import type { BranchDto, TableDto } from "@/lib/api/branches";
 import {
   ArrowLeft,
   Check,
+  Download,
   Home,
   Loader2,
   MapPin,
@@ -77,7 +78,7 @@ export default function BranchTablesPage() {
     queryFn: () => fetchBranchTables(branchId),
     enabled: !!branchId && !!branch,
   });
-console.log(tables);
+
   const { data: qrData } = useQuery({
     queryKey: ["tableQr", qrTableId],
     queryFn: () => fetchTableQr(qrTableId!),
@@ -466,8 +467,33 @@ console.log(tables);
               )}
             </div>
 
-            <div className="border-t border-slate-100 px-6 py-4">
-              <button type="button" onClick={() => setQrTableId(null)} className="btn-secondary w-full justify-center">
+            <div className="flex gap-3 border-t border-slate-100 px-6 py-4">
+              {qrData.qr_svg && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const blob = new Blob([qrData.qr_svg!], {
+                      type: "image/svg+xml",
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `table-${qrData.table_code || qrTableId}-qr.svg`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast.success("QR code downloaded");
+                  }}
+                  className="btn-primary flex-1 justify-center"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setQrTableId(null)}
+                className="btn-secondary flex-1 justify-center"
+              >
                 Close
               </button>
             </div>
