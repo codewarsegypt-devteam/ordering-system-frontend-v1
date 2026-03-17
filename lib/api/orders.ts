@@ -79,6 +79,29 @@ export async function fetchCashierOrders(params?: {
   return data;
 }
 
+/** Response shape for GET /orders/updates (delta polling). */
+export interface OrdersUpdatesResponse {
+  items: Order[];
+  server_time: string;
+  count: number;
+}
+
+export async function fetchOrderUpdates(params: {
+  after: string;
+  branch_id?: string;
+  limit?: number;
+}): Promise<OrdersUpdatesResponse> {
+  const search = new URLSearchParams();
+  search.set("after", params.after);
+  if (params.branch_id) search.set("branch_id", params.branch_id);
+  if (params.limit != null) search.set("limit", String(params.limit));
+
+  const { data } = await apiClient.get<OrdersUpdatesResponse>(
+    `/orders/updates?${search.toString()}`
+  );
+  return data;
+}
+
 /** Params for export (no page/limit/cursor). */
 export type OrdersExportParams = Omit<
   OrdersQueryParams,

@@ -10,7 +10,6 @@ import {
   type TableServiceRow,
   type TableServiceStatus,
 } from "@/lib/api";
-import { useTableServiceCreated } from "@/hooks/useTableServiceCreated";
 import {
   UserCircle2,
   Loader2,
@@ -202,13 +201,6 @@ export default function TableServicesPage() {
     enabled: !!user?.merchant_id,
     placeholderData: (previousData) => previousData,
   });
-
-  useTableServiceCreated(
-    () => {
-      queryClient.invalidateQueries({ queryKey: ["tableServices"] });
-    },
-    { branchId: user?.branch_id ? String(user.branch_id) : undefined },
-  );
 
   const updateStatusMut = useMutation({
     mutationFn: ({ id, status }: { id: string; status: TableServiceStatus }) =>

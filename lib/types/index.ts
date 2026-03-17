@@ -180,6 +180,8 @@ export interface Order {
   notes?: string | null;
   total_price: number;
   created_at: string;
+  /** Optional: present when backend sends last update time. Used for live polling cursor. */
+  updated_at?: string;
   branch_name?: string | null;
   table_number?: string | null;
   branch?: {

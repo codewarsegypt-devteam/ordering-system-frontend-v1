@@ -1,12 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts";
 import { fetchBranches, fetchOrders, exportOrdersExcel, getApiError, updateOrderStatus } from "@/lib/api";
 import type { OrderStatus } from "@/lib/types";
-import { useOrderCreated } from "@/hooks/useOrderCreated";
+import { useLiveOrdersPolling } from "@/hooks/useLiveOrdersPolling";
 import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import {
   CalendarRange,
@@ -155,15 +155,6 @@ export default function DashboardOrdersPage() {
 
   const isOwner = user?.role === "owner";
 
-  useOrderCreated(
-    (data) => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      setNewOrderToast({ order_number: data.order_number });
-      setTimeout(() => setNewOrderToast(null), 4000);
-    },
-    { branchId: user?.branch_id != null ? String(user.branch_id) : undefined }
-  );
-
   const { data: branches } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
@@ -193,6 +184,25 @@ export default function DashboardOrdersPage() {
       }),
     enabled: !!user?.merchant_id,
     placeholderData: (previousData) => previousData,
+  });
+
+  // Live polling: merge /orders/updates deltas into the same React Query cache.
+  const statusFilterSet = useMemo(
+    () => (filters.status.length ? new Set(filters.status) : null),
+    [filters.status],
+  );
+
+  const { isPolling, error: pollingError } = useLiveOrdersPolling({
+    queryKey: ["orders", user?.merchant_id, user?.branch_id, filters],
+    initialData: data,
+    branchId: activeBranchId,
+    enabled: !!user?.merchant_id,
+    intervalMs: 3000,
+    filterFn: (order) => {
+      if (activeBranchId && String(order.branch_id) !== activeBranchId) return false;
+      if (statusFilterSet && !statusFilterSet.has(order.status)) return false;
+      return true;
+    },
   });
 
   const updateStatus = useMutation({
@@ -359,7 +369,7 @@ export default function DashboardOrdersPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {isFetching && (
+          {(isFetching || isPolling) && (
             <div className="inline-flex items-center gap-2 text-sm text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
               Updating…
