@@ -17,6 +17,7 @@ export default function DashboardLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const signedUp = searchParams.get("signedup") === "1";
   const [error, setError] = useState<string | null>(null);
   const [showPw, setShowPw] = useState(false);
 
@@ -84,6 +85,11 @@ export default function DashboardLoginPage() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {signedUp && (
+                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                  Account created. Sign in with your username and password.
+                </div>
+              )}
               {error && (
                 <div className="alert-error flex items-start gap-2">
                   <span className="mt-0.5 shrink-0 text-red-500">!</span>

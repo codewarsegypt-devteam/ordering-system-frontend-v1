@@ -196,4 +196,23 @@ export async function fetchPublicTableQrcode(
   return data;
 }
 
+/** Public signup: create merchant owner account. POST /public/signup */
+export interface SignupRequestBody {
+  username: string;
+  merchant_name: string;
+  password: string;
+}
+
+export interface SignupResponse {
+  id?: string;
+  username?: string;
+  merchant_id?: string;
+  message?: string;
+}
+
+export async function signup(body: SignupRequestBody): Promise<SignupResponse> {
+  const { data } = await apiClient.post<SignupResponse>("/public/signup", body);
+  return data;
+}
+
 export { getApiError };
