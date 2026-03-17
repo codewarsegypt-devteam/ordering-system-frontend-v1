@@ -48,7 +48,10 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
   const displayName = item.name_en || item.name_ar || "Item";
   const nameAr = item.name_ar;
   const nameEn = item.name_en;
-  const basePrice = variant ? variant.price : item.base_price;
+  // Use display_price if available (set by currency context recompute), else base_price
+  const basePrice = variant
+    ? (variant.display_price ?? variant.price)
+    : (item.display_price ?? item.base_price);
   const grad = avatarGradient(displayName);
   const img1 = item.images?.img_url_1 ?? null;
   const img2 = item.images?.img_url_2 ?? null;
@@ -123,7 +126,8 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
     let sum = 0;
     for (const g of groups) {
       for (const s of modifierSelections[String(g.group.id)] ?? []) {
-        sum += (s.modifier.price || 0) * s.qty;
+        const modPrice = s.modifier.display_price ?? s.modifier.price ?? 0;
+        sum += modPrice * s.qty;
       }
     }
     return sum;
@@ -335,7 +339,7 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
                         >
                           <span>{v.name_en || v.name_ar}</span>
                           <span className="font-bold">
-                            {v.price.toFixed(2)}
+                            {(v.display_price ?? v.price).toFixed(2)}
                           </span>
                         </button>
                       );
@@ -410,9 +414,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              {m.price > 0 && (
+                              {(m.display_price ?? m.price) > 0 && (
                                 <span className="text-sm font-semibold text-orange-500">
-                                  +{m.price.toFixed(2)}
+                                  +{(m.display_price ?? m.price).toFixed(2)}
                                 </span>
                               )}
                               {selected && sel && (

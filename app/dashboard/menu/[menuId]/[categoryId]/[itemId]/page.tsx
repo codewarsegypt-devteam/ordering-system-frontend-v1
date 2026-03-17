@@ -21,6 +21,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef } from "react";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
@@ -37,6 +38,7 @@ export default function ItemDetailPage() {
   const categoryId = params?.categoryId as string;
   const itemId    = params?.itemId as string;
   const { user } = useAuth();
+  const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
   const [editForm, setEditForm] = useState(false);
   const [addVariant, setAddVariant] = useState(false);
@@ -111,7 +113,7 @@ export default function ItemDetailPage() {
               <p className="text-xs font-medium text-slate-500 mb-1">Base price</p>
               <p className="flex items-center gap-1 font-bold text-teal-700">
                 <DollarSign className="h-4 w-4" />
-                {item.base_price.toFixed(2)} EGP
+                {formatPrice(item.base_price)}
               </p>
             </div>
             <div className="rounded-lg bg-slate-50 p-3 sm:col-span-3 flex items-center justify-between">
@@ -326,6 +328,7 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
   onError: (e: unknown) => void;
 }) {
   const queryClient = useQueryClient();
+  const { currencyCode } = useMerchantBaseCurrency();
   const { register, handleSubmit } = useForm({
     defaultValues: { name_en: item.name_en ?? "", name_ar: item.name_ar ?? "", base_price: item.base_price, status: item.status },
   });
@@ -346,7 +349,7 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
           <input className="input-base" dir="rtl" {...register("name_ar")} />
         </div>
         <div>
-          <label className="label">Base price (EGP)</label>
+          <label className="label">Base price ({currencyCode})</label>
           <input type="number" step="0.01" min="0" className="input-base" {...register("base_price", { valueAsNumber: true })} />
         </div>
         <div>
@@ -374,6 +377,7 @@ function VariantsCard({ itemId, editable, addVariant, setAddVariant }: {
   addVariant: boolean; setAddVariant: (v: boolean) => void;
 }) {
   const queryClient = useQueryClient();
+  const { formatPrice } = useMerchantBaseCurrency();
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const { data: variants, isLoading } = useQuery({
@@ -458,7 +462,7 @@ function VariantsCard({ itemId, editable, addVariant, setAddVariant }: {
                         <span className="font-medium text-slate-700">{v.name_en ?? v.name_ar}</span>
                         {v.name_ar && v.name_en && <span className="ml-2 text-xs text-slate-400" dir="rtl">{v.name_ar}</span>}
                       </td>
-                      <td className="font-semibold text-teal-700">{v.price.toFixed(2)} EGP</td>
+                      <td className="font-semibold text-teal-700">{formatPrice(v.price)}</td>
                       {editable && (
                         <td className="text-right">
                           <div className="flex items-center justify-end gap-1">
@@ -491,6 +495,7 @@ function VariantForm({ defaultValues, onSubmit, onCancel, isPending }: {
   onCancel: () => void;
   isPending: boolean;
 }) {
+  const { currencyCode } = useMerchantBaseCurrency();
   const { register, handleSubmit } = useForm<{ name_en: string; name_ar: string; price: number }>({
     defaultValues: { name_en: defaultValues?.name_en ?? "", name_ar: defaultValues?.name_ar ?? "", price: defaultValues?.price ?? 0 },
   });
@@ -506,7 +511,7 @@ function VariantForm({ defaultValues, onSubmit, onCancel, isPending }: {
         <input className="input-base" dir="rtl" placeholder="كبير" {...register("name_ar")} />
       </div>
       <div className="w-28">
-        <label className="label text-xs">Price (EGP) *</label>
+        <label className="label text-xs">Price ({currencyCode}) *</label>
         <input type="number" step="0.01" min="0" className="input-base" {...register("price", { valueAsNumber: true })} />
       </div>
       <div className="flex gap-2 pb-0.5">

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Bell,
   UserCircle2,
+  Coins,
 } from "lucide-react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
@@ -46,6 +47,12 @@ const NAV_ITEMS = [
     roles: ["owner"],
   },
   { href: "/dashboard/users", label: "Users", icon: Users, roles: ["owner"] },
+  {
+    href: "/dashboard/currencies",
+    label: "Currencies",
+    icon: Coins,
+    roles: ["owner"],
+  },
 ] as const;
 
 function NavItem({

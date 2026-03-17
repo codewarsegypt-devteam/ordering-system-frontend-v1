@@ -28,11 +28,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
 export default function ModifiersPage() {
   const { user } = useAuth();
+  const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
@@ -412,7 +414,7 @@ export default function ModifiersPage() {
                                     }}
                                   >
                                     <DollarSign className="h-3.5 w-3.5" />
-                                    {m.price.toFixed(2)} EGP
+                                    {formatPrice(m.price)}
                                   </span>
                                 </td>
                                 {editable && (
@@ -548,6 +550,7 @@ function ModifierForm({
   onCancel: () => void;
   isPending: boolean;
 }) {
+  const { currencyCode } = useMerchantBaseCurrency();
   const { register, handleSubmit } = useForm<{
     name_en: string;
     name_ar: string;
@@ -588,7 +591,7 @@ function ModifierForm({
         />
       </div>
       <div className="w-28">
-        <label className="label text-xs">Price (EGP) *</label>
+        <label className="label text-xs">Price ({currencyCode}) *</label>
         <input
           type="number"
           step="0.01"

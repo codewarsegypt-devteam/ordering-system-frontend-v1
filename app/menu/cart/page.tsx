@@ -1,9 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { fetchPublicMenu } from "@/lib/api";
-import { useAuth, useCart } from "@/contexts";
+import { useAuth, useCart, useCurrency } from "@/contexts";
 import Link from "next/link";
 import {
   ShoppingBag, Minus, Plus, Trash2, ChevronLeft, ArrowRight, Tag,
@@ -19,17 +17,8 @@ export default function CartPage() {
       ? String(user.merchant_id)
       : searchParams.get("merchantId") ?? "";
 
-  const { data: menuData } = useQuery({
-    queryKey: token
-      ? ["publicMenu", "token", token]
-      : ["publicMenu", merchantIdParam, tableCodeParam],
-    queryFn: () =>
-      token
-        ? fetchPublicMenu(undefined, undefined, token)
-        : fetchPublicMenu(merchantIdParam, tableCodeParam),
-    enabled: !!token || !!merchantIdParam,
-  });
-  const currency = menuData?.menu?.currancy ?? "EGP";
+  const { selectedCurrency } = useCurrency();
+  const currency = selectedCurrency?.symbol ?? selectedCurrency?.code ?? "EGP";
 
   const { entries, updateQuantity, removeItem, totalItems } = useCart();
 
@@ -41,9 +30,11 @@ export default function CartPage() {
     : `/menu/checkout?merchantId=${merchantIdParam}&tableCode=${tableCodeParam}`;
 
   const subtotal = entries.reduce((sum, entry) => {
-    const price = entry.variant ? entry.variant.price : entry.item.base_price;
+    const price = entry.variant
+      ? (entry.variant.display_price ?? entry.variant.price)
+      : (entry.item.display_price ?? entry.item.base_price);
     const modTotal = entry.selectedModifiers.reduce(
-      (s, m) => s + m.modifier.price * m.quantity,
+      (s, m) => s + (m.modifier.display_price ?? m.modifier.price) * m.quantity,
       0,
     );
     return sum + (price + modTotal) * entry.quantity;
@@ -99,9 +90,11 @@ export default function CartPage() {
         {/* ─── Item rows ─── */}
         <div className="space-y-3">
           {entries.map((entry, index) => {
-            const price = entry.variant ? entry.variant.price : entry.item.base_price;
+            const price = entry.variant
+              ? (entry.variant.display_price ?? entry.variant.price)
+              : (entry.item.display_price ?? entry.item.base_price);
             const modTotal = entry.selectedModifiers.reduce(
-              (s, m) => s + m.modifier.price * m.quantity,
+              (s, m) => s + (m.modifier.display_price ?? m.modifier.price) * m.quantity,
               0,
             );
             const lineTotal = (price + modTotal) * entry.quantity;

@@ -20,6 +20,7 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 
 const statusLabels: Record<OrderStatus, string> = {
   draft: "Draft",
@@ -198,6 +199,7 @@ export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params?.id as string;
   const queryClient = useQueryClient();
+  const { formatPrice } = useMerchantBaseCurrency();
   const [statusToast, setStatusToast] = useState<string | null>(null);
 
   const {
@@ -307,9 +309,9 @@ export default function OrderDetailPage() {
           {/* Total */}
           <div className="text-right">
             <p className="text-2xl font-bold text-slate-900">
-              {order.total_price.toFixed(2)}
+              {formatPrice(order.total_price)}
             </p>
-            <p className="text-sm text-slate-500">EGP total</p>
+            <p className="text-sm text-slate-500">Total</p>
           </div>
         </div>
 
@@ -429,7 +431,7 @@ export default function OrderDetailPage() {
                           <span className="h-1 w-1 rounded-full bg-slate-300" />
                           {m.name_snapshot}
                           <span className="text-slate-400">
-                            +{m.price.toFixed(2)} EGP
+                            +{formatPrice(m.price)}
                           </span>
                         </li>
                       ))}
@@ -440,7 +442,7 @@ export default function OrderDetailPage() {
                   ×{item.quantity}
                 </td>
                 <td className="text-right font-semibold text-slate-800">
-                  {item.total_price.toFixed(2)} EGP
+                  {formatPrice(item.total_price)}
                 </td>
               </tr>
             ))}
@@ -450,7 +452,7 @@ export default function OrderDetailPage() {
         <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-5 py-3">
           <span className="font-semibold text-slate-700">Total</span>
           <span className="text-lg font-bold text-slate-900">
-            {order.total_price.toFixed(2)} EGP
+            {formatPrice(order.total_price)}
           </span>
         </div>
       </div>

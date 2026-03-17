@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { fetchPublicScan, createTableServiceRequest, getApiError } from "@/lib/api";
+import { useCurrency } from "@/contexts";
 import Image from "next/image";
 import { UtensilsCrossed, ChevronLeft, UserCircle2, Receipt } from "lucide-react";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ export default function MenuPage() {
   const router = useRouter();
   const token = searchParams.get("t") ?? undefined;
   const redirected = useRef(false);
+  const { initFromCurrencyInfo } = useCurrency();
 
   // ── all hooks before any conditional returns ──
   const [serviceSending, setServiceSending] = useState<"call_waiter" | "request_bill" | null>(null);
@@ -34,13 +36,18 @@ export default function MenuPage() {
   });
 
   useEffect(() => {
-    if (!scanData || redirected.current) return;
+    if (!scanData) return;
+    // Initialize currency context from scan response
+    if (scanData.currency_info) {
+      initFromCurrencyInfo(scanData.currency_info);
+    }
+    if (redirected.current) return;
     const menus = scanData.menus ?? [];
     if (menus.length === 1) {
       redirected.current = true;
       router.replace(`/menu/${menus[0].id}?t=${encodeURIComponent(token!)}`);
     }
-  }, [scanData, token, router]);
+  }, [scanData, token, router, initFromCurrencyInfo]);
 
   const { primary, secondary } = useBrandColors(
     scanData?.hexa_color_1,

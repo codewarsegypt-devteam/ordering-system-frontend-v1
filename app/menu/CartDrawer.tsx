@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useCart } from "@/contexts";
+import { useCart, useCurrency } from "@/contexts";
 import { createOrder, getApiError } from "@/lib/api";
 import {
   X,
@@ -37,6 +37,7 @@ export function CartDrawer({
     lineItems,
     clearCart,
   } = useCart();
+  const { selectedCurrency } = useCurrency();
   const searchParams = useSearchParams();
   const token = searchParams.get("t") ?? undefined;
 
@@ -44,12 +45,15 @@ export function CartDrawer({
   const [orderError, setOrderError] = React.useState<string | null>(null);
   const [orderSuccess, setOrderSuccess] = React.useState<{
     order_number: string;
+    display_total?: number;
   } | null>(null);
 
   const subtotal = entries.reduce((sum, entry) => {
-    const price = entry.variant ? entry.variant.price : entry.item.base_price;
+    const price = entry.variant
+      ? (entry.variant.display_price ?? entry.variant.price)
+      : (entry.item.display_price ?? entry.item.base_price);
     const modTotal = entry.selectedModifiers.reduce(
-      (s, m) => s + m.modifier.price * m.quantity,
+      (s, m) => s + (m.modifier.display_price ?? m.modifier.price) * m.quantity,
       0,
     );
     return sum + (price + modTotal) * entry.quantity;
@@ -60,8 +64,11 @@ export function CartDrawer({
     setOrderError(null);
     setPlacing(true);
     try {
-      const res = await createOrder(token, lineItems);
-      setOrderSuccess({ order_number: res.order_number });
+      const res = await createOrder(token, lineItems, selectedCurrency?.id);
+      setOrderSuccess({
+        order_number: res.order_number,
+        display_total: res.display_total_price,
+      });
       clearCart();
     } catch (err) {
       setOrderError(getApiError(err));
@@ -111,6 +118,11 @@ export function CartDrawer({
             {orderSuccess.order_number && (
               <p className="mt-3 rounded-xl bg-gray-100 px-4 py-2 font-mono text-sm font-semibold text-gray-800">
                 Order #{orderSuccess.order_number}
+              </p>
+            )}
+            {orderSuccess.display_total != null && selectedCurrency && (
+              <p className="mt-2 text-base font-bold text-gray-900">
+                {selectedCurrency.symbol} {orderSuccess.display_total.toFixed(2)}
               </p>
             )}
             <button
@@ -165,10 +177,10 @@ export function CartDrawer({
               <ul className="space-y-2.5">
                 {entries.map((entry, index) => {
                   const price = entry.variant
-                    ? entry.variant.price
-                    : entry.item.base_price;
+                    ? (entry.variant.display_price ?? entry.variant.price)
+                    : (entry.item.display_price ?? entry.item.base_price);
                   const modTotal = entry.selectedModifiers.reduce(
-                    (s, m) => s + m.modifier.price * m.quantity,
+                    (s, m) => s + (m.modifier.display_price ?? m.modifier.price) * m.quantity,
                     0,
                   );
                   const lineTotal = (price + modTotal) * entry.quantity;

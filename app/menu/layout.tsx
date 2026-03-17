@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
-import { CartProvider, ThemeProvider } from "@/contexts";
+import { CartProvider, ThemeProvider, CurrencyProvider } from "@/contexts";
 import { Cormorant_Garamond } from "next/font/google";
 import { AuthProvider } from "@/contexts";
 
@@ -31,9 +31,11 @@ export default function MenuSiteLayout({
       <QueryProvider>
         <AuthProvider>
           <ThemeProvider>
-            <CartProvider>
-              <Suspense fallback={<MenuLoading />}>{children}</Suspense>
-            </CartProvider>
+            <CurrencyProvider>
+              <CartProvider>
+                <Suspense fallback={<MenuLoading />}>{children}</Suspense>
+              </CartProvider>
+            </CurrencyProvider>
           </ThemeProvider>
         </AuthProvider>
       </QueryProvider>

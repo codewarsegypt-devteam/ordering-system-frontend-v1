@@ -15,6 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import { toast } from "sonner";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
@@ -31,6 +32,7 @@ export default function CategoryItemsPage() {
   const menuId = params?.menuId as string;
   const categoryId = params?.categoryId as string;
   const { user } = useAuth();
+  const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
 
@@ -168,7 +170,7 @@ export default function CategoryItemsPage() {
                   <td className="hidden sm:table-cell">
                     <span className="flex items-center gap-1 font-semibold text-teal-700">
                       {/* <DollarSign className="h-3.5 w-3.5" /> */}
-                      {item.base_price.toFixed(2)} EGP
+                      {formatPrice(item.base_price)}
                     </span>
                   </td>
                   <td>
@@ -221,7 +223,7 @@ function CreateItemForm({ onAdd, onCancel, isPending }: {
     base_price: number; description_ar: string;
     description_en: string; status: string;
   }>({ defaultValues: { base_price: 0, status: "active", description_ar: "", description_en: "" } });
-
+  const { currencyCode } = useMerchantBaseCurrency();
   return (
     <form onSubmit={handleSubmit((d) => onAdd({
       name_ar: d.name_ar, name_en: d.name_en,
@@ -248,7 +250,7 @@ function CreateItemForm({ onAdd, onCancel, isPending }: {
           <textarea rows={2} className="input-base resize-none" dir="rtl" {...register("description_ar")} />
         </div>
         <div>
-          <label className="label">Base price (EGP) *</label>
+          <label className="label">Base price ({currencyCode}) *</label>
           <input type="number" step="0.01" min="0" className="input-base" {...register("base_price", { required: true, valueAsNumber: true })} />
         </div>
         <div>

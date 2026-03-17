@@ -40,6 +40,7 @@ export interface PublicMenuVariant {
   name_ar: string;
   name_en: string;
   price: number;
+  display_price?: number;
 }
 
 export interface PublicMenuModifier {
@@ -47,6 +48,7 @@ export interface PublicMenuModifier {
   name_ar: string;
   name_en: string;
   price: number;
+  display_price?: number;
 }
 
 export interface PublicMenuModifierGroupRule {
@@ -61,6 +63,7 @@ export interface PublicMenuItem {
   name_ar: string;
   name_en: string;
   base_price: number;
+  display_price?: number;
   status: string;
   variants?: PublicMenuVariant[];
   modifier_groups?: PublicMenuModifierGroupRule[];
@@ -115,6 +118,31 @@ export interface ValidateCartRequest {
   branch_id: string;
   table_id: string | null;
   items: CartLineItem[];
+  currency_id?: number;
+}
+
+export interface ValidateCartResponse {
+  is_valid: boolean;
+  errors: string[];
+  totals: {
+    subtotal: number;
+    total: number;
+    display_subtotal: number;
+    display_total: number;
+  };
+  currency_info: {
+    display_currency: import("./currency").Currency | null;
+    display_rate: number;
+  };
+  line_items: Array<{
+    item_id: number;
+    variant_id: number | null;
+    unit_price: number;
+    qty: number;
+    line_total: number;
+    display_unit_price: number;
+    display_line_total: number;
+  }>;
 }
 
 export type OrderType = "dine_in" | "pickup" | "delivery";
@@ -190,6 +218,9 @@ export interface CreateOrderResponse {
   order_number: string;
   status: OrderStatus;
   total_price: number;
+  display_total_price?: number;
+  display_currency_id?: number | null;
+  display_exchange_rate?: number;
 }
 
 // Dashboard – list response

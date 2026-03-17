@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import {
   fetchBranches,
   fetchBranchesStats,
@@ -47,9 +48,6 @@ interface StatCardProps {
 
 type DatePreset = "today" | "last7" | "last30" | "thisMonth";
 
-function formatMoney(value: number | undefined) {
-  return `${Number(value ?? 0).toFixed(2)} EGP`;
-}
 
 function formatCount(value: number | undefined) {
   return new Intl.NumberFormat().format(Number(value ?? 0));
@@ -130,6 +128,7 @@ function StatCard({ title, value, hint }: StatCardProps) {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { formatPrice } = useMerchantBaseCurrency();
   const isOwner = user?.role === "owner";
   const canViewStats = user?.role === "owner" || user?.role === "manager";
 
@@ -524,7 +523,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard
                   title="Total Sales"
-                  value={formatMoney(salesQuery.data?.summary.total_sales)}
+                  value={formatPrice(salesQuery.data?.summary.total_sales)}
                   hint={`${formatCount(salesQuery.data?.summary.completed_orders_count)} completed orders`}
                 />
                 <StatCard
@@ -534,7 +533,7 @@ export default function DashboardPage() {
                 />
                 <StatCard
                   title="Average Order"
-                  value={formatMoney(
+                  value={formatPrice(
                     salesQuery.data?.summary.average_order_value,
                   )}
                   hint={`${salesQuery.data?.summary.cancelled_rate ?? 0}% cancellation rate`}
@@ -567,7 +566,7 @@ export default function DashboardPage() {
                               {item.date}
                             </span>
                             <span className="text-slate-500">
-                              {formatMoney(item.total_sales)}
+                              {formatPrice(item.total_sales)}
                             </span>
                           </div>
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
@@ -600,7 +599,7 @@ export default function DashboardPage() {
                           ?.branch_name ?? "—"}
                       </p>
                       <p className="text-slate-500">
-                        {formatMoney(
+                        {formatPrice(
                           branchesQuery.data?.summary.best_branch_by_sales
                             ?.total_sales,
                         )}
@@ -663,7 +662,7 @@ export default function DashboardPage() {
                             </p>
                           </div>
                           <p className="font-semibold text-slate-800">
-                            {formatMoney(branch.total_sales)}
+                            {formatPrice(branch.total_sales)}
                           </p>
                         </div>
                       ))
@@ -697,7 +696,7 @@ export default function DashboardPage() {
                             </p>
                           </div>
                           <p className="font-semibold text-slate-800">
-                            {formatMoney(table.total_sales)}
+                            {formatPrice(table.total_sales)}
                           </p>
                         </div>
                       ))
@@ -740,7 +739,7 @@ export default function DashboardPage() {
                               {formatCount(item.quantity_sold)} sold
                             </p>
                             <p className="text-xs text-slate-500">
-                              {formatMoney(item.revenue)}
+                              {formatPrice(item.revenue)}
                             </p>
                           </div>
                         </div>

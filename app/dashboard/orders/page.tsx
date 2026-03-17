@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts";
 import { fetchBranches, fetchOrders, exportOrdersExcel, getApiError, updateOrderStatus } from "@/lib/api";
 import type { OrderStatus } from "@/lib/types";
 import { useOrderCreated } from "@/hooks/useOrderCreated";
+import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import {
   CalendarRange,
   Check,
@@ -144,6 +145,7 @@ function formatRelativeTime(value: string) {
 
 export default function DashboardOrdersPage() {
   const { user } = useAuth();
+  const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<OrdersFilterState>(getDefaultFilters);
   const [newOrderToast, setNewOrderToast] = useState<{ order_number: string } | null>(null);
@@ -588,7 +590,7 @@ export default function DashboardOrdersPage() {
             )}
             {filters.min_total && (
               <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
-                Min {filters.min_total} EGP
+                Min {filters.min_total} {currencyCode}
               </span>
             )}
           </div>
@@ -775,7 +777,7 @@ export default function DashboardOrdersPage() {
                       {new Date(order.created_at).toLocaleString()}
                     </td>
                     <td className="text-right font-semibold text-slate-800">
-                      {order.total_price.toFixed(2)} EGP
+                      {formatPrice(order.total_price)}
                     </td>
                     <td className="text-right">
                       <div className="flex items-center justify-end gap-1">

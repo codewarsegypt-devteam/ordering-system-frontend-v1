@@ -4,6 +4,7 @@ import type {
   CreateOrderResponse,
   CartLineItem,
 } from "@/lib/types";
+import type { CurrencyInfo } from "@/lib/types/currency";
 
 /**
  * First step after scanning QR. Returns merchant, branch, table info and list of menus (no categories/items).
@@ -29,6 +30,7 @@ export interface PublicScanResponse {
     is_active?: boolean;
     created_at?: string;
   }>;
+  currency_info?: CurrencyInfo;
 }
 
 export async function fetchPublicScan(
@@ -72,15 +74,19 @@ export interface PublicMenuByIdResponse {
   branch_id?: string | null;
   table_id?: string | null;
   table_code?: string | null;
+  currency_info?: CurrencyInfo;
 }
 
 export async function fetchPublicMenuById(
   menuId: string | number,
   token: string,
+  currencyId?: number,
 ): Promise<PublicMenuByIdResponse> {
+  const params: Record<string, string | number> = { t: token };
+  if (currencyId != null) params.currency_id = currencyId;
   const { data } = await apiClient.get<PublicMenuByIdResponse>(
     `/public/menu/${menuId}`,
-    { params: { t: token } },
+    { params },
   );
   return data;
 }
@@ -93,6 +99,7 @@ export async function fetchPublicMenuById(
  * - modifiers: array of { modifier_id, quantity }
  */
 export type CreateOrderRequestBody = {
+  display_currency_id?: number;
   items: Array<{
     item_id: string;
     variant_id?: string;
@@ -103,8 +110,9 @@ export type CreateOrderRequestBody = {
 
 function buildCreateOrderBody(
   lineItems: CartLineItem[],
+  displayCurrencyId?: number,
 ): CreateOrderRequestBody {
-  return {
+  const body: CreateOrderRequestBody = {
     items: lineItems.map((line) => {
       const item: CreateOrderRequestBody["items"][0] = {
         item_id: String(line.item_id),
@@ -120,18 +128,23 @@ function buildCreateOrderBody(
       return item;
     }),
   };
+  if (displayCurrencyId != null) {
+    body.display_currency_id = displayCurrencyId;
+  }
+  return body;
 }
 
 /**
  * Create order using table token (from QR scan).
- * POST /orders?t=TOKEN with body { items: [...] }.
+ * POST /orders?t=TOKEN with body { items: [...], display_currency_id? }.
  * Backend validates token and extracts merchant_id, branch_id, table_id from JWT.
  */
 export async function createOrder(
   token: string,
   items: CartLineItem[],
+  displayCurrencyId?: number,
 ): Promise<CreateOrderResponse> {
-  const body = buildCreateOrderBody(items);
+  const body = buildCreateOrderBody(items, displayCurrencyId);
   const { data } = await apiClient.post<CreateOrderResponse>("/orders", body, {
     params: { t: token },
   });

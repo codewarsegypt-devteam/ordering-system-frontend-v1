@@ -65,6 +65,9 @@ export * from "./branches";
 export * from "./tables";
 export * from "./users";
 
+// Currencies (admin)
+export * from "./currencies";
+
 // Table services (call waiter / request bill)
 export {
   listTableServices,

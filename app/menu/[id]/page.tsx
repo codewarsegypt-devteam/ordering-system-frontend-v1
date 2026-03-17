@@ -5,8 +5,9 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { fetchPublicScan, fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
-import { useCart } from "@/contexts";
-import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt } from "lucide-react";
+import { useCart, useCurrency } from "@/contexts";
+import { recomputeMenuPrices } from "@/lib/utils/currency.utils";
+import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { MenuItemCard } from "../MenuItemCard";
 import { CartDrawer } from "../CartDrawer";
@@ -17,6 +18,15 @@ export default function MenuByIdPage() {
   const id = params?.id as string | undefined;
   const token = searchParams.get("t") ?? undefined;
 
+  const {
+    selectedCurrency,
+    selectedRate,
+    availableCurrencies,
+    setSelectedCurrency: setCurrency,
+    initFromCurrencyInfo,
+  } = useCurrency();
+
+  // Fetch menu once without currency_id; we recompute display prices client-side on switch (no refetch = no freeze)
   const { data, isLoading, error } = useQuery({
     queryKey: ["publicMenuById", token, id],
     queryFn: () => fetchPublicMenuById(id!, token!),
@@ -32,6 +42,15 @@ export default function MenuByIdPage() {
   });
   const primary = scanData?.hexa_color_1 || "#f97316";     // orange-500 fallback
   const secondary = scanData?.hexa_color_2 || scanData?.hexa_color_1 || "#ea580c";
+
+  // Init currency context from menu response if not yet done from scan
+  React.useEffect(() => {
+    if (data?.currency_info) {
+      initFromCurrencyInfo(data.currency_info);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.currency_info]);
+
   const { totalItems } = useCart();
   const [query, setQuery] = React.useState("");
   const [activeCategoryId, setActiveCategoryId] = React.useState<string | null>(
@@ -42,12 +61,19 @@ export default function MenuByIdPage() {
   const [serviceCooldown, setServiceCooldown] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
 
+  // Must run before any early return (Rules of Hooks)
+  const rawCategories = data?.categories ?? [];
+  const categories = React.useMemo(
+    () => recomputeMenuPrices(rawCategories, selectedRate),
+    [rawCategories, selectedRate]
+  );
+
   const sendTableService = async (type: "call_waiter" | "request_bill") => {
     if (!token || serviceCooldown) return;
     setServiceSending(type);
     try {
       await createTableServiceRequest(token, type);
-      toast.success(type === "call_waiter" ? "تم إرسال طلب الويتر" : "تم إرسال طلب الفاتورة");
+      toast.success(type === "call_waiter" ? "Call waiter request sent" : "Request bill sent");
       setServiceCooldown(true);
       setTimeout(() => setServiceCooldown(false), 8000);
     } catch (err) {
@@ -149,17 +175,12 @@ export default function MenuByIdPage() {
     );
   }
 
-  const {
-    menu,
-    categories = [],
-    merchant_id,
-    branch_id,
-    table_id,
-    table_code,
-  } = data;
+  const { menu, merchant_id, branch_id, table_id, table_code } = data;
   const merchantId = merchant_id != null ? String(merchant_id) : "";
   const branchId = branch_id != null ? String(branch_id) : null;
   const tableId = table_id != null ? String(table_id) : null;
+
+  const currencySymbol = selectedCurrency?.symbol ?? menu.currancy ?? "";
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredCategories = normalizedQuery
@@ -216,6 +237,37 @@ export default function MenuByIdPage() {
                 </p>
               ) : null}
             </div>
+
+            {/* Currency selector — hidden when only one or zero choices */}
+            {availableCurrencies.length > 1 && (
+              <div className="relative shrink-0">
+                <select
+                  value={selectedCurrency?.id ?? ""}
+                  onChange={(e) => {
+                    const chosen = availableCurrencies.find(
+                      (c) => c.currency_id === Number(e.target.value)
+                    );
+                    if (chosen) setCurrency(chosen);
+                  }}
+                  className="appearance-none rounded-xl border border-gray-200 bg-gray-50 py-1.5 pl-3 pr-7 text-sm font-semibold text-gray-700 focus:outline-none focus:ring-2 cursor-pointer"
+                  style={{ focusRingColor: primary } as React.CSSProperties}
+                  aria-label="Select currency"
+                >
+                  {availableCurrencies.map((c) => (
+                    <option key={c.currency_id} value={c.currency_id}>
+                      {c.currency.symbol} {c.currency.code}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+              </div>
+            )}
+            {availableCurrencies.length === 1 && selectedCurrency && (
+              <span className="shrink-0 rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-semibold text-gray-600">
+                {selectedCurrency.symbol} {selectedCurrency.code}
+              </span>
+            )}
+
             <button
               type="button"
               onClick={() => setCartOpen(true)}
@@ -251,7 +303,7 @@ export default function MenuByIdPage() {
               ) : (
                 <UserCircle2 className="h-4 w-4" style={{ color: primary }} />
               )}
-              {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب ويتر"}
+              {serviceCooldown && serviceSending === null ? "Sent" : "Call waiter"}
             </button>
             <button
               type="button"
@@ -267,7 +319,7 @@ export default function MenuByIdPage() {
               ) : (
                 <Receipt className="h-4 w-4" style={{ color: primary }} />
               )}
-              {serviceCooldown && serviceSending === null ? "تم الإرسال" : "طلب الفاتورة"}
+              {serviceCooldown && serviceSending === null ? "Sent" : "Request bill"}
             </button>
           </div>
 
@@ -362,7 +414,7 @@ export default function MenuByIdPage() {
                     <MenuItemCard
                       key={item.id}
                       item={item}
-                      currency={menu.currancy}
+                      currency={currencySymbol}
                       merchantId={merchantId}
                       branchId={branchId}
                       tableId={tableId}
@@ -395,7 +447,7 @@ export default function MenuByIdPage() {
       <CartDrawer
         open={cartOpen}
         onClose={() => setCartOpen(false)}
-        currency={menu.currancy}
+        currency={currencySymbol}
         cartLink={cartHref}
       />
     </div>
