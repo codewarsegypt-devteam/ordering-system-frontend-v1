@@ -34,7 +34,7 @@ export default function MenuPage() {
     enabled: !!token,
     staleTime: 60_000,
   });
-
+// console.log(scanData);
   useEffect(() => {
     if (!scanData) return;
     // Initialize currency context from scan response
@@ -258,12 +258,12 @@ export default function MenuPage() {
               No menus available at the moment.
             </p>
           ) : (
-            <ul className="space-y-2.5">
+            <ul className="grid gap-3 sm:grid-cols-2">
               {menus.map((menu) => (
                 <li key={String(menu.id)}>
                   <Link
                     href={`/menu/${menu.id}?t=${encodeURIComponent(token)}`}
-                    className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/80 px-5 py-4 font-semibold text-gray-900 transition-all hover:border-opacity-50 active:scale-[0.99]"
+                    className="group block overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/80 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]"
                     style={
                       {
                         "--tw-border-opacity": "1",
@@ -280,8 +280,31 @@ export default function MenuPage() {
                       (e.currentTarget as HTMLElement).style.color = "";
                     }}
                   >
-                    {menu.name_en || menu.name_ar || `Menu ${menu.id}`}
-                    <ChevronLeft className="h-5 w-5 rotate-180 text-gray-400" />
+                    <div className="relative h-32 overflow-hidden">
+                      {menu.img_url_1 ? (
+                        <Image
+                          src={menu.img_url_1}
+                          alt=""
+                          fill
+                          priority={false}
+                          sizes="(min-width: 640px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-300">
+                          <UtensilsCrossed className="h-10 w-10" />
+                        </div>
+                      )}
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
+                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 px-4 pb-3">
+                        <div className="min-w-0">
+                          <p className="line-clamp-2 text-sm font-semibold text-white">
+                            {menu.name_en || menu.name_ar || `Menu ${menu.id}`}
+                          </p>
+                        </div>
+                        <ChevronLeft className="h-4 w-4 -rotate-180 text-white/80" />
+                      </div>
+                    </div>
                   </Link>
                 </li>
               ))}

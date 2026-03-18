@@ -1,8 +1,8 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   // "https://ordering-system-backend-v1-1.onrender.com";
-  // "https://online-merchant-ordering-system-bac.vercel.app";
-  "http://localhost:3001";
+  "https://ordering-system-backend-v1.vercel.app";
+  // "http://localhost:3001";
 
 export const DEFAULT_MERCHANT_ID = process.env.NEXT_PUBLIC_MERCHANT_ID || "";
 

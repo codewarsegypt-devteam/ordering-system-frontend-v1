@@ -11,6 +11,8 @@ export {
   createMenu,
   updateMenu,
   deleteMenu,
+  uploadMenuImage,
+  deleteMenuImage,
   fetchMenuCategories,
   createCategory,
   reorderCategories,

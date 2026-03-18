@@ -46,8 +46,11 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
 
   const groups = item.modifier_groups ?? [];
   const displayName = item.name_en || item.name_ar || "Item";
-  const nameAr = item.name_ar;
-  const nameEn = item.name_en;
+  const nameEn = item.name_en || item.name_ar || "Item";
+  const description =
+    item.description_en?.trim() ||
+    item.description_ar?.trim() ||
+    "";
   // Use display_price if available (set by currency context recompute), else base_price
   const basePrice = variant
     ? (variant.display_price ?? variant.price)
@@ -152,12 +155,12 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
     <>
       {/* ─── List card ─── */}
       <div
-        className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-100 bg-white p-3.5 shadow-sm transition-all hover:border-orange-200 hover:shadow-md active:scale-[0.99]"
+        className="group flex cursor-pointer rounded-2xl items-center gap-3 border-b border-gray-100 bg-white px-1.5 py-3 transition-all last:border-b-0"
         onClick={() => setDetailsOpen(true)}
       >
         {/* Avatar */}
         <div
-          className={`relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-linear-to-br ${grad} flex items-center justify-center shadow-sm`}
+          className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-linear-to-br ${grad} flex items-center justify-center shadow-sm`}
         >
           {primaryImage ? (
             <Image
@@ -178,19 +181,12 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
         {/* Info */}
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-snug text-gray-900 line-clamp-2">
-            {nameEn && nameAr ? (
-              <>
-                {nameEn}
-                <span className="block text-xs font-normal text-gray-400">
-                  {nameAr}
-                </span>
-              </>
-            ) : (
-              displayName
-            )}
+            {nameEn}
           </p>
-          {groups.length > 0 && (
-            <p className="mt-0.5 text-xs text-gray-400">Customisable</p>
+          {description && (
+            <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">
+              {description}
+            </p>
           )}
           <p className="mt-1.5 text-sm font-bold text-orange-500">
             {basePrice.toFixed(2)}{" "}
@@ -207,7 +203,7 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
             e.stopPropagation();
             setDetailsOpen(true);
           }}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm transition-all hover:bg-orange-600 active:scale-90 group-hover:shadow-md"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm transition-all hover:bg-orange-600 active:scale-90"
           aria-label={`Add ${displayName}`}
         >
           <Plus className="h-5 w-5" />
@@ -287,9 +283,9 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
 
             {/* Item header */}
             <div className="border-b border-gray-100 px-5 pt-4 pb-3">
-              <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-              {nameAr && nameEn && (
-                <p className="text-sm text-gray-400">{nameAr}</p>
+              <h2 className="text-xl font-bold text-gray-900">{nameEn}</h2>
+              {description && (
+                <p className="mt-0.5 text-sm text-gray-500">{description}</p>
               )}
               <p className="mt-1.5 text-lg font-bold text-orange-500">
                 {unitTotal.toFixed(2)}{" "}

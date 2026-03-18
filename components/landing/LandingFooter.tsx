@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UtensilsCrossed, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 const FOOTER_LINKS = [
   {
@@ -35,13 +35,8 @@ export function LandingFooter() {
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 font-bold text-white">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
-                style={{ backgroundColor: "var(--system-green)" }}
-              >
-                <UtensilsCrossed className="h-4.5 w-4.5" />
-              </span>
-              <span className="text-lg tracking-tight">Qurixa</span>
+              <img src="/logos/3.svg" alt="Qrixa" className="h-9 w-9 object-contain" />
+              <span className="text-lg tracking-tight">Qrixa</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-500">
               Smart QR ordering system for restaurants and cafés. No app download,
@@ -116,7 +111,7 @@ export function LandingFooter() {
       <div className="border-t border-zinc-800 px-4 py-5 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
           <p className="text-xs text-zinc-600">
-            © {new Date().getFullYear()} Qurixa. Smart restaurant ordering.
+            © {new Date().getFullYear()} Qrixa. Smart restaurant ordering.
           </p>
           <a
             href="https://codewarsegypt.com"

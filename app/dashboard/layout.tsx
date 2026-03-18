@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/contexts";
+import { LiveOrdersProvider, useLiveOrders } from "@/contexts/LiveOrdersContext";
+import { LiveOrdersPoller } from "@/components/dashboard/LiveOrdersPoller";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -15,9 +17,13 @@ import {
   MapPin,
   Users,
   Layers,
+  Bell,
   ChevronDown,
   ChevronRight,
-  Bell,
+  CheckCircle2,
+  Loader2,
+  Play,
+  Square,
   UserCircle2,
   Coins,
 } from "lucide-react";
@@ -124,19 +130,18 @@ function Sidebar({
       {/* Header */}
       <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--system-sage)" }}>
         <div className="flex min-w-0 items-center gap-3">
-          <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-bold text-white shadow-md"
-            style={{ backgroundColor: "var(--system-green)" }}
-          >
-            T
-          </div>
+          <img
+            src="/logos/4.svg"
+            alt="Qrixa"
+            className="h-20 w-22 shrink-0 object-contain"
+          />
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-slate-800">
-              Tably
-            </p>
-            <p className="truncate text-xs font-medium text-slate-500">
+            {/* <p className="truncate text-xs font-medium text-slate-500">
               Dashboard
-            </p>
+            </p> */}
+            {/* <p className="truncate text-sm font-bold text-slate-800">
+              Qrixa
+            </p> */}
           </div>
         </div>
         {onClose && (
@@ -233,6 +238,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const liveOrders = useLiveOrders();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
@@ -261,6 +267,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-slate-100">
+      <LiveOrdersPoller />
       {/* Mobile overlay */}
       {sidebarOpen && (
         <button
@@ -305,14 +312,48 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
 
           {/* Right */}
           <div className="flex items-center gap-2">
-            {/* Notification bell (cosmetic) */}
+            {/* Live orders */}
+            {liveOrders.autoPaused && (
+              <span className="hidden text-sm text-amber-600 sm:inline">
+                Live paused (3 min). Start live to resume.
+              </span>
+            )}
+            {(liveOrders.isPolling) && (
+              <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
+                <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+              </div>
+            )}
             <button
+              type="button"
+              onClick={() =>
+                liveOrders.setLivePollingEnabled((v) => !v)
+              }
+              className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+              style={
+                liveOrders.livePollingEnabled
+                  ? { borderColor: "var(--system-sage)", backgroundColor: "white", color: "var(--system-green)" }
+                  : { backgroundColor: "var(--system-green)", color: "white", borderColor: "var(--system-green)" }
+              }
+            >
+              {liveOrders.livePollingEnabled ? (
+                <>
+                  <Square className="h-4 w-4" />
+                  <span className="hidden sm:inline">Stop live</span>
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  <span className="hidden sm:inline">Start live orders</span>
+                </>
+              )}
+            </button>
+            {/* <button
               type="button"
               className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
               aria-label="Notifications"
             >
               <Bell className="h-4.5 w-4.5" />
-            </button>
+            </button> */}
 
             {/* User pill */}
             <div className="relative">
@@ -378,6 +419,27 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
+        {/* Global new order toast */}
+        {liveOrders.newOrderToast && (
+          <div
+            className="fixed top-20 right-6 z-50 flex items-center gap-3 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 shadow-lg"
+            style={{ borderColor: "var(--system-sage)" }}
+          >
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-full text-white"
+              style={{ backgroundColor: "var(--system-green)" }}
+            >
+              <CheckCircle2 className="h-4.5 w-4.5" />
+            </div>
+            <div>
+              <p className="font-semibold text-teal-800">New order</p>
+              <p className="text-sm font-mono text-teal-600">
+                #{liveOrders.newOrderToast.order_number}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Page content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           {children}
@@ -395,7 +457,9 @@ export default function DashboardLayout({
   return (
     <QueryProvider>
       <AuthProvider>
-        <DashboardNav>{children}</DashboardNav>
+        <LiveOrdersProvider>
+          <DashboardNav>{children}</DashboardNav>
+        </LiveOrdersProvider>
       </AuthProvider>
     </QueryProvider>
   );

@@ -127,6 +127,14 @@ export default function ItemDetailPage() {
                 <ItemStatusButtons item={item} queryClient={queryClient} />
               )}
             </div>
+            <div className="rounded-lg bg-slate-50 p-3 sm:col-span-3">
+              <p className="text-xs font-medium text-slate-500 mb-1">Description (EN)</p>
+              <p className="font-medium text-slate-800 whitespace-pre-wrap">{item.description_en?.trim() || "—"}</p>
+            </div>
+            <div className="rounded-lg bg-slate-50 p-3 sm:col-span-3">
+              <p className="text-xs font-medium text-slate-500 mb-1">Description (AR)</p>
+              <p className="font-medium text-slate-800 whitespace-pre-wrap" dir="rtl">{item.description_ar?.trim() || "—"}</p>
+            </div>
           </div>
         ) : (
           /* Edit form */
@@ -330,7 +338,14 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
   const queryClient = useQueryClient();
   const { currencyCode } = useMerchantBaseCurrency();
   const { register, handleSubmit } = useForm({
-    defaultValues: { name_en: item.name_en ?? "", name_ar: item.name_ar ?? "", base_price: item.base_price, status: item.status },
+    defaultValues: {
+      name_en: item.name_en ?? "",
+      name_ar: item.name_ar ?? "",
+      description_en: item.description_en ?? "",
+      description_ar: item.description_ar ?? "",
+      base_price: item.base_price,
+      status: item.status,
+    },
   });
   const mut = useMutation({
     mutationFn: (body: Parameters<typeof updateItem>[1]) => updateItem(item.id, body),
@@ -338,7 +353,14 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
     onError,
   });
   return (
-    <form onSubmit={handleSubmit((d) => mut.mutate({ name_en: d.name_en, name_ar: d.name_ar, base_price: Number(d.base_price), status: d.status as "active" | "hidden" | "out_of_stock" }))}>
+    <form onSubmit={handleSubmit((d) => mut.mutate({
+      name_en: d.name_en,
+      name_ar: d.name_ar,
+      description_en: d.description_en?.trim() || null,
+      description_ar: d.description_ar?.trim() || null,
+      base_price: Number(d.base_price),
+      status: d.status as "active" | "hidden" | "out_of_stock",
+    }))}>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label">Name (EN)</label>
@@ -347,6 +369,14 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
         <div>
           <label className="label">Name (AR)</label>
           <input className="input-base" dir="rtl" {...register("name_ar")} />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label">Description (EN)</label>
+          <textarea className="input-base min-h-[80px] resize-y" {...register("description_en")} placeholder="Short description in English" />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label">Description (AR)</label>
+          <textarea className="input-base min-h-[80px] resize-y" dir="rtl" {...register("description_ar")} placeholder="وصف قصير بالعربية" />
         </div>
         <div>
           <label className="label">Base price ({currencyCode})</label>

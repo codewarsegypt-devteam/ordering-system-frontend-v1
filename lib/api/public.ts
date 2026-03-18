@@ -29,6 +29,7 @@ export interface PublicScanResponse {
     currancy?: string;
     is_active?: boolean;
     created_at?: string;
+    img_url_1?: string | null;
   }>;
   currency_info?: CurrencyInfo;
 }

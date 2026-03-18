@@ -45,10 +45,10 @@ export default function DashboardLoginPage() {
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-teal-500/10" />
         <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-teal-500/8" />
         <div className="relative text-center">
-          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-teal-500/20 ring-1 ring-teal-400/30">
-            <span className="text-4xl font-black text-teal-400">T</span>
+          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-teal-500/20 ring-1 ring-teal-400/30 overflow-hidden">
+            <img src="/logos/3.svg" alt="Qrixa" className="h-14 w-14 object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Tably Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white">Qrixa Dashboard</h1>
           <p className="mt-3 text-base text-slate-400 max-w-xs mx-auto leading-relaxed">
             Manage your orders, menu and branches from one place.
           </p>
@@ -72,10 +72,10 @@ export default function DashboardLoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 flex flex-col items-center lg:hidden">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-600 text-white text-2xl font-black shadow-lg shadow-teal-600/30">
-              T
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-600/20 ring-1 ring-teal-400/30 overflow-hidden">
+              <img src="/logos/3.svg" alt="Qrixa" className="h-10 w-10 object-contain" />
             </div>
-            <p className="mt-3 text-xl font-bold text-slate-800">Tably</p>
+            <p className="mt-3 text-xl font-bold text-slate-800">Qrixa</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">

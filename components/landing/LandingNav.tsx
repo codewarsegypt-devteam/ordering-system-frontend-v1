@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { UtensilsCrossed, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
@@ -29,16 +29,18 @@ export function LandingNav() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-bold text-zinc-900">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-md"
-            style={{ backgroundColor: "var(--system-green)" }}
-          >
-            <UtensilsCrossed className="h-4.5 w-4.5" />
-          </span>
-          <span className="text-lg tracking-tight">Qurixa</span>
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 font-bold text-zinc-900"
+        >
+          <img
+            src="/logos/4.svg"
+            alt="Qrixa"
+            className="h-9 w-20 object-contain"
+          />
+          {/* <span className="text-lg tracking-tight">Qrixa</span> */}
         </Link>
 
         {/* Desktop links */}
@@ -75,7 +77,11 @@ export function LandingNav() {
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
         >
-          {open ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
+          {open ? (
+            <X className="h-4.5 w-4.5" />
+          ) : (
+            <Menu className="h-4.5 w-4.5" />
+          )}
         </button>
       </div>
 

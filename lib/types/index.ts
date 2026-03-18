@@ -62,6 +62,8 @@ export interface PublicMenuItem {
   category_id: string;
   name_ar: string;
   name_en: string;
+  description_ar?: string | null;
+  description_en?: string | null;
   base_price: number;
   display_price?: number;
   status: string;

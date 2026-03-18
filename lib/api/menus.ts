@@ -8,6 +8,7 @@ export interface MenuDto {
   currency?: string;
   is_active: boolean;
   created_at?: string;
+  img_url_1?: string | null;
 }
 
 export interface CategoryDto {
@@ -49,7 +50,7 @@ export async function updateMenu(
     name_en?: string;
     currency?: string;
     is_active?: boolean;
-  }
+  },
 ): Promise<MenuDto> {
   const payload: Record<string, unknown> = {};
   if (body.name_ar !== undefined) payload.name_ar = body.name_ar;
@@ -64,9 +65,42 @@ export async function deleteMenu(menuId: string): Promise<void> {
   await apiClient.delete(`/menus/${menuId}`);
 }
 
-export async function fetchMenuCategories(menuId: string): Promise<CategoryDto[]> {
+const MENU_IMAGE_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/**
+ * Upload or replace the menu cover image.
+ * Backend: POST /menus/:menuId/image, multipart/form-data, field name "image".
+ */
+export async function uploadMenuImage(
+  menuId: string,
+  file: File,
+): Promise<MenuDto> {
+  if (file.size > MENU_IMAGE_MAX_BYTES) {
+    throw new Error("Image must be 5 MB or smaller.");
+  }
+  const form = new FormData();
+  form.append("image", file);
+  const { data } = await apiClient.post<MenuDto>(
+    `/menus/${menuId}/image`,
+    form,
+  );
+  return data;
+}
+
+/**
+ * Remove the menu cover image (clears menue.img_url_1).
+ * Backend: DELETE /menus/:menuId/image.
+ */
+export async function deleteMenuImage(menuId: string): Promise<MenuDto> {
+  const { data } = await apiClient.delete<MenuDto>(`/menus/${menuId}/image`);
+  return data;
+}
+
+export async function fetchMenuCategories(
+  menuId: string,
+): Promise<CategoryDto[]> {
   const { data } = await apiClient.get<CategoryDto[]>(
-    `/menus/${menuId}/categories`
+    `/menus/${menuId}/categories`,
   );
   return data;
 }
@@ -81,19 +115,21 @@ export async function createCategory(
     sort_order?: number;
     img_url_1?: string | null;
     is_active?: boolean;
-  }
+  },
 ): Promise<CategoryDto> {
   const { data } = await apiClient.post<CategoryDto>(
     `/menus/${menuId}/categories`,
-    body
+    body,
   );
   return data;
 }
 
-export async function reorderCategories(items: { category_id: string; sort_order: number }[]): Promise<{ ok: boolean }> {
+export async function reorderCategories(
+  items: { category_id: string; sort_order: number }[],
+): Promise<{ ok: boolean }> {
   const { data } = await apiClient.patch<{ ok: boolean }>(
     "/categories/reorder",
-    { items }
+    { items },
   );
   return data;
 }
@@ -108,11 +144,11 @@ export async function updateCategory(
     sort_order?: number;
     img_url_1?: string | null;
     is_active?: boolean;
-  }
+  },
 ): Promise<CategoryDto> {
   const { data } = await apiClient.patch<CategoryDto>(
     `/categories/${categoryId}`,
-    body
+    body,
   );
   return data;
 }

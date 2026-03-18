@@ -1,12 +1,16 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts";
+import { useLiveOrdersOptional } from "@/contexts/LiveOrdersContext";
+import {
+  getDefaultOrdersFilters,
+  type OrdersFilterState,
+} from "@/lib/orders-filters";
 import { fetchBranches, fetchOrders, exportOrdersExcel, getApiError, updateOrderStatus } from "@/lib/api";
 import type { OrderStatus } from "@/lib/types";
-import { useLiveOrdersPolling } from "@/hooks/useLiveOrdersPolling";
 import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import {
   CalendarRange,
@@ -53,40 +57,6 @@ const SORT_OPTIONS = [
 ] as const;
 
 type DatePreset = "live" | "today" | "last24h" | "last7d";
-
-type OrdersFilterState = {
-  q: string;
-  branch_id: string;
-  table_id: string;
-  table_number: string;
-  from: string;
-  to: string;
-  min_total: string;
-  max_total: string;
-  status: OrderStatus[];
-  sort_by: string;
-  sort_dir: "asc" | "desc";
-  page: number;
-  limit: number;
-};
-
-function getDefaultFilters(): OrdersFilterState {
-  return {
-    q: "",
-    branch_id: "",
-    table_id: "",
-    table_number: "",
-    from: "",
-    to: "",
-    min_total: "",
-    max_total: "",
-    status: [],
-    sort_by: "created_at",
-    sort_dir: "desc",
-    page: 1,
-    limit: 20,
-  };
-}
 
 function formatDateTimeLocal(value: Date) {
   const year = value.getFullYear();
@@ -147,13 +117,17 @@ export default function DashboardOrdersPage() {
   const { user } = useAuth();
   const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<OrdersFilterState>(getDefaultFilters);
-  const [newOrderToast, setNewOrderToast] = useState<{ order_number: string } | null>(null);
+  const [filters, setFilters] = useState<OrdersFilterState>(getDefaultOrdersFilters);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const liveOrders = useLiveOrdersOptional();
 
   const isOwner = user?.role === "owner";
+
+  useEffect(() => {
+    if (liveOrders) liveOrders.setOrdersFilters(filters);
+  }, [filters, liveOrders]);
 
   const { data: branches } = useQuery({
     queryKey: ["branches"],
@@ -184,25 +158,6 @@ export default function DashboardOrdersPage() {
       }),
     enabled: !!user?.merchant_id,
     placeholderData: (previousData) => previousData,
-  });
-
-  // Live polling: merge /orders/updates deltas into the same React Query cache.
-  const statusFilterSet = useMemo(
-    () => (filters.status.length ? new Set(filters.status) : null),
-    [filters.status],
-  );
-
-  const { isPolling, error: pollingError } = useLiveOrdersPolling({
-    queryKey: ["orders", user?.merchant_id, user?.branch_id, filters],
-    initialData: data,
-    branchId: activeBranchId,
-    enabled: !!user?.merchant_id,
-    intervalMs: 3000,
-    filterFn: (order) => {
-      if (activeBranchId && String(order.branch_id) !== activeBranchId) return false;
-      if (statusFilterSet && !statusFilterSet.has(order.status)) return false;
-      return true;
-    },
   });
 
   const updateStatus = useMutation({
@@ -238,7 +193,7 @@ export default function DashboardOrdersPage() {
   };
 
   const resetFilters = () => {
-    setFilters(getDefaultFilters());
+    setFilters(getDefaultOrdersFilters());
   };
 
   const orders = data?.data ?? [];
@@ -348,18 +303,6 @@ export default function DashboardOrdersPage() {
           {exportError}
         </div>
       )}
-      {newOrderToast && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-3 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 shadow-lg">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
-            <CheckCircle2 className="h-4.5 w-4.5" />
-          </div>
-          <div>
-            <p className="font-semibold text-teal-800">New order</p>
-            <p className="text-sm font-mono text-teal-600">#{newOrderToast.order_number}</p>
-          </div>
-        </div>
-      )}
-
       <div className="page-header">
         <div>
           <h1 className="page-title">Orders</h1>
@@ -369,10 +312,9 @@ export default function DashboardOrdersPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {(isFetching || isPolling) && (
+          {isFetching && (
             <div className="inline-flex items-center gap-2 text-sm text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-              Updating…
             </div>
           )}
           <button

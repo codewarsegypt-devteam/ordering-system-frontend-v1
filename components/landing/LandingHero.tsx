@@ -142,7 +142,7 @@ export function LandingHero() {
             <div className="flex items-center justify-between rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-zinc-900">
-                  Qurixa Dashboard
+                  Qrixa Dashboard
                 </p>
                 <p className="text-xs text-zinc-500">
                   Live restaurant operations

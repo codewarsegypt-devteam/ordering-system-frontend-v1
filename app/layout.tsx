@@ -15,18 +15,27 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tably - Smart Restaurant Ordering",
-    template: "%s | Tably",
+    default: "Qrixa - Smart Restaurant Ordering",
+    template: "%s | Qrixa",
   },
   description:
     "Manage your restaurant menu, orders, branches and team from one dashboard. QR-based ordering for customers.",
   keywords: ["restaurant", "ordering", "menu", "QR code", "dashboard", "POS"],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
-    title: "Tably - Smart Restaurant Ordering",
+    title: "Qrixa - Smart Restaurant Ordering",
     description:
       "Manage your restaurant menu, orders, branches and team from one dashboard.",
     type: "website",
-    siteName: "Tably",
+    siteName: "Qrixa",
   },
 };
 

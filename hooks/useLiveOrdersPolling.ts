@@ -6,17 +6,23 @@ import type { Order, OrdersListResponse } from "@/lib/types";
 import { fetchOrderUpdates } from "@/lib/api/orders";
 import { mergeOrdersById, getOrderTimestamp } from "@/lib/utils/orders.utils";
 
+const NO_UPDATES_PAUSE_MS = 3 * 60 * 1000; // 3 minutes
+
 interface UseLiveOrdersPollingOptions {
   queryKey: unknown[];
   initialData?: OrdersListResponse;
   branchId?: string;
   enabled?: boolean;
   intervalMs?: number;
+  noUpdatesPauseMs?: number;
+  onAutoPause?: () => void;
+  onNewOrders?: (orders: Order[]) => void;
   filterFn?: (order: Order) => boolean;
 }
 
 interface UseLiveOrdersPollingResult {
   isPolling: boolean;
+  autoPaused: boolean;
   lastCursor: string | null;
   error: string | null;
   refreshNow: () => void;
@@ -31,6 +37,9 @@ export function useLiveOrdersPolling(
     branchId,
     enabled = true,
     intervalMs = 3000,
+    noUpdatesPauseMs = NO_UPDATES_PAUSE_MS,
+    onAutoPause,
+    onNewOrders,
     filterFn,
   } = options;
 
@@ -38,10 +47,12 @@ export function useLiveOrdersPolling(
 
   const [lastCursor, setLastCursor] = useState<string | null>(null);
   const [isPolling, setIsPolling] = useState(false);
+  const [autoPaused, setAutoPaused] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const inFlightRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastUpdateAtRef = useRef<number>(Date.now());
 
   // Derive initial cursor from initialData (only once).
   useEffect(() => {
@@ -81,6 +92,8 @@ export function useLiveOrdersPolling(
       const incoming = filterFn ? res.items.filter(filterFn) : res.items;
 
       if (incoming.length) {
+        lastUpdateAtRef.current = Date.now();
+        onNewOrders?.(incoming);
         queryClient.setQueryData<OrdersListResponse | undefined>(
           queryKey,
           (old) => {
@@ -97,6 +110,11 @@ export function useLiveOrdersPolling(
             };
           }
         );
+      } else {
+        if (Date.now() - lastUpdateAtRef.current >= noUpdatesPauseMs) {
+          setAutoPaused(true);
+          onAutoPause?.();
+        }
       }
 
       let nextCursor = res.server_time || lastCursor;
@@ -120,7 +138,7 @@ export function useLiveOrdersPolling(
       inFlightRef.current = false;
       setIsPolling(false);
     }
-  }, [enabled, lastCursor, branchId, filterFn, queryClient, queryKey]);
+  }, [enabled, lastCursor, branchId, filterFn, queryClient, queryKey, noUpdatesPauseMs, onAutoPause, onNewOrders]);
 
   // Visibility-based resume.
   useEffect(() => {
@@ -138,6 +156,8 @@ export function useLiveOrdersPolling(
   useEffect(() => {
     if (!enabled || !lastCursor) return;
 
+    setAutoPaused(false);
+    lastUpdateAtRef.current = Date.now();
     let cancelled = false;
 
     const loop = async () => {
@@ -163,6 +183,7 @@ export function useLiveOrdersPolling(
 
   return {
     isPolling,
+    autoPaused,
     lastCursor,
     error,
     refreshNow,
