@@ -296,7 +296,7 @@ function CreateMenuForm({
     name_en: string;
     currency: string;
     is_active: boolean;
-  }>({ defaultValues: { currency: "EGP", is_active: true } });
+  }>({ defaultValues: { currency: "", is_active: true } });
 
   return (
     <form
@@ -304,7 +304,7 @@ function CreateMenuForm({
         onSubmit({
           name_ar: d.name_ar.trim(),
           name_en: d.name_en.trim(),
-          currency: d.currency || "EGP",
+          currency: d.currency || "",
           is_active: d.is_active,
         }),
       )}
@@ -327,14 +327,14 @@ function CreateMenuForm({
             {...register("name_ar")}
           />
         </div>
-        <div>
+        {/* <div>
           <label className="label">Currency</label>
           <input
             className="input-base"
             placeholder="EGP"
             {...register("currency")}
           />
-        </div>
+        </div> */}
         <div className="flex items-center gap-2.5 sm:col-span-3">
           <input
             type="checkbox"

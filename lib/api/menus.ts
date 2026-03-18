@@ -37,7 +37,7 @@ export async function createMenu(body: {
   const { data } = await apiClient.post<MenuDto>("/menus", {
     name_ar: body.name_ar,
     name_en: body.name_en,
-    currancy: body.currency ?? "EGP",
+    currancy: body.currency ?? "",
     is_active: body.is_active,
   });
   return data;
