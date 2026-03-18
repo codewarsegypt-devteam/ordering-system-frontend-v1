@@ -4,7 +4,7 @@ import type { TableDto } from "./branches";
 export async function updateTable(
   tableId: string,
   body: {
-    number?: string | number;
+    number?: string;
     seats?: number;
     is_active?: boolean;
     qr_code?: string | null;

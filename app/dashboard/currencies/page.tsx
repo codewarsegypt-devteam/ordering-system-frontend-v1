@@ -154,9 +154,16 @@ export default function CurrenciesPage() {
   const displayCurrencies = setup?.display_currencies ?? [];
   const addedIds = new Set(displayCurrencies.map((d) => d.currency_id));
   const baseCurrencyId = setup?.base_currency?.id;
-  const availableToAdd = allCurrencies.filter(
-    (c) => !addedIds.has(c.id) && c.id !== baseCurrencyId
-  );
+  const availableToAdd = allCurrencies.filter((c) => !addedIds.has(c.id));
+
+  React.useEffect(() => {
+    const selectedId = Number(addForm.currency_id || 0);
+    if (!selectedId || !baseCurrencyId) return;
+
+    if (selectedId === baseCurrencyId && !addForm.rate_from_base) {
+      setAddForm((f) => ({ ...f, rate_from_base: "1" }));
+    }
+  }, [addForm.currency_id, addForm.rate_from_base, baseCurrencyId]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 py-8">
@@ -454,10 +461,18 @@ export default function CurrenciesPage() {
               />
               {setup?.base_currency && addForm.currency_id && (
                 <p className="mt-1 text-xs text-gray-400">
-                  How many{" "}
-                  {availableToAdd.find((c) => c.id === Number(addForm.currency_id))
-                    ?.code ?? "?"}{" "}
-                  = 1 {setup.base_currency.code}
+                  {Number(addForm.currency_id) === baseCurrencyId ? (
+                    <>
+                      Same as base currency — rate is usually <strong>1</strong>.
+                    </>
+                  ) : (
+                    <>
+                      How many{" "}
+                      {availableToAdd.find((c) => c.id === Number(addForm.currency_id))
+                        ?.code ?? "?"}{" "}
+                      = 1 {setup.base_currency.code}
+                    </>
+                  )}
                 </p>
               )}
             </div>

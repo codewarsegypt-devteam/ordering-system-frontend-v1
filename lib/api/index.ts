@@ -73,9 +73,12 @@ export * from "./currencies";
 // Table services (call waiter / request bill)
 export {
   listTableServices,
+  pollTableServiceUpdates,
   updateTableServiceStatus,
   type TableServiceRow,
   type TableServiceStatus,
   type TableServicesListResponse,
   type TableServicesListParams,
+  type TableServicesPollParams,
+  type TableServicesPollResponse,
 } from "./tableServices";

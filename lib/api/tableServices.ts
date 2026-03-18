@@ -40,6 +40,18 @@ export interface TableServicesListParams {
   limit?: number;
 }
 
+export interface TableServicesPollParams {
+  after: string; // ISO timestamp
+  branch_id?: string;
+  limit?: number;
+}
+
+export interface TableServicesPollResponse {
+  items: TableServiceRow[];
+  server_time: string;
+  count: number;
+}
+
 /**
  * قائمة طلبات الخدمة (للستاف) مع فلترة.
  * GET /table-services?branch_id=&status=&from=&to=&table_id=&page=&limit=
@@ -53,6 +65,24 @@ export async function listTableServices(
   });
   const { data } = await apiClient.get<TableServicesListResponse>(
     `/table-services?${search.toString()}`
+  );
+  return data;
+}
+
+/**
+ * Delta polling endpoint. Returns only rows where updated_at > after.
+ * GET /table-services/updates?after=<ISO>&branch_id=<optional>&limit=<optional>
+ */
+export async function pollTableServiceUpdates(
+  params: TableServicesPollParams,
+): Promise<TableServicesPollResponse> {
+  const search = new URLSearchParams();
+  search.set("after", params.after);
+  if (params.branch_id) search.set("branch_id", params.branch_id);
+  if (params.limit != null) search.set("limit", String(params.limit));
+
+  const { data } = await apiClient.get<TableServicesPollResponse>(
+    `/table-services/updates?${search.toString()}`
   );
   return data;
 }

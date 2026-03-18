@@ -2,8 +2,10 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts";
+import { useLiveOrdersOptional } from "@/contexts/LiveOrdersContext";
 import {
   listTableServices,
+  pollTableServiceUpdates,
   updateTableServiceStatus,
   getApiError,
   fetchBranches,
@@ -26,7 +28,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const TYPE_LABELS: Record<string, string> = {
   call_waiter: "Call waiter",
@@ -171,10 +173,13 @@ function StatusSelect({
 
 export default function TableServicesPage() {
   const { user } = useAuth();
+  const liveOrders = useLiveOrdersOptional();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<TableServicesFilterState>(getDefaultFilters);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [pollAfterIso, setPollAfterIso] = useState<string>(() => new Date().toISOString());
+  const [polledById, setPolledById] = useState<Record<string, TableServiceRow>>({});
 
   const isOwner = user?.role === "owner";
   const activeBranchId =
@@ -201,6 +206,93 @@ export default function TableServicesPage() {
     enabled: !!user?.merchant_id,
     placeholderData: (previousData) => previousData,
   });
+
+  const requests = data?.data ?? [];
+
+  const pollingEnabled =
+    !!user?.merchant_id &&
+    !!liveOrders?.livePollingEnabled &&
+    filters.page === 1 &&
+    !filters.from &&
+    !filters.to &&
+    !isLoading &&
+    !error;
+
+  // Reset delta polling state whenever filters change (avoid mixing results across filter sets)
+  useEffect(() => {
+    setPolledById({});
+    setPollAfterIso(new Date().toISOString());
+  }, [filters, user?.merchant_id, user?.branch_id]);
+
+  // When list data changes, move the cursor forward so polling starts after latest known update.
+  useEffect(() => {
+    if (!pollingEnabled) return;
+    if (!requests.length) return;
+    const maxTs = requests.reduce((acc: string, row: TableServiceRow) => {
+      const ts = row.updated_at ?? row.created_at;
+      return ts && ts > acc ? ts : acc;
+    }, pollAfterIso);
+    if (maxTs !== pollAfterIso) setPollAfterIso(maxTs);
+  }, [pollingEnabled, pollAfterIso, requests]);
+
+  const { data: updatesResp } = useQuery({
+    queryKey: ["tableServicesUpdates", user?.merchant_id, activeBranchId, pollAfterIso],
+    queryFn: () =>
+      pollTableServiceUpdates({
+        after: pollAfterIso,
+        branch_id: activeBranchId,
+        limit: 50,
+      }),
+    enabled: pollingEnabled && !!pollAfterIso,
+    refetchInterval: 3000,
+    refetchIntervalInBackground: true,
+  });
+
+  useEffect(() => {
+    if (!pollingEnabled) return;
+    if (!updatesResp) return;
+
+    const items = updatesResp.items ?? [];
+    if (items.length === 0) {
+      setPollAfterIso(updatesResp.server_time ?? new Date().toISOString());
+      return;
+    }
+
+    // Advance cursor to newest updated_at (or created_at fallback)
+    const newest = items.reduce((acc: string, row: TableServiceRow) => {
+      const ts = row.updated_at ?? row.created_at;
+      return ts && ts > acc ? ts : acc;
+    }, pollAfterIso);
+    setPollAfterIso(newest);
+
+    setPolledById((prev) => {
+      const next = { ...prev };
+      for (const row of items) next[row.id] = row;
+      return next;
+    });
+  }, [pollAfterIso, pollingEnabled, updatesResp]);
+
+  const mergedRequests = useMemo(() => {
+    if (!pollingEnabled) return requests;
+
+    const matches = (row: TableServiceRow) => {
+      if (activeBranchId && String(row.branch_id) !== String(activeBranchId)) return false;
+      if (filters.table_id && String(row.table_id) !== String(filters.table_id)) return false;
+      if (filters.status.length && !filters.status.includes(row.status)) return false;
+      return true;
+    };
+
+    const baseById = new Map(requests.map((r) => [r.id, r]));
+    for (const row of Object.values(polledById)) {
+      if (!matches(row)) continue;
+      baseById.set(row.id, row);
+    }
+    return [...baseById.values()].sort((a, b) => {
+      const at = a.updated_at ?? a.created_at;
+      const bt = b.updated_at ?? b.created_at;
+      return bt.localeCompare(at);
+    });
+  }, [activeBranchId, filters.status, filters.table_id, polledById, pollingEnabled, requests]);
 
   const updateStatusMut = useMutation({
     mutationFn: ({ id, status }: { id: string; status: TableServiceStatus }) =>
@@ -256,7 +348,6 @@ export default function TableServicesPage() {
     }));
   };
 
-  const requests = data?.data ?? [];
   const pagination = data?.pagination;
   const totalPages = pagination?.total_pages ?? 1;
   const currentPage = pagination?.page ?? filters.page;
@@ -473,7 +564,7 @@ export default function TableServicesPage() {
       ) : (
         <div className="card overflow-hidden">
           <div className="flex flex-col gap-4 p-5">
-            {requests.map((row) => (
+            {mergedRequests.map((row) => (
             <div
               key={row.id}
               className="flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-shadow hover:shadow-md"

@@ -343,7 +343,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  <span className="hidden sm:inline">Start live orders</span>
+                  <span className="hidden sm:inline">Start live updates</span>
                 </>
               )}
             </button>

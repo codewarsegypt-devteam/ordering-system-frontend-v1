@@ -65,7 +65,11 @@ export default function BranchTablesPage() {
   const [editingTableId, setEditingTableId] = useState<string | null>(null);
   const [qrTableId, setQrTableId] = useState<string | null>(null);
 
-  const { data: branches, isLoading: branchesLoading, error: branchesError } = useQuery({
+  const {
+    data: branches,
+    isLoading: branchesLoading,
+    error: branchesError,
+  } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
     enabled: !!user?.merchant_id && user?.role === "owner",
@@ -73,31 +77,48 @@ export default function BranchTablesPage() {
 
   const branch = branches?.find((item) => String(item.id) === branchId);
 
-  const { data: tables, isLoading: tablesLoading, error: tablesError } = useQuery({
+  const {
+    data: tables,
+    isLoading: tablesLoading,
+    error: tablesError,
+  } = useQuery({
     queryKey: ["branchTables", branchId],
     queryFn: () => fetchBranchTables(branchId),
     enabled: !!branchId && !!branch,
   });
-
+  console.log(tables);
   const { data: qrData } = useQuery({
     queryKey: ["tableQr", qrTableId],
     queryFn: () => fetchTableQr(qrTableId!),
     enabled: !!qrTableId,
   });
 
-  const setBranchesCache = (updater: (current: BranchDto[] | undefined) => BranchDto[] | undefined) => {
+  const setBranchesCache = (
+    updater: (current: BranchDto[] | undefined) => BranchDto[] | undefined,
+  ) => {
     queryClient.setQueryData<BranchDto[]>(["branches"], updater);
   };
 
-  const setTablesCache = (updater: (current: TableDto[] | undefined) => TableDto[] | undefined) => {
+  const setTablesCache = (
+    updater: (current: TableDto[] | undefined) => TableDto[] | undefined,
+  ) => {
     queryClient.setQueryData<TableDto[]>(["branchTables", branchId], updater);
   };
 
   const updateBranchMut = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateBranch>[1] }) => updateBranch(id, body),
+    mutationFn: ({
+      id,
+      body,
+    }: {
+      id: string;
+      body: Parameters<typeof updateBranch>[1];
+    }) => updateBranch(id, body),
     onSuccess: (updatedBranch) => {
-      setBranchesCache((current) =>
-        current?.map((item) => (String(item.id) === String(updatedBranch.id) ? updatedBranch : item)) ?? current
+      setBranchesCache(
+        (current) =>
+          current?.map((item) =>
+            String(item.id) === String(updatedBranch.id) ? updatedBranch : item,
+          ) ?? current,
       );
       setEditingBranch(false);
       queryClient.invalidateQueries({ queryKey: ["branches"] });
@@ -109,8 +130,14 @@ export default function BranchTablesPage() {
   const deleteBranchMut = useMutation({
     mutationFn: deleteBranch,
     onSuccess: (_, deletedId) => {
-      setBranchesCache((current) => current?.filter((item) => String(item.id) !== String(deletedId)) ?? current);
-      queryClient.removeQueries({ queryKey: ["branchTables", String(deletedId)] });
+      setBranchesCache(
+        (current) =>
+          current?.filter((item) => String(item.id) !== String(deletedId)) ??
+          current,
+      );
+      queryClient.removeQueries({
+        queryKey: ["branchTables", String(deletedId)],
+      });
       toast.success("Branch deleted.");
       router.push("/dashboard/branches");
     },
@@ -124,14 +151,16 @@ export default function BranchTablesPage() {
     }: {
       branchId: string;
       body: {
-        number: string | number;
+        number: string;
         seats?: number;
         is_active?: boolean;
         qr_code?: string | null;
       };
     }) => createTable(branchId, { ...body, is_active: true }),
     onSuccess: (createdTable) => {
-      setTablesCache((current) => (current ? [...current, createdTable] : [createdTable]));
+      setTablesCache((current) =>
+        current ? [...current, createdTable] : [createdTable],
+      );
       setAddingTable(false);
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
       toast.success("Table created.");
@@ -146,15 +175,18 @@ export default function BranchTablesPage() {
     }: {
       tableId: string;
       body: {
-        number?: string | number;
+        number?: string;
         seats?: number;
         is_active?: boolean;
         qr_code?: string | null;
       };
     }) => updateTable(tableId, body),
     onSuccess: (updatedTable) => {
-      setTablesCache((current) =>
-        current?.map((item) => (String(item.id) === String(updatedTable.id) ? updatedTable : item)) ?? current
+      setTablesCache(
+        (current) =>
+          current?.map((item) =>
+            String(item.id) === String(updatedTable.id) ? updatedTable : item,
+          ) ?? current,
       );
       setEditingTableId(null);
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
@@ -166,9 +198,17 @@ export default function BranchTablesPage() {
   const deleteTableMut = useMutation({
     mutationFn: deleteTable,
     onSuccess: (_, deletedId) => {
-      setTablesCache((current) => current?.filter((item) => String(item.id) !== String(deletedId)) ?? current);
-      setEditingTableId((current) => (String(current) === String(deletedId) ? null : current));
-      setQrTableId((current) => (String(current) === String(deletedId) ? null : current));
+      setTablesCache(
+        (current) =>
+          current?.filter((item) => String(item.id) !== String(deletedId)) ??
+          current,
+      );
+      setEditingTableId((current) =>
+        String(current) === String(deletedId) ? null : current,
+      );
+      setQrTableId((current) =>
+        String(current) === String(deletedId) ? null : current,
+      );
       queryClient.invalidateQueries({ queryKey: ["branchTables", branchId] });
       toast.success("Table deleted.");
     },
@@ -193,7 +233,9 @@ export default function BranchTablesPage() {
   }
 
   if (branchesError) {
-    return <div className="alert-error rounded-xl">{getApiError(branchesError)}</div>;
+    return (
+      <div className="alert-error rounded-xl">{getApiError(branchesError)}</div>
+    );
   }
 
   if (!branchId || !branch) {
@@ -226,7 +268,9 @@ export default function BranchTablesPage() {
               <MapPin className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{branch.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                {branch.name}
+              </h1>
               <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-teal-100">
                 {branch.address && (
                   <span className="flex items-center gap-1.5">
@@ -277,7 +321,9 @@ export default function BranchTablesPage() {
             branch={branch}
             isPending={updateBranchMut.isPending}
             onCancel={() => setEditingBranch(false)}
-            onSubmit={(body) => updateBranchMut.mutate({ id: String(branch.id), body })}
+            onSubmit={(body) =>
+              updateBranchMut.mutate({ id: String(branch.id), body })
+            }
           />
         </div>
       )}
@@ -291,13 +337,18 @@ export default function BranchTablesPage() {
             <div>
               <h2 className="text-lg font-semibold text-slate-800">Tables</h2>
               <p className="text-sm text-slate-500">
-                {tables?.length ?? 0} table{(tables?.length ?? 0) === 1 ? "" : "s"} in this branch
+                {tables?.length ?? 0} table
+                {(tables?.length ?? 0) === 1 ? "" : "s"} in this branch
               </p>
             </div>
           </div>
 
           {!addingTable && (
-            <button type="button" onClick={() => setAddingTable(true)} className="btn-primary">
+            <button
+              type="button"
+              onClick={() => setAddingTable(true)}
+              className="btn-primary"
+            >
               <Plus className="h-4 w-4" /> Add table
             </button>
           )}
@@ -327,7 +378,9 @@ export default function BranchTablesPage() {
           </div>
         ) : tablesError ? (
           <div className="px-6 py-8">
-            <div className="alert-error rounded-xl">{getApiError(tablesError)}</div>
+            <div className="alert-error rounded-xl">
+              {getApiError(tablesError)}
+            </div>
           </div>
         ) : !tables || tables.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -335,7 +388,9 @@ export default function BranchTablesPage() {
               <TableProperties className="h-8 w-8 text-slate-400" />
             </div>
             <p className="font-medium text-slate-700">No tables yet</p>
-            <p className="mt-1 text-sm text-slate-500">Add a table to generate QR codes for customers.</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Add a table to generate QR codes for customers.
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -350,7 +405,12 @@ export default function BranchTablesPage() {
                       table={table}
                       isPending={updateTableMut.isPending}
                       onCancel={() => setEditingTableId(null)}
-                      onSave={(body) => updateTableMut.mutate({ tableId: String(table.id), body })}
+                      onSave={(body) =>
+                        updateTableMut.mutate({
+                          tableId: String(table.id),
+                          body,
+                        })
+                      }
                     />
                   </div>
                 ) : (
@@ -360,9 +420,13 @@ export default function BranchTablesPage() {
                         #{table.number}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-800">Table {table.number}</p>
+                        <p className="font-semibold text-slate-800">
+                          Table {table.number}
+                        </p>
                         <p className="text-sm text-slate-500">
-                          {table.seats != null ? `${table.seats} seats` : "Seats not set"}
+                          {table.seats != null
+                            ? `${table.seats} seats`
+                            : "Seats not set"}
                         </p>
                       </div>
                       {table.is_active ? (
@@ -375,7 +439,13 @@ export default function BranchTablesPage() {
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
-                        onClick={() => setQrTableId((current) => (String(current) === String(table.id) ? null : String(table.id)))}
+                        onClick={() =>
+                          setQrTableId((current) =>
+                            String(current) === String(table.id)
+                              ? null
+                              : String(table.id),
+                          )
+                        }
                         className="rounded-lg p-2.5 text-system-green transition-colors hover:bg-teal-50"
                         title="View QR"
                       >
@@ -438,7 +508,10 @@ export default function BranchTablesPage() {
             <div className="px-6 py-8 text-center">
               {qrData.table_code && (
                 <p className="mb-4 text-sm text-slate-500">
-                  Code: <span className="font-mono font-semibold text-slate-700">{qrData.table_code}</span>
+                  Code:{" "}
+                  <span className="font-mono font-semibold text-slate-700">
+                    {qrData.table_code}
+                  </span>
                 </p>
               )}
 
@@ -510,8 +583,18 @@ function BranchEditForm({
   onCancel,
   isPending,
 }: {
-  branch: { name: string; address?: string | null; phone?: string | null; is_active: boolean };
-  onSubmit: (data: { name: string; address?: string | null; phone?: string | null; is_active?: boolean }) => void;
+  branch: {
+    name: string;
+    address?: string | null;
+    phone?: string | null;
+    is_active: boolean;
+  };
+  onSubmit: (data: {
+    name: string;
+    address?: string | null;
+    phone?: string | null;
+    is_active?: boolean;
+  }) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
@@ -532,21 +615,33 @@ function BranchEditForm({
           address: data.address || null,
           phone: data.phone || null,
           is_active: data.is_active,
-        })
+        }),
       )}
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label">Branch name *</label>
-          <input className="input-base" placeholder="e.g. Downtown" {...register("name", { required: true })} />
+          <input
+            className="input-base"
+            placeholder="e.g. Downtown"
+            {...register("name", { required: true })}
+          />
         </div>
         <div>
           <label className="label">Phone</label>
-          <input className="input-base" placeholder="+20 100 000 0000" {...register("phone")} />
+          <input
+            className="input-base"
+            placeholder="+20 100 000 0000"
+            {...register("phone")}
+          />
         </div>
         <div className="sm:col-span-2">
           <label className="label">Address</label>
-          <input className="input-base" placeholder="Street, City" {...register("address")} />
+          <input
+            className="input-base"
+            placeholder="Street, City"
+            {...register("address")}
+          />
         </div>
         <div className="flex items-center gap-2.5 sm:col-span-2">
           <input
@@ -555,7 +650,10 @@ function BranchEditForm({
             className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
             {...register("is_active")}
           />
-          <label htmlFor="branch_active_edit" className="text-sm font-medium text-slate-700">
+          <label
+            htmlFor="branch_active_edit"
+            className="text-sm font-medium text-slate-700"
+          >
             Active
           </label>
         </div>
@@ -563,7 +661,11 @@ function BranchEditForm({
 
       <div className="mt-5 flex gap-2">
         <button type="submit" disabled={isPending} className="btn-primary">
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          {isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Check className="h-4 w-4" />
+          )}
           Save changes
         </button>
         <button type="button" onClick={onCancel} className="btn-secondary">
@@ -601,7 +703,7 @@ function AddTableForm({
       <div className="w-28">
         <label className="label text-xs">Table # *</label>
         <input
-          type="number"
+          type="text"
           className="input-base"
           placeholder="e.g. 5 or A1"
           {...register("number", { required: true })}
@@ -609,14 +711,32 @@ function AddTableForm({
       </div>
       <div className="w-28">
         <label className="label text-xs">Seats</label>
-        <input type="number" min={1} className="input-base" placeholder="e.g. 4" {...register("seats")} />
+        <input
+          type="number"
+          min={1}
+          className="input-base"
+          placeholder="e.g. 4"
+          {...register("seats")}
+        />
       </div>
       <div className="flex gap-2 pb-0.5">
-        <button type="submit" disabled={isPending} className="btn-primary btn-sm">
-          {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+        <button
+          type="submit"
+          disabled={isPending}
+          className="btn-primary btn-sm"
+        >
+          {isPending ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Check className="h-3.5 w-3.5" />
+          )}
           Add
         </button>
-        <button type="button" onClick={onCancel} className="btn-secondary btn-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-secondary btn-sm"
+        >
           Cancel
         </button>
       </div>
@@ -630,8 +750,12 @@ function TableEditForm({
   onCancel,
   isPending,
 }: {
-  table: { id: string; number: string | number; seats?: number; is_active: boolean };
-  onSave: (body: { number?: string | number; seats?: number; is_active?: boolean }) => void;
+  table: { id: string; number: string; seats?: number; is_active: boolean };
+  onSave: (body: {
+    number?: string;
+    seats?: number;
+    is_active?: boolean;
+  }) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
@@ -650,14 +774,14 @@ function TableEditForm({
           number: data.number,
           seats: data.seats ? parseInt(data.seats, 10) : undefined,
           is_active: data.is_active,
-        })
+        }),
       )}
       className="flex flex-wrap items-end gap-3"
     >
       <div className="w-28">
         <label className="label text-xs">Table #</label>
         <input
-          type="number"
+          type="text"
           className="input-base"
           placeholder="e.g. 5 or A1"
           {...register("number", { required: true })}
@@ -665,7 +789,12 @@ function TableEditForm({
       </div>
       <div className="w-28">
         <label className="label text-xs">Seats</label>
-        <input type="number" min={1} className="input-base" {...register("seats")} />
+        <input
+          type="number"
+          min={1}
+          className="input-base"
+          {...register("seats")}
+        />
       </div>
       <div className="flex items-center gap-2 pb-2.5">
         <input
@@ -676,11 +805,23 @@ function TableEditForm({
         <span className="text-sm text-slate-700">Active</span>
       </div>
       <div className="flex gap-2 pb-0.5">
-        <button type="submit" disabled={isPending} className="btn-primary btn-sm">
-          {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+        <button
+          type="submit"
+          disabled={isPending}
+          className="btn-primary btn-sm"
+        >
+          {isPending ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Check className="h-3.5 w-3.5" />
+          )}
           Save
         </button>
-        <button type="button" onClick={onCancel} className="btn-secondary btn-sm">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-secondary btn-sm"
+        >
           Cancel
         </button>
       </div>
