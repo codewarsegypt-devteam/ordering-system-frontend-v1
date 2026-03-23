@@ -9,13 +9,7 @@ import { useCurrency } from "@/contexts";
 import Image from "next/image";
 import { UtensilsCrossed, ChevronLeft, UserCircle2, Receipt } from "lucide-react";
 import { toast } from "sonner";
-
-/** Resolve the two brand hex colors with orange fallbacks. */
-function useBrandColors(c1: string | null | undefined, c2: string | null | undefined) {
-  const primary = c1 || "#f97316";   // orange-500
-  const secondary = c2 || c1 || "#ea580c"; // orange-600
-  return { primary, secondary };
-}
+import { useScanBrandColors } from "@/lib/hooks/useScanBrandColors";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
@@ -49,10 +43,7 @@ export default function MenuPage() {
     }
   }, [scanData, token, router, initFromCurrencyInfo]);
 
-  const { primary, secondary } = useBrandColors(
-    scanData?.hexa_color_1,
-    scanData?.hexa_color_2,
-  );
+  const { primary, secondary } = useScanBrandColors(token, scanData);
 
   const sendTableService = async (type: "call_waiter" | "request_bill") => {
     if (!token || serviceCooldown) return;
@@ -148,11 +139,11 @@ export default function MenuPage() {
   const btnBorder = `${primary}35`;
 
   return (
-    <div className="min-h-screen pb-10" style={{ backgroundColor: `${primary}` }}>
+    <div className="min-h-screen pb-10 bg-white" >
       {/* Welcome header — brand gradient */}
       <div
         className="rounded-b-4xl px-6 pt-10 pb-12 text-white shadow-lg"
-        style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }}
+        style={{ background: `${primary}` }}
       >
         <div className="mx-auto max-w-lg">
           <div className="flex flex-col items-start gap-4">

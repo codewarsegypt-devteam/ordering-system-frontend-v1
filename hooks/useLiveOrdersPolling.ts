@@ -54,10 +54,21 @@ export function useLiveOrdersPolling(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastUpdateAtRef = useRef<number>(Date.now());
 
-  // Derive initial cursor from initialData (only once).
+  const queryKeySerialized = JSON.stringify(queryKey);
+
+  // New filters / list = new cursor baseline (avoid polling with a stale "after" timestamp).
+  useEffect(() => {
+    setLastCursor(null);
+  }, [queryKeySerialized]);
+
+  // Derive initial cursor from initialData once per query: max order time, or "now" if list is empty
+  // (otherwise lastCursor stays null and the polling loop never starts).
   useEffect(() => {
     if (!initialData || lastCursor) return;
-    if (!initialData.data.length) return;
+    if (initialData.data.length === 0) {
+      setLastCursor(new Date().toISOString());
+      return;
+    }
     const latest = initialData.data.reduce((latestSoFar, order) => {
       const ts = getOrderTimestamp(order);
       if (!latestSoFar) return ts;

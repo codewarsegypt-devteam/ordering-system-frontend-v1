@@ -4,13 +4,14 @@ import * as React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { fetchPublicScan, fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
+import { fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
 import { useCart, useCurrency } from "@/contexts";
 import { recomputeMenuPrices } from "@/lib/utils/currency.utils";
 import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { MenuItemCard } from "../MenuItemCard";
 import { CartDrawer } from "../CartDrawer";
+import { useScanBrandColors } from "@/lib/hooks/useScanBrandColors";
 
 export default function MenuByIdPage() {
   const params = useParams();
@@ -33,15 +34,8 @@ export default function MenuByIdPage() {
     enabled: !!id && !!token,
   });
 
-  // Pull brand colors from the scan response (served from React Query cache — no extra request).
-  const { data: scanData } = useQuery({
-    queryKey: ["publicScan", token],
-    queryFn: () => fetchPublicScan(token!),
-    enabled: !!token,
-    staleTime: 60_000,
-  });
-  const primary = scanData?.hexa_color_1 || "#f97316";     // orange-500 fallback
-  const secondary = scanData?.hexa_color_2 || scanData?.hexa_color_1 || "#ea580c";
+  // Brand colors: only from localStorage (saved on first /menu scan) — no second fetch here.
+  const { primary } = useScanBrandColors(token, undefined);
 
   // Init currency context from menu response if not yet done from scan
   React.useEffect(() => {
@@ -415,6 +409,7 @@ export default function MenuByIdPage() {
                       key={item.id}
                       item={item}
                       currency={currencySymbol}
+                      token={token}
                       merchantId={merchantId}
                       branchId={branchId}
                       tableId={tableId}

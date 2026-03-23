@@ -36,7 +36,7 @@ interface LiveOrdersContextValue extends LiveOrdersState {
 const LiveOrdersContext = createContext<LiveOrdersContextValue | null>(null);
 
 export function LiveOrdersProvider({ children }: { children: React.ReactNode }) {
-  const [livePollingEnabled, setLivePollingEnabled] = useState(false);
+  const [livePollingEnabled, setLivePollingEnabled] = useState(true);
   const [newOrderToast, setNewOrderToast] = useState<NewOrderToast | null>(null);
   const [ordersFilters, setOrdersFilters] = useState<OrdersFilterState>(
     getDefaultOrdersFilters

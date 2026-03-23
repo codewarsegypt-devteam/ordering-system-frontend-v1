@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Plus, Minus, X, Check } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  X,
+  Check,
+  ShoppingCart,
+  Smile,
+} from "lucide-react";
 import { useCart } from "@/contexts";
 import type {
   PublicMenuItem,
@@ -10,6 +17,7 @@ import type {
   PublicMenuModifierGroupRule,
   PublicMenuModifier,
 } from "@/lib/types";
+import { useScanBrandColors } from "@/lib/hooks/useScanBrandColors";
 
 interface MenuItemCardProps {
   item: PublicMenuItem;
@@ -17,6 +25,7 @@ interface MenuItemCardProps {
   merchantId: string;
   branchId: string | null;
   tableId: string | null;
+  token: string | null;
 }
 
 const GRADIENTS = [
@@ -28,11 +37,11 @@ const GRADIENTS = [
   "from-pink-400 to-rose-500",
 ];
 
-function avatarGradient(name: string) {
-  return GRADIENTS[name.charCodeAt(0) % GRADIENTS.length];
-}
+// function avatarGradient(name: string) {
+//   return GRADIENTS[name.charCodeAt(0) % GRADIENTS.length];
+// }
 
-export function MenuItemCard({ item, currency }: MenuItemCardProps) {
+export function MenuItemCard({ item, currency, token }: MenuItemCardProps) {
   const { addItem } = useCart();
 
   const [detailsOpen, setDetailsOpen] = React.useState(false);
@@ -55,11 +64,15 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
   const basePrice = variant
     ? (variant.display_price ?? variant.price)
     : (item.display_price ?? item.base_price);
-  const grad = avatarGradient(displayName);
+  // const grad = avatarGradient(displayName);
   const img1 = item.images?.img_url_1 ?? null;
   const img2 = item.images?.img_url_2 ?? null;
   const primaryImage = img1 ?? img2 ?? null;
   const hasTwoImages = Boolean(img1 && img2);
+
+  /** List card accent — deep red to match menu item card design */
+  const priceMain =
+    basePrice % 1 === 0 ? basePrice.toFixed(0) : basePrice.toFixed(2);  
 
   const selectedCountForGroup = (groupId: string) =>
     (modifierSelections[groupId] ?? []).reduce((s, x) => s + x.qty, 0);
@@ -150,64 +163,97 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
     setDetailsOpen(false);
     resetState();
   };
+  const { primary } = useScanBrandColors(token ?? undefined, undefined);
 
   return (
     <>
-      {/* ─── List card ─── */}
+      {/* ─── List card (horizontal: image ~40%, content with title/price row + actions) ─── */}
       <div
-        className="group flex cursor-pointer rounded-2xl items-center gap-3 border-b border-gray-100 bg-white px-1.5 py-3 transition-all last:border-b-0"
+        className="group flex cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
         onClick={() => setDetailsOpen(true)}
       >
-        {/* Avatar */}
+        {/* Image — left column, rounded on card edge only */}
         <div
-          className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-linear-to-br ${grad} flex items-center justify-center shadow-sm`}
+          className={`relative w-[40%] max-w-[168px] shrink-0 overflow-hidden rounded-l-2xl bg-[${primary}] min-h-[118px] sm:min-h-[128px]`}
+          style={{ backgroundColor: primary }}
         >
           {primaryImage ? (
             <Image
               src={primaryImage}
               alt={displayName}
-              width={72}
-              height={72}
-              className="h-full w-full object-cover"
-              sizes="72px"
+              width={336}
+              height={256}
+              className="h-full min-h-[118px] w-full object-cover sm:min-h-[128px]"
+              sizes="(max-width: 640px) 40vw, 168px"
             />
           ) : (
-            <span className="text-3xl font-bold text-white/75 select-none">
-              {displayName.charAt(0).toUpperCase()}
-            </span>
+            <div className="flex h-full min-h-[118px] items-center justify-center sm:min-h-[128px]">
+              <span className="text-4xl font-bold text-white/75 select-none sm:text-5xl">
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+            </div>
           )}
         </div>
 
-        {/* Info */}
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold leading-snug text-gray-900 line-clamp-2">
-            {nameEn}
-          </p>
-          {description && (
-            <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">
-              {description}
-            </p>
-          )}
-          <p className="mt-1.5 text-sm font-bold text-orange-500">
-            {basePrice.toFixed(2)}{" "}
-            <span className="text-xs font-medium text-gray-400">
-              {currency}
-            </span>
-          </p>
-        </div>
+        {/* Content */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-2 p-3 sm:p-4">
+          <div className="min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="line-clamp-2 text-left text-[15px] font-bold leading-snug text-gray-900 sm:text-base">
+                {nameEn}
+              </h3>
+              <p className="shrink-0 text-right leading-none">
+                <span
+                  className="text-base font-bold sm:text-lg"
+                  style={{ color: primary }}
+                >
+                  {priceMain}
+                </span>
+                <span
+                  className="ml-0.5 text-[11px] font-medium sm:text-xs"
+                  style={{ color: primary }}
+                >
+                  {currency}
+                </span>
+              </p>
+            </div>
+            {description ? (
+              <div className="mt-1.5 flex min-w-0 items-start gap-1.5">
+                <Smile
+                  className="mt-0.5 h-4 w-4 shrink-0 text-gray-400"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <p className="min-w-0 truncate text-sm text-[#666666]">
+                  {description}
+                </p>
+              </div>
+            ) : null}
+          </div>
 
-        {/* Add button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDetailsOpen(true);
-          }}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm transition-all hover:bg-orange-600 active:scale-90"
-          aria-label={`Add ${displayName}`}
-        >
-          <Plus className="h-5 w-5" />
-        </button>
+          <div
+            className="flex items-center gap-2 pt-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(true)}
+              className="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-gray-50 sm:px-4 sm:text-sm"
+              style={{ borderColor: primary, color: primary }}
+            >
+              View Options
+            </button>
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(true)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm transition-transform active:scale-95 sm:h-10 sm:w-10"
+              style={{ backgroundColor: primary }}
+              aria-label={`Add ${displayName} to cart`}
+            >
+              <ShoppingCart className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ─── Detail bottom sheet ─── */}
@@ -226,7 +272,8 @@ export function MenuItemCard({ item, currency }: MenuItemCardProps) {
           >
             {/* Image / banner — show both images from response when available */}
             <div
-              className={`relative w-full bg-linear-to-br ${grad} flex flex-col overflow-hidden ${hasTwoImages ? "min-h-44" : "h-44"}`}
+              className={`relative w-full bg-[${primary}] flex flex-col overflow-hidden ${hasTwoImages ? "min-h-44" : "h-44"}`}
+              style={{ backgroundColor: primary }}
             >
               {primaryImage ? (
                 hasTwoImages ? (

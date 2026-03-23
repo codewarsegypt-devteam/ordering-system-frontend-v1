@@ -26,7 +26,7 @@ export function LiveOrdersPoller() {
       ? String(user.branch_id)
       : ordersFilters.branch_id || undefined;
 
-  const { data, isFetching } = useQuery({
+  const { data, isPlaceholderData } = useQuery({
     queryKey: ["orders", user?.merchant_id, user?.branch_id, ordersFilters],
     queryFn: () =>
       fetchOrders({
@@ -59,7 +59,7 @@ export function LiveOrdersPoller() {
 
   const { isPolling, autoPaused } = useLiveOrdersPolling({
     queryKey: ["orders", user?.merchant_id, user?.branch_id, ordersFilters],
-    initialData: data,
+    initialData: isPlaceholderData ? undefined : data,
     branchId: activeBranchId,
     enabled: livePollingEnabled && !!user?.merchant_id,
     intervalMs: 5000,
@@ -68,11 +68,10 @@ export function LiveOrdersPoller() {
     onNewOrders: (orders: Order[]) => {
       if (!orders.length) return;
       playNewOrderSound();
-      const firstPlaced = orders.find((o) => o.status === "placed");
-      if (firstPlaced) {
-        setNewOrderToast({ order_number: firstPlaced.order_number });
-        setTimeout(() => setNewOrderToast(null), 4000);
-      }
+      const toShow =
+        orders.find((o) => o.status === "placed") ?? orders[0];
+      setNewOrderToast({ order_number: toShow.order_number });
+      setTimeout(() => setNewOrderToast(null), 4000);
     },
     filterFn: (order) => {
       if (
