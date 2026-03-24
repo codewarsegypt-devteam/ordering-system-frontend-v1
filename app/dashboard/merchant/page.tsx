@@ -58,8 +58,14 @@ function Card({
 }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
-        <div className="text-black">{icon}</div>
+      <div
+        className="flex items-center gap-2 rounded-t-2xl px-5 py-4"
+        style={{
+          backgroundColor: "var(--system-cream)",
+          borderBottom: "1px solid var(--system-sage)",
+        }}
+      >
+        <div style={{ color: "var(--system-primary)" }}>{icon}</div>
         <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
       </div>
       <div className="p-5">{children}</div>
@@ -164,7 +170,7 @@ export default function MerchantPage() {
   if (isLoading || !merchant) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-24">
-        <Loader2 className="h-7 w-7 animate-spin text-slate-500" />
+        <Loader2 className="h-7 w-7 animate-spin" style={{ color: "var(--system-primary)" }} />
         <p className="text-sm text-slate-500">Loading merchant...</p>
       </div>
     );
@@ -182,8 +188,11 @@ export default function MerchantPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
-          <Store className="h-6 w-6 text-slate-700" />
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: "var(--system-primary-soft)" }}
+        >
+          <Store className="h-6 w-6" style={{ color: "var(--system-primary)" }} />
         </div>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -373,7 +382,7 @@ export default function MerchantPage() {
           <button
             type="submit"
             disabled={update.isPending}
-            className="inline-flex items-center gap-2 rounded-xl bg-system-green px-4 py-2.5 text-sm font-medium text-white transition hover:bg-system-green/90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex items-center gap-2 rounded-xl bg-system-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-system-primary/90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
           >
             {update.isPending ? (
               <>

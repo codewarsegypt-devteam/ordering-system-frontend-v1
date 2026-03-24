@@ -1,5 +1,10 @@
 import { apiClient, getApiError } from "./client";
-import type { Order, OrdersListResponse, OrderStatus } from "@/lib/types";
+import type {
+  Order,
+  OrdersListResponse,
+  OrderStatus,
+  PaginationMeta,
+} from "@/lib/types";
 
 export interface OrdersQueryParams {
   branch_id?: string;
@@ -19,14 +24,14 @@ export interface OrdersQueryParams {
 }
 
 export async function fetchOrders(
-  params: OrdersQueryParams = {}
+  params: OrdersQueryParams = {},
 ): Promise<OrdersListResponse> {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
     if (v != null && v !== "") search.set(k, String(v));
   });
   const { data } = await apiClient.get<OrdersListResponse>(
-    `/orders?${search.toString()}`
+    `/orders?${search.toString()}`,
   );
   return data;
 }
@@ -38,12 +43,11 @@ export async function fetchOrder(orderId: string): Promise<Order> {
 
 export async function updateOrderStatus(
   orderId: string,
-  status: OrderStatus
+  status: OrderStatus,
 ): Promise<Order> {
-  const { data } = await apiClient.patch<Order>(
-    `/orders/${orderId}/status`,
-    { status }
-  );
+  const { data } = await apiClient.patch<Order>(`/orders/${orderId}/status`, {
+    status,
+  });
   return data;
 }
 
@@ -58,7 +62,7 @@ export async function fetchKitchenOrders(params?: {
     });
   }
   const { data } = await apiClient.get<OrdersListResponse>(
-    `/kitchen/orders?${search.toString()}`
+    `/kitchen/orders?${search.toString()}`,
   );
   return data;
 }
@@ -74,7 +78,7 @@ export async function fetchCashierOrders(params?: {
     });
   }
   const { data } = await apiClient.get<OrdersListResponse>(
-    `/cashier/orders?${search.toString()}`
+    `/cashier/orders?${search.toString()}`,
   );
   return data;
 }
@@ -84,6 +88,59 @@ export interface OrdersUpdatesResponse {
   items: Order[];
   server_time: string;
   count: number;
+}
+
+export interface TableSessionSummary {
+  id: string;
+  status: "active" | "closed";
+  opened_at?: string;
+  closed_at?: string | null;
+  orders_count: number;
+  open_orders_count: number;
+  total_price: number;
+  display_total_price?: number;
+}
+
+export interface TableSessionOrderSummary {
+  id: string;
+  order_number?: string;
+  status: string;
+  total_price: number;
+  display_total_price?: number;
+  created_at?: string;
+}
+
+export interface TableSessionOrdersResponse {
+  session: TableSessionSummary;
+  orders: TableSessionOrderSummary[];
+}
+
+export interface OpenTableSession extends TableSessionSummary {
+  merchant_id?: string | number;
+  branch_id?: string | number;
+  table_id?: string | number;
+  opened_by_type?: string | null;
+  opened_by_id?: string | number | null;
+  branch_name?: string | null;
+  table_number?: string | number | null;
+  orders?: TableSessionOrderSummary[];
+}
+
+export interface TableSessionsListResponse {
+  data: OpenTableSession[];
+  count?: number;
+  pagination?: PaginationMeta;
+}
+
+export interface CloseTableSessionConflictError {
+  error: string;
+  open_orders_count: number;
+  open_order_ids: Array<string | number>;
+}
+
+export interface CloseTableSessionResponse {
+  session: TableSessionSummary;
+  orders_count: number;
 }
 
 export async function fetchOrderUpdates(params: {
@@ -97,7 +154,65 @@ export async function fetchOrderUpdates(params: {
   if (params.limit != null) search.set("limit", String(params.limit));
 
   const { data } = await apiClient.get<OrdersUpdatesResponse>(
-    `/orders/updates?${search.toString()}`
+    `/orders/updates?${search.toString()}`,
+  );
+  return data;
+}
+
+/** Staff endpoint: GET /table-sessions/:sessionId/orders */
+export async function fetchTableSessionOrders(
+  sessionId: string,
+): Promise<TableSessionOrdersResponse> {
+  const { data } = await apiClient.get<TableSessionOrdersResponse>(
+    `/table-sessions/${sessionId}/orders`,
+  );
+  return data;
+}
+
+/** Staff endpoint: GET /table-sessions */
+export async function fetchTableSessions(params?: {
+  branch_id?: string;
+  table_id?: string;
+  status?: string;
+  opened_by_type?: string;
+  include_orders?: boolean;
+  page?: number;
+  limit?: number;
+  from?: string;
+  to?: string;
+  sort_by?: "opened_at" | "closed_at" | "created_at";
+  sort_dir?: "asc" | "desc";
+}): Promise<TableSessionsListResponse> {
+  const search = new URLSearchParams();
+  if (params?.branch_id) search.set("branch_id", String(params.branch_id));
+  if (params?.table_id) search.set("table_id", String(params.table_id));
+  if (params?.status) search.set("status", params.status);
+  if (params?.opened_by_type) {
+    search.set("opened_by_type", String(params.opened_by_type));
+  }
+  if (params?.include_orders != null) {
+    search.set("include_orders", String(Boolean(params.include_orders)));
+  }
+  if (params?.page != null) search.set("page", String(params.page));
+  if (params?.limit != null) search.set("limit", String(params.limit));
+  if (params?.from) search.set("from", params.from);
+  if (params?.to) search.set("to", params.to);
+  if (params?.sort_by) search.set("sort_by", params.sort_by);
+  if (params?.sort_dir) search.set("sort_dir", params.sort_dir);
+
+  const suffix = search.toString() ? `?${search.toString()}` : "";
+  const { data } = await apiClient.get<TableSessionsListResponse>(
+    `/table-sessions${suffix}`,
+  );
+  return data;
+}
+
+/** Staff endpoint: PATCH /table-sessions/:sessionId/close */
+export async function closeTableSession(
+  sessionId: string,
+): Promise<CloseTableSessionResponse> {
+  const { data } = await apiClient.patch<CloseTableSessionResponse>(
+    `/table-sessions/${sessionId}/close`,
   );
   return data;
 }
@@ -113,7 +228,7 @@ export type OrdersExportParams = Omit<
  * Triggers a file download in the browser.
  */
 export async function exportOrdersExcel(
-  params: OrdersExportParams = {}
+  params: OrdersExportParams = {},
 ): Promise<void> {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
@@ -123,7 +238,7 @@ export async function exportOrdersExcel(
   try {
     response = await apiClient.get<Blob>(
       `/orders/export/excel?${search.toString()}`,
-      { responseType: "blob" }
+      { responseType: "blob" },
     );
   } catch (err: unknown) {
     if (err && typeof err === "object" && "response" in err) {
@@ -153,7 +268,8 @@ export async function exportOrdersExcel(
         : undefined;
   const match = disposition?.match(/filename="?([^";\n]+)"?/);
   const filename =
-    match?.[1]?.trim() || `orders_${new Date().toISOString().slice(0, 16).replace("T", "_")}.xlsx`;
+    match?.[1]?.trim() ||
+    `orders_${new Date().toISOString().slice(0, 16).replace("T", "_")}.xlsx`;
   const url = URL.createObjectURL(data);
   const a = document.createElement("a");
   a.href = url;

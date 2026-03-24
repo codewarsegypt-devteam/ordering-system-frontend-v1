@@ -92,28 +92,32 @@ export default function UsersPage() {
   }
 
   if (isLoading) return (
-    <div className="flex items-center justify-center py-24">
-      <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+    <div className="flex flex-col items-center justify-center gap-3 py-24">
+      <Loader2 className="h-7 w-7 animate-spin" style={{ color: "var(--system-primary)" }} />
+      <p className="text-sm text-slate-500">Loading users…</p>
     </div>
   );
 
   if (error) return <div className="alert-error">{getApiError(error)}</div>;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
-            <UsersIcon className="h-5 w-5 text-indigo-600" />
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--system-primary-soft)" }}
+          >
+            <UsersIcon className="h-6 w-6" style={{ color: "var(--system-primary)" }} />
           </div>
           <div>
-            <h1 className="page-title">Users</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Users</h1>
             <p className="text-sm text-slate-500">{users?.length ?? 0} team member{users?.length !== 1 ? "s" : ""}</p>
           </div>
         </div>
         {!creating && (
-          <button type="button" onClick={() => setCreating(true)} className="btn-primary">
+          <button type="button" onClick={() => setCreating(true)} className="btn-primary shrink-0">
             <Plus className="h-4 w-4" /> New user
           </button>
         )}
@@ -143,8 +147,8 @@ export default function UsersPage() {
       {/* Users table */}
       {!users || users.length === 0 ? (
         <div className="card flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <UsersIcon className="h-8 w-8 text-slate-400" />
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--system-primary-soft)" }}>
+            <UsersIcon className="h-8 w-8" style={{ color: "var(--system-primary)" }} />
           </div>
           <p className="font-medium text-slate-700">No users yet</p>
           <p className="mt-1 text-sm text-slate-400">Create your first team member above.</p>

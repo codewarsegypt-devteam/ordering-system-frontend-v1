@@ -21,7 +21,7 @@ export function LandingHero() {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl"
-        style={{ backgroundColor: "var(--system-green)", opacity: 0.08 }}
+        style={{ backgroundColor: "var(--system-primary)", opacity: 0.08 }}
       />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
@@ -37,7 +37,7 @@ export function LandingHero() {
           >
             <Sparkles
               className="h-4 w-4"
-              style={{ color: "var(--system-green)" }}
+              style={{ color: "var(--system-primary)" }}
             />
             Smart QR ordering for restaurants &amp; cafés
           </div> */}
@@ -45,10 +45,7 @@ export function LandingHero() {
           {/* Heading */}
           <h1 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
             Turn every table into
-            <span
-              className="block"
-              style={{ color: "var(--system-green)" }}
-            >
+            <span className="block" style={{ color: "var(--system-primary)" }}>
               a self-ordering experience
             </span>
           </h1>
@@ -93,7 +90,7 @@ export function LandingHero() {
                   >
                     <Icon
                       className="h-5 w-5"
-                      style={{ color: "var(--system-green)" }}
+                      style={{ color: "var(--system-primary)" }}
                     />
                   </div>
                   <span className="text-sm font-medium text-zinc-700">
@@ -106,14 +103,14 @@ export function LandingHero() {
 
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a
-              href="#signup"
+            <Link
+              href="/signup"
               className="inline-flex items-center gap-2 rounded-2xl px-7 py-4 text-base font-bold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:opacity-95"
-              style={{ backgroundColor: "var(--system-green)" }}
+              style={{ backgroundColor: "var(--system-primary)" }}
             >
               Create free account
               <ChevronRight className="h-5 w-5" />
-            </a>
+            </Link>
 
             <Link
               href="/dashboard"
@@ -150,7 +147,7 @@ export function LandingHero() {
               </div>
               <div
                 className="rounded-xl px-3 py-1 text-xs font-semibold text-white"
-                style={{ backgroundColor: "var(--system-green)" }}
+                style={{ backgroundColor: "var(--system-primary)" }}
               >
                 Live
               </div>
@@ -173,7 +170,7 @@ export function LandingHero() {
                     className="rounded-xl px-2.5 py-1 text-xs font-semibold"
                     style={{
                       backgroundColor: "var(--system-cream)",
-                      color: "var(--system-green)",
+                      color: "var(--system-primary)",
                     }}
                   >
                     12 new
@@ -182,9 +179,21 @@ export function LandingHero() {
 
                 <div className="mt-4 space-y-3">
                   {[
-                    { table: "Table 04", items: "2 Burgers • 1 Cola", status: "Preparing" },
-                    { table: "Table 11", items: "1 Pasta • 2 Coffee", status: "New" },
-                    { table: "Takeaway", items: "3 Sandwiches", status: "Ready" },
+                    {
+                      table: "Table 04",
+                      items: "2 Burgers • 1 Cola",
+                      status: "Preparing",
+                    },
+                    {
+                      table: "Table 11",
+                      items: "1 Pasta • 2 Coffee",
+                      status: "New",
+                    },
+                    {
+                      table: "Takeaway",
+                      items: "3 Sandwiches",
+                      status: "Ready",
+                    },
                   ].map((order) => (
                     <div
                       key={`${order.table}-${order.items}`}
@@ -208,7 +217,7 @@ export function LandingHero() {
               <div className="space-y-4">
                 <div
                   className="rounded-3xl p-5 text-white shadow-lg"
-                  style={{ backgroundColor: "var(--system-green)" }}
+                  style={{ backgroundColor: "var(--system-primary)" }}
                 >
                   <p className="text-sm font-medium text-white/80">
                     Today’s sales
@@ -246,7 +255,7 @@ export function LandingHero() {
                       className="h-2 rounded-full"
                       style={{
                         width: "82%",
-                        backgroundColor: "var(--system-green)",
+                        backgroundColor: "var(--system-primary)",
                       }}
                     />
                   </div>
@@ -266,7 +275,7 @@ export function LandingHero() {
             >
               <QrCode
                 className="h-5 w-5"
-                style={{ color: "var(--system-green)" }}
+                style={{ color: "var(--system-primary)" }}
               />
             </div>
             <div>
@@ -295,7 +304,7 @@ export function LandingHero() {
             >
               <p
                 className="text-2xl font-extrabold sm:text-3xl"
-                style={{ color: "var(--system-green)" }}
+                style={{ color: "var(--system-primary)" }}
               >
                 {s.value}
               </p>

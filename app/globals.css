@@ -15,22 +15,22 @@
   --border-light: #f4f4f5;
 
   /* Dashboard system colors (palette) */
-  --system-red: #A82323;
+  --system-red: #a82323;
   --system-red-hover: #8b1c1c;
   --system-red-soft: rgba(168, 35, 35, 0.1);
-  --system-cream: #feffd2;
-  --system-sage: #cce2b9;
+  --system-cream: #f8f3e1;
+  --system-sage: #e3dbbb;
   --system-sage-soft: rgba(188, 217, 162, 0.3);
-  --system-green: #6D9E51;
-  --system-green-hover: #5a8545;
-  --system-green-soft: rgba(109, 158, 81, 0.15);
+  --system-primary: #41431b;
+  --system-primary-hover: #2e3115;
+  --system-primary-soft: rgba(109, 158, 81, 0.15);
 
-  /* Sidebar (dashboard) – uses system green */
+  /* Sidebar (dashboard) – uses system primary */
   --sidebar-bg: #1e293b;
   --sidebar-fg: #e2e8f0;
   --sidebar-muted: #94a3b8;
-  --sidebar-active: var(--system-green);
-  --sidebar-active-bg: var(--system-green-soft);
+  --sidebar-active: var(--system-primary);
+  --sidebar-active-bg: var(--system-primary-soft);
 
   /* Luxury client menu theme */
   --luxury-bg: #f8f6f3;
@@ -68,10 +68,10 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   /* Dashboard system colors */
-  --color-system-red: #A82323;
-  --color-system-cream: #FEFFD3;
-  --color-system-sage: #BCD9A2;
-  --color-system-green: #6D9E51;
+  --color-system-red: #a82323;
+  --color-system-cream: #f8f3e1;
+  --color-system-sage: #e3dbbb;
+  --color-system-primary: #41431b;
   /* Menu theme (always use these for /menu) */
   --color-menu-bg: #f1f0ed;
   --color-menu-orange: #e85d04;
@@ -88,7 +88,7 @@
     --foreground: #ededed;
   }
 }
-*{
+* {
   scroll-behavior: smooth;
 }
 body {
@@ -99,13 +99,13 @@ body {
 
 /* ─── Dashboard design system ─────────────────────────────────── */
 @layer components {
-  /* Buttons – system green primary, system red danger */
+  /* Buttons – system primary, system red danger */
   .btn-primary {
     @apply inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
-    background-color: var(--system-green);
+    background-color: var(--system-primary);
   }
   .btn-primary:hover:not(:disabled) {
-    background-color: var(--system-green-hover);
+    background-color: var(--system-primary-hover);
   }
   .btn-secondary {
     @apply inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium shadow-sm transition-all active:scale-[0.98];
@@ -115,7 +115,7 @@ body {
   }
   .btn-secondary:hover {
     background-color: var(--system-sage-soft);
-    border-color: var(--system-green);
+    border-color: var(--system-primary);
   }
   .btn-ghost {
     @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors;
@@ -159,8 +159,8 @@ body {
     border: 1px solid #cbd5e1;
   }
   .input-base:focus {
-    border-color: var(--system-green);
-    box-shadow: 0 0 0 2px var(--system-green-soft);
+    border-color: var(--system-primary);
+    box-shadow: 0 0 0 2px var(--system-primary-soft);
   }
   .input-error {
     border-color: var(--system-red);
@@ -208,14 +208,14 @@ body {
   }
   .badge-success {
     background-color: var(--system-sage-soft);
-    color: var(--system-green);
+    color: var(--system-primary);
   }
   .badge-warning {
     @apply bg-amber-100 text-amber-700;
   }
   .badge-info {
     background-color: var(--system-sage-soft);
-    color: var(--system-green);
+    color: var(--system-primary);
   }
   .badge-error {
     background-color: var(--system-red-soft);
@@ -226,7 +226,7 @@ body {
   }
   .badge-teal {
     background-color: var(--system-sage-soft);
-    color: var(--system-green);
+    color: var(--system-primary);
   }
 
   /* Alert / feedback banners */

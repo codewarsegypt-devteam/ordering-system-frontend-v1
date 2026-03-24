@@ -4,7 +4,6 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { PlansSection } from "@/components/landing/PlansSection";
-import { SignupSection } from "@/components/landing/SignupSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function HomePage() {
@@ -16,7 +15,6 @@ export default function HomePage() {
       <FeaturesSection />
       <TestimonialsSection />
       <PlansSection />
-      <SignupSection />
       <LandingFooter />
     </div>
   );

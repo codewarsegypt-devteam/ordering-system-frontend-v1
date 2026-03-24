@@ -45,8 +45,8 @@ export function SignupForm() {
 
   if (success) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-[var(--system-green)] bg-[var(--system-green-soft)] px-8 py-12 text-center">
-        <CheckCircle2 className="mb-4 h-14 w-14 text-[var(--system-green)]" />
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-[var(--system-primary)] bg-[var(--system-primary-soft)] px-8 py-12 text-center">
+        <CheckCircle2 className="mb-4 h-14 w-14 text-[var(--system-primary)]" />
         <h3 className="text-lg font-bold text-zinc-900">You&apos;re all set!</h3>
         <p className="mt-2 text-sm text-zinc-600">
           Redirecting you to sign in…
@@ -107,7 +107,7 @@ export function SignupForm() {
         type="submit"
         disabled={submitting}
         className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white transition-colors disabled:opacity-70"
-        style={{ backgroundColor: "var(--system-green)" }}
+        style={{ backgroundColor: "var(--system-primary)" }}
       >
         {submitting ? (
           <Loader2 className="h-5 w-5 animate-spin" />

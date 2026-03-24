@@ -4,10 +4,21 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { fetchPublicScan, createTableServiceRequest, getApiError } from "@/lib/api";
+import {
+  fetchPublicScan,
+  fetchActiveTableSession,
+  createTableServiceRequest,
+  getApiError,
+} from "@/lib/api";
 import { useCurrency } from "@/contexts";
 import Image from "next/image";
-import { UtensilsCrossed, ChevronLeft, UserCircle2, Receipt } from "lucide-react";
+import {
+  UtensilsCrossed,
+  ChevronLeft,
+  UserCircle2,
+  Receipt,
+  Clock3,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useScanBrandColors } from "@/lib/hooks/useScanBrandColors";
 
@@ -19,16 +30,32 @@ export default function MenuPage() {
   const { initFromCurrencyInfo } = useCurrency();
 
   // ── all hooks before any conditional returns ──
-  const [serviceSending, setServiceSending] = useState<"call_waiter" | "request_bill" | null>(null);
+  const [serviceSending, setServiceSending] = useState<
+    "call_waiter" | "request_bill" | null
+  >(null);
   const [serviceCooldown, setServiceCooldown] = useState(false);
 
-  const { data: scanData, isLoading, error } = useQuery({
+  const {
+    data: scanData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["publicScan", token],
     queryFn: () => fetchPublicScan(token!),
     enabled: !!token,
     staleTime: 60_000,
   });
-// console.log(scanData);
+
+  const { data: activeSessionData, isLoading: activeSessionLoading } = useQuery(
+    {
+      queryKey: ["activeTableSession", token],
+      queryFn: () => fetchActiveTableSession(token!),
+      enabled: !!token,
+      staleTime: 20_000,
+      retry: false,
+    },
+  );
+  // console.log(scanData);
   useEffect(() => {
     if (!scanData) return;
     // Initialize currency context from scan response
@@ -50,7 +77,11 @@ export default function MenuPage() {
     setServiceSending(type);
     try {
       await createTableServiceRequest(token, type);
-      toast.success(type === "call_waiter" ? " sent call waiter request" : " sent request bill");
+      toast.success(
+        type === "call_waiter"
+          ? " sent call waiter request"
+          : " sent request bill",
+      );
       setServiceCooldown(true);
       setTimeout(() => setServiceCooldown(false), 8000);
     } catch (err) {
@@ -78,7 +109,10 @@ export default function MenuPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="px-6 pb-10 pt-16 text-white" style={{ backgroundColor: "#f97316" }}>
+        <div
+          className="px-6 pb-10 pt-16 text-white"
+          style={{ backgroundColor: "#f97316" }}
+        >
           <div className="mx-auto max-w-lg">
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 animate-pulse rounded-2xl bg-white/20" />
@@ -94,7 +128,10 @@ export default function MenuPage() {
             <div className="mb-4 h-4 w-28 animate-pulse rounded bg-gray-200" />
             <div className="space-y-2.5">
               {[1, 2].map((i) => (
-                <div key={i} className="h-14 animate-pulse rounded-2xl bg-gray-100" />
+                <div
+                  key={i}
+                  className="h-14 animate-pulse rounded-2xl bg-gray-100"
+                />
               ))}
             </div>
           </div>
@@ -112,7 +149,9 @@ export default function MenuPage() {
         <p className="font-semibold text-gray-900">
           {error ? getApiError(error) : "Failed to load scan"}
         </p>
-        <p className="mt-1.5 text-sm text-gray-500">Please scan the table QR again.</p>
+        <p className="mt-1.5 text-sm text-gray-500">
+          Please scan the table QR again.
+        </p>
       </div>
     );
   }
@@ -124,7 +163,9 @@ export default function MenuPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div
           className="h-10 w-10 animate-spin rounded-full border-[3px] border-t-transparent"
-          style={{ borderColor: `${primary} transparent transparent transparent` }}
+          style={{
+            borderColor: `${primary} transparent transparent transparent`,
+          }}
         />
       </div>
     );
@@ -133,13 +174,15 @@ export default function MenuPage() {
   const merchantName = scanData.merchant_name ?? "our place";
   const branchName = scanData.branch_name;
   const tableName = scanData.table_name;
+  const activeSession = activeSessionData?.active_session ?? null;
+  const activeOrders = activeSessionData?.orders ?? [];
 
   // Derive a subtle tint for button background (hex + ~10% opacity)
   const btnBg = `${primary}18`;
   const btnBorder = `${primary}35`;
 
   return (
-    <div className="min-h-screen pb-10 bg-white" >
+    <div className="min-h-screen pb-10 bg-white">
       {/* Welcome header — brand gradient */}
       <div
         className="rounded-b-4xl px-6 pt-10 pb-12 text-white shadow-lg"
@@ -166,25 +209,40 @@ export default function MenuPage() {
               <h1 className="mt-1 text-2xl font-bold leading-tight">
                 Welcome to {merchantName}
               </h1>
-              <p className="mt-3 leading-relaxed" style={{ color: "rgba(255,255,255,0.9)" }}>
+              <p
+                className="mt-3 leading-relaxed"
+                style={{ color: "rgba(255,255,255,0.9)" }}
+              >
                 {branchName != null && tableName != null ? (
                   <>
                     You&apos;re at{" "}
-                    <span className="font-semibold text-white">{branchName}</span>, sitting at{" "}
-                    <span className="font-semibold text-white">Table {tableName}</span>.{" "}
-                    We&apos;re glad you&apos;re here, take a look at the menu and enjoy your time.
+                    <span className="font-semibold text-white">
+                      {branchName}
+                    </span>
+                    , sitting at{" "}
+                    <span className="font-semibold text-white">
+                      Table {tableName}
+                    </span>
+                    . We&apos;re glad you&apos;re here, take a look at the menu
+                    and enjoy your time.
                   </>
                 ) : branchName ? (
                   <>
                     You&apos;re at{" "}
-                    <span className="font-semibold text-white">{branchName}</span>.{" "}
-                    We&apos;re glad you&apos;re here, browse the menu below and enjoy.
+                    <span className="font-semibold text-white">
+                      {branchName}
+                    </span>
+                    . We&apos;re glad you&apos;re here, browse the menu below
+                    and enjoy.
                   </>
                 ) : tableName != null ? (
                   <>
                     You&apos;re at{" "}
-                    <span className="font-semibold text-white">Table {tableName}</span>.{" "}
-                    We&apos;re glad you&apos;re here, browse the menu and enjoy.
+                    <span className="font-semibold text-white">
+                      Table {tableName}
+                    </span>
+                    . We&apos;re glad you&apos;re here, browse the menu and
+                    enjoy.
                   </>
                 ) : (
                   "We're glad you're here — browse the menu below and enjoy."
@@ -207,12 +265,18 @@ export default function MenuPage() {
               onClick={() => sendTableService("call_waiter")}
               disabled={serviceSending !== null || serviceCooldown}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium transition-colors disabled:opacity-60"
-              style={{ backgroundColor: btnBg, border: `1px solid ${btnBorder}`, color: primary }}
+              style={{
+                backgroundColor: btnBg,
+                border: `1px solid ${btnBorder}`,
+                color: primary,
+              }}
             >
               {serviceSending === "call_waiter" ? (
                 <span
                   className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                  style={{
+                    borderColor: `${primary} transparent transparent transparent`,
+                  }}
                 />
               ) : (
                 <UserCircle2 className="h-4 w-4" style={{ color: primary }} />
@@ -225,12 +289,18 @@ export default function MenuPage() {
               onClick={() => sendTableService("request_bill")}
               disabled={serviceSending !== null || serviceCooldown}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium transition-colors disabled:opacity-60"
-              style={{ backgroundColor: btnBg, border: `1px solid ${btnBorder}`, color: primary }}
+              style={{
+                backgroundColor: btnBg,
+                border: `1px solid ${btnBorder}`,
+                color: primary,
+              }}
             >
               {serviceSending === "request_bill" ? (
                 <span
                   className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                  style={{
+                    borderColor: `${primary} transparent transparent transparent`,
+                  }}
                 />
               ) : (
                 <Receipt className="h-4 w-4" style={{ color: primary }} />
@@ -240,10 +310,82 @@ export default function MenuPage() {
           </div>
         </div>
 
+        {/* Active check/session */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Current check
+          </p>
+
+          {activeSessionLoading ? (
+            <div className="space-y-2">
+              <div className="h-4 w-44 animate-pulse rounded bg-gray-100" />
+              <div className="h-3 w-56 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : !activeSession ? (
+            <p className="text-sm text-gray-500">
+              No active check yet. Your first order will open one automatically.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3 py-2.5">
+                <p className="text-sm font-semibold text-emerald-800">
+                  Session active
+                </p>
+                <p className="mt-1 text-xs text-emerald-700">
+                  {activeSession.orders_count} order
+                  {activeSession.orders_count === 1 ? "" : "s"} {" · "}
+                  {activeSession.open_orders_count} open
+                </p>
+                <p className="mt-1.5 text-base font-bold text-gray-900">
+                  {(
+                    activeSession.display_total_price ??
+                    activeSession.total_price
+                  ).toFixed(2)}
+                </p>
+              </div>
+
+              {activeOrders.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    Orders in this check
+                  </p>
+                  <ul className="space-y-2">
+                    {activeOrders.slice(0, 4).map((order) => (
+                      <li
+                        key={order.id}
+                        className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900">
+                            #{order.order_number}
+                          </p>
+                          <p className="truncate text-xs text-gray-500">
+                            {order.status}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Clock3 className="h-3.5 w-3.5" />
+                          {(
+                            order.display_total_price ?? order.total_price
+                          ).toFixed(2)}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Choose menu */}
         <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="mb-1 text-base font-bold text-gray-900">Choose a menu</h2>
-          <p className="mb-4 text-sm text-gray-500">Select a menu to start ordering</p>
+          <h2 className="mb-1 text-base font-bold text-gray-900">
+            Choose a menu
+          </h2>
+          <p className="mb-4 text-sm text-gray-500">
+            Select a menu to start ordering
+          </p>
           {menus.length === 0 ? (
             <p className="py-8 text-center text-sm text-gray-400">
               No menus available at the moment.
@@ -261,13 +403,16 @@ export default function MenuPage() {
                       } as React.CSSProperties
                     }
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = `${primary}55`;
-                      (e.currentTarget as HTMLElement).style.backgroundColor = `${primary}08`;
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        `${primary}55`;
+                      (e.currentTarget as HTMLElement).style.backgroundColor =
+                        `${primary}08`;
                       (e.currentTarget as HTMLElement).style.color = primary;
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLElement).style.borderColor = "";
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "";
+                      (e.currentTarget as HTMLElement).style.backgroundColor =
+                        "";
                       (e.currentTarget as HTMLElement).style.color = "";
                     }}
                   >

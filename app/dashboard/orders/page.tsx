@@ -9,7 +9,13 @@ import {
   getDefaultOrdersFilters,
   type OrdersFilterState,
 } from "@/lib/orders-filters";
-import { fetchBranches, fetchOrders, exportOrdersExcel, getApiError, updateOrderStatus } from "@/lib/api";
+import {
+  fetchBranches,
+  fetchOrders,
+  exportOrdersExcel,
+  getApiError,
+  updateOrderStatus,
+} from "@/lib/api";
 import type { OrderStatus } from "@/lib/types";
 import { useMerchantBaseCurrency } from "@/lib/hooks/useMerchantBaseCurrency";
 import {
@@ -117,7 +123,9 @@ export default function DashboardOrdersPage() {
   const { user } = useAuth();
   const { formatPrice, currencyCode } = useMerchantBaseCurrency();
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<OrdersFilterState>(getDefaultOrdersFilters);
+  const [filters, setFilters] = useState<OrdersFilterState>(
+    getDefaultOrdersFilters,
+  );
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -136,7 +144,9 @@ export default function DashboardOrdersPage() {
   });
 
   const activeBranchId =
-    !isOwner && user?.branch_id != null ? String(user.branch_id) : filters.branch_id || undefined;
+    !isOwner && user?.branch_id != null
+      ? String(user.branch_id)
+      : filters.branch_id || undefined;
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["orders", user?.merchant_id, user?.branch_id, filters],
@@ -173,7 +183,7 @@ export default function DashboardOrdersPage() {
 
   const updateFilter = <K extends keyof OrdersFilterState>(
     key: K,
-    value: OrdersFilterState[K]
+    value: OrdersFilterState[K],
   ) => {
     setFilters((current) => ({
       ...current,
@@ -206,14 +216,19 @@ export default function DashboardOrdersPage() {
       accumulator[status] = 0;
       return accumulator;
     },
-    {} as Record<OrderStatus, number>
+    {} as Record<OrderStatus, number>,
   );
 
   for (const order of orders) {
     statusCounts[order.status] += 1;
   }
 
-  const liveStatusSet: OrderStatus[] = ["placed", "accepted", "preparing", "ready"];
+  const liveStatusSet: OrderStatus[] = [
+    "placed",
+    "accepted",
+    "preparing",
+    "ready",
+  ];
   const kitchenStatusSet: OrderStatus[] = ["accepted", "preparing"];
   const hasAdvancedFilters =
     Boolean(filters.table_id) ||
@@ -308,7 +323,8 @@ export default function DashboardOrdersPage() {
           <h1 className="page-title">Orders</h1>
           <p className="mt-0.5 text-sm text-slate-500">
             {totalOrders} {totalOrders === 1 ? "order" : "orders"}
-            {filters.status.length > 0 && ` · ${filters.status.length} status filter${filters.status.length > 1 ? "s" : ""}`}
+            {filters.status.length > 0 &&
+              ` · ${filters.status.length} status filter${filters.status.length > 1 ? "s" : ""}`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -368,10 +384,10 @@ export default function DashboardOrdersPage() {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             New
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{statusCounts.placed}</p>
-          <p className="mt-1 text-sm text-slate-500">
-            Waiting to be accepted
+          <p className="mt-2 text-2xl font-bold text-slate-900">
+            {statusCounts.placed}
           </p>
+          <p className="mt-1 text-sm text-slate-500">Waiting to be accepted</p>
         </button>
         <button
           type="button"
@@ -404,7 +420,9 @@ export default function DashboardOrdersPage() {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Ready
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{statusCounts.ready}</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">
+            {statusCounts.ready}
+          </p>
           <p className="mt-1 text-sm text-slate-500">
             Ready for pickup or service
           </p>
@@ -419,7 +437,8 @@ export default function DashboardOrdersPage() {
               <h2 className="section-title text-sm">Filters</h2>
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              Keep the common filters visible, and open advanced options only when needed.
+              Keep the common filters visible, and open advanced options only
+              when needed.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -433,7 +452,11 @@ export default function DashboardOrdersPage() {
                 ? "Hide advanced"
                 : "Advanced filters"}
             </button>
-            <button type="button" onClick={resetFilters} className="btn-secondary btn-sm">
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="btn-secondary btn-sm"
+            >
               <RotateCcw className="h-3.5 w-3.5" />
               Reset
             </button>
@@ -458,11 +481,15 @@ export default function DashboardOrdersPage() {
             <label className="label">Branch</label>
             <select
               className="input-base"
-              value={isOwner ? filters.branch_id : String(user?.branch_id ?? "")}
+              value={
+                isOwner ? filters.branch_id : String(user?.branch_id ?? "")
+              }
               onChange={(e) => updateFilter("branch_id", e.target.value)}
               disabled={!isOwner}
             >
-              <option value="">{isOwner ? "All branches" : "Your branch"}</option>
+              <option value="">
+                {isOwner ? "All branches" : "Your branch"}
+              </option>
               {branches?.map((branch) => (
                 <option key={branch.id} value={String(branch.id)}>
                   {branch.name}
@@ -473,12 +500,14 @@ export default function DashboardOrdersPage() {
           <div className="md:col-span-2 xl:col-span-1">
             <label className="label">Quick date range</label>
             <div className="flex flex-wrap gap-2">
-              {([
-                ["live", "Last 6h"],
-                ["today", "Today"],
-                ["last24h", "Last 24h"],
-                ["last7d", "Last 7d"],
-              ] as const).map(([preset, label]) => (
+              {(
+                [
+                  ["live", "Last 6h"],
+                  ["today", "Today"],
+                  ["last24h", "Last 24h"],
+                  ["last7d", "Last 7d"],
+                ] as const
+              ).map(([preset, label]) => (
                 <button
                   key={preset}
                   type="button"
@@ -503,7 +532,9 @@ export default function DashboardOrdersPage() {
                   key={status}
                   type="button"
                   onClick={() => toggleStatus(status)}
-                  className={active ? "btn-primary btn-sm" : "btn-secondary btn-sm"}
+                  className={
+                    active ? "btn-primary btn-sm" : "btn-secondary btn-sm"
+                  }
                 >
                   {statusLabels[status]}
                 </button>
@@ -634,7 +665,9 @@ export default function DashboardOrdersPage() {
               <select
                 className="input-base"
                 value={filters.sort_dir}
-                onChange={(e) => updateFilter("sort_dir", e.target.value as "asc" | "desc")}
+                onChange={(e) =>
+                  updateFilter("sort_dir", e.target.value as "asc" | "desc")
+                }
               >
                 <option value="desc">Descending</option>
                 <option value="asc">Ascending</option>
@@ -665,7 +698,9 @@ export default function DashboardOrdersPage() {
             <ClipboardList className="h-8 w-8 text-slate-400" />
           </div>
           <p className="font-medium text-slate-700">No orders found</p>
-          <p className="mt-1 text-sm text-slate-400">Try adjusting your filters.</p>
+          <p className="mt-1 text-sm text-slate-400">
+            Try adjusting your filters.
+          </p>
         </div>
       ) : (
         <div className="card overflow-hidden">
@@ -704,9 +739,13 @@ export default function DashboardOrdersPage() {
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                         <span>{formatRelativeTime(order.created_at)}</span>
                         {(order.table_number || order.table?.number) && (
-                          <span>Table: {order.table_number ?? order.table?.number}</span>
+                          <span>
+                            Table: {order.table_number ?? order.table?.number}
+                          </span>
                         )}
-                        {order.branch_name && <span>Branch: {order.branch_name}</span>}
+                        {order.branch_name && (
+                          <span>Branch: {order.branch_name}</span>
+                        )}
                         {order.order_type && (
                           <span className="badge badge-neutral capitalize">
                             {order.order_type.replace("_", " ")}
@@ -715,15 +754,21 @@ export default function DashboardOrdersPage() {
                       </div>
                     </td>
                     <td>
-                      <span className={statusBadge[order.status]}>{statusLabels[order.status]}</span>
+                      <span className={statusBadge[order.status]}>
+                        {statusLabels[order.status]}
+                      </span>
                     </td>
                     <td className="hidden sm:table-cell">
                       <span className="text-slate-600">
-                        {order.customer_name ?? <span className="italic text-slate-400">Guest</span>}
+                        {order.customer_name ?? (
+                          <span className="italic text-slate-400">Guest</span>
+                        )}
                       </span>
                     </td>
                     <td className="hidden md:table-cell">
-                      <span className="text-slate-500">{order.table_number ?? order.table?.number ?? "—"}</span>
+                      <span className="text-slate-500">
+                        {order.table_number ?? order.table?.number ?? "—"}
+                      </span>
                     </td>
                     <td className="hidden lg:table-cell text-xs text-slate-500">
                       {new Date(order.created_at).toLocaleString()}
@@ -744,7 +789,12 @@ export default function DashboardOrdersPage() {
                         {order.status === "placed" && (
                           <button
                             type="button"
-                            onClick={() => updateStatus.mutate({ orderId: String(order.id), status: "accepted" })}
+                            onClick={() =>
+                              updateStatus.mutate({
+                                orderId: String(order.id),
+                                status: "accepted",
+                              })
+                            }
                             disabled={updateStatus.isPending}
                             className="flex h-8 items-center gap-1 rounded-lg bg-teal-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-teal-700 disabled:opacity-50"
                             title="Accept order"
@@ -756,7 +806,12 @@ export default function DashboardOrdersPage() {
                         {order.status === "accepted" && (
                           <button
                             type="button"
-                            onClick={() => updateStatus.mutate({ orderId: String(order.id), status: "preparing" })}
+                            onClick={() =>
+                              updateStatus.mutate({
+                                orderId: String(order.id),
+                                status: "preparing",
+                              })
+                            }
                             disabled={updateStatus.isPending}
                             className="flex h-8 items-center gap-1 rounded-lg bg-amber-500 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-amber-600 disabled:opacity-50"
                             title="Start preparing"
@@ -768,7 +823,12 @@ export default function DashboardOrdersPage() {
                         {order.status === "preparing" && (
                           <button
                             type="button"
-                            onClick={() => updateStatus.mutate({ orderId: String(order.id), status: "ready" })}
+                            onClick={() =>
+                              updateStatus.mutate({
+                                orderId: String(order.id),
+                                status: "ready",
+                              })
+                            }
                             disabled={updateStatus.isPending}
                             className="flex h-8 items-center gap-1 rounded-lg bg-sky-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-sky-700 disabled:opacity-50"
                             title="Mark ready"
@@ -779,7 +839,12 @@ export default function DashboardOrdersPage() {
                         {order.status === "ready" && (
                           <button
                             type="button"
-                            onClick={() => updateStatus.mutate({ orderId: String(order.id), status: "completed" })}
+                            onClick={() =>
+                              updateStatus.mutate({
+                                orderId: String(order.id),
+                                status: "completed",
+                              })
+                            }
                             disabled={updateStatus.isPending}
                             className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                             title="Complete"
@@ -788,10 +853,17 @@ export default function DashboardOrdersPage() {
                             <span className="hidden sm:inline">Complete</span>
                           </button>
                         )}
-                        {["placed", "accepted", "preparing"].includes(order.status) && (
+                        {["placed", "accepted", "preparing"].includes(
+                          order.status,
+                        ) && (
                           <button
                             type="button"
-                            onClick={() => updateStatus.mutate({ orderId: String(order.id), status: "cancelled" })}
+                            onClick={() =>
+                              updateStatus.mutate({
+                                orderId: String(order.id),
+                                status: "cancelled",
+                              })
+                            }
                             disabled={updateStatus.isPending}
                             className="flex h-8 w-8 items-center justify-center rounded-lg text-red-500 transition-colors hover:bg-red-50"
                             title="Cancel order"
@@ -815,7 +887,9 @@ export default function DashboardOrdersPage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => updateFilter("page", Math.max(1, filters.page - 1))}
+                onClick={() =>
+                  updateFilter("page", Math.max(1, filters.page - 1))
+                }
                 disabled={!pagination?.has_prev}
                 className="btn-secondary btn-sm"
               >

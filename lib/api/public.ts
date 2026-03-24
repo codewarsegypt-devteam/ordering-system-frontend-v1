@@ -152,6 +152,48 @@ export async function createOrder(
   return data;
 }
 
+export interface PublicActiveTableSession {
+  id: string;
+  merchant_id: string;
+  branch_id: string;
+  table_id: string;
+  status: "active" | "closed";
+  opened_at: string;
+  closed_at: string | null;
+  orders_count: number;
+  open_orders_count: number;
+  total_price: number;
+  display_total_price?: number;
+}
+
+export interface PublicTableSessionOrderSummary {
+  id: string;
+  order_number: string;
+  status: string;
+  total_price: number;
+  display_total_price?: number;
+  created_at: string;
+}
+
+export interface PublicActiveTableSessionResponse {
+  active_session: PublicActiveTableSession | null;
+  orders?: PublicTableSessionOrderSummary[];
+}
+
+/**
+ * Customer side: fetch the current active table session for token.
+ * GET /table-sessions/active?t=TOKEN
+ */
+export async function fetchActiveTableSession(
+  token: string,
+): Promise<PublicActiveTableSessionResponse> {
+  const { data } = await apiClient.get<PublicActiveTableSessionResponse>(
+    "/table-sessions/active",
+    { params: { t: token } },
+  );
+  return data;
+}
+
 /**
  * Request table service (call waiter / request bill) — من واجهة العميل بعد سكان الـ QR.
  * POST /public/table-services

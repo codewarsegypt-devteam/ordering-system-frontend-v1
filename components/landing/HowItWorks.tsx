@@ -44,7 +44,7 @@ export function HowItWorks() {
       <div
         aria-hidden
         className="pointer-events-none absolute bottom-0 left-0 h-[360px] w-[360px] rounded-full blur-3xl"
-        style={{ backgroundColor: "var(--system-green)", opacity: 0.08 }}
+        style={{ backgroundColor: "var(--system-primary)", opacity: 0.08 }}
       />
 
       <div className="relative mx-auto max-w-7xl">
@@ -53,8 +53,8 @@ export function HowItWorks() {
           <span
             className="inline-flex rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em]"
             style={{
-              backgroundColor: "var(--system-green-soft)",
-              color: "var(--system-green)",
+              backgroundColor: "var(--system-primary-soft)",
+              color: "var(--system-primary)",
             }}
           >
             How it works
@@ -62,10 +62,7 @@ export function HowItWorks() {
 
           <h2 className="mt-5 text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
             From empty setup to
-            <span
-              className="block"
-              style={{ color: "var(--system-green)" }}
-            >
+            <span className="block" style={{ color: "var(--system-primary)" }}>
               live table orders
             </span>
           </h2>
@@ -102,8 +99,8 @@ export function HowItWorks() {
                   <div
                     className="rounded-full px-3 py-1 text-xs font-bold"
                     style={{
-                      backgroundColor: "var(--system-green-soft)",
-                      color: "var(--system-green)",
+                      backgroundColor: "var(--system-primary-soft)",
+                      color: "var(--system-primary)",
                     }}
                   >
                     Fast setup
@@ -130,7 +127,7 @@ export function HowItWorks() {
                           className="flex h-10 w-10 items-center justify-center rounded-xl"
                           style={{
                             backgroundColor: active
-                              ? "var(--system-green-soft)"
+                              ? "var(--system-primary-soft)"
                               : "var(--system-cream)",
                           }}
                         >
@@ -138,7 +135,7 @@ export function HowItWorks() {
                             className="h-5 w-5"
                             style={{
                               color: active
-                                ? "var(--system-green)"
+                                ? "var(--system-primary)"
                                 : "rgb(113 113 122)",
                             }}
                           />
@@ -157,7 +154,7 @@ export function HowItWorks() {
                           className="h-2.5 w-2.5 rounded-full"
                           style={{
                             backgroundColor: active
-                              ? "var(--system-green)"
+                              ? "var(--system-primary)"
                               : "rgb(212 212 216)",
                           }}
                         />
@@ -171,7 +168,7 @@ export function HowItWorks() {
                   className="mt-5 rounded-3xl p-5"
                   style={{
                     background:
-                      "linear-gradient(135deg, var(--system-green) 0%, #7bb45f 100%)",
+                      "linear-gradient(135deg, var(--system-primary) 0%, #7bb45f 100%)",
                   }}
                 >
                   <p className="text-sm font-medium text-white/80">
@@ -215,7 +212,7 @@ export function HowItWorks() {
                         >
                           <Icon
                             className="h-5 w-5"
-                            style={{ color: "var(--system-green)" }}
+                            style={{ color: "var(--system-primary)" }}
                           />
                         </div>
                       </div>
@@ -225,7 +222,7 @@ export function HowItWorks() {
                         <div className="flex flex-wrap items-center gap-3">
                           <span
                             className="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-extrabold text-white md:hidden"
-                            style={{ backgroundColor: "var(--system-green)" }}
+                            style={{ backgroundColor: "var(--system-primary)" }}
                           >
                             {item.step}
                           </span>
@@ -234,7 +231,7 @@ export function HowItWorks() {
                             className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide"
                             style={{
                               backgroundColor: "var(--system-cream)",
-                              color: "var(--system-green)",
+                              color: "var(--system-primary)",
                             }}
                           >
                             Step {item.step}
@@ -253,8 +250,8 @@ export function HowItWorks() {
                           <div
                             className="rounded-2xl px-4 py-2 text-sm font-semibold"
                             style={{
-                              backgroundColor: "var(--system-green-soft)",
-                              color: "var(--system-green)",
+                              backgroundColor: "var(--system-primary-soft)",
+                              color: "var(--system-primary)",
                             }}
                           >
                             Easy to complete

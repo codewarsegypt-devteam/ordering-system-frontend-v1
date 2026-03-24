@@ -1,10 +1,4 @@
 import { FEATURES } from "./data";
-import { CheckCircle2 } from "lucide-react";
-
-const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  Core: { bg: "var(--system-cream)", text: "var(--system-green)" },
-  Pro: { bg: "var(--system-green)", text: "#fff" },
-};
 
 export function FeaturesSection() {
   return (
@@ -15,73 +9,42 @@ export function FeaturesSection() {
           <span
             className="inline-flex rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em]"
             style={{
-              backgroundColor: "var(--system-green-soft)",
-              color: "var(--system-green)",
+              backgroundColor: "var(--system-primary-soft)",
+              color: "var(--system-primary)",
             }}
           >
             Features
           </span>
 
           <h2 className="mt-5 text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
-            Everything you need to run
-            <span
-              className="block"
-              style={{ color: "var(--system-green)" }}
-            >
-              QR ordering smoothly
-            </span>
+            Everything you need to run a modern restaurant
           </h2>
-
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg">
-            Give guests an easy ordering experience and give your team the tools
-            to manage menus, orders, branches, and staff without complexity.
-          </p>
         </div>
 
-        {/* Sales cards */}
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => {
-            const badge = BADGE_COLORS[f.badge] ?? BADGE_COLORS.Core;
-
-            return (
+        {/* Feature cards */}
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {FEATURES.map((f) => (
+            <div
+              key={f.title}
+              className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+            >
               <div
-                key={f.title}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{ backgroundColor: "var(--system-cream)" }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl text-white"
-                    style={{ backgroundColor: "var(--system-green)" }}
-                  >
-                    <f.icon className="h-6 w-6" />
-                  </div>
-
-                  <span
-                    className="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide"
-                    style={{ backgroundColor: badge.bg, color: badge.text }}
-                  >
-                    {f.badge}
-                  </span>
-                </div>
-
-                <h3 className="mt-5 text-lg font-bold text-zinc-900">
-                  {f.title}
-                </h3>
-
-                <p className="mt-2 text-sm leading-7 text-zinc-600">
-                  {f.description}
-                </p>
-
-                <div className="mt-5 flex items-center gap-2 text-sm font-medium">
-                  <CheckCircle2
-                    className="h-4 w-4"
-                    style={{ color: "var(--system-green)" }}
-                  />
-                  <span className="text-zinc-700">Built for daily restaurant use</span>
-                </div>
+                <f.icon
+                  className="h-4.5 w-4.5"
+                  style={{ color: "var(--system-primary)" }}
+                />
               </div>
-            );
-          })}
+
+              <h3 className="mt-4 text-base font-bold text-zinc-900">{f.title}</h3>
+
+              <p className="mt-2 text-sm leading-6 text-zinc-500">
+                {f.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

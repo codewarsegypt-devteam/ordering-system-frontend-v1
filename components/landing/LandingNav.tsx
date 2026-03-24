@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How it works", href: "#how" },
   { label: "Plans", href: "#plans" },
-  { label: "Sign up", href: "#signup" },
+  { label: "Sign up", href: "/signup" },
 ];
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const homePrefix = pathname === "/" ? "" : "/";
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -48,7 +51,7 @@ export function LandingNav() {
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
-              href={l.href}
+              href={l.href.startsWith("#") ? `${homePrefix}${l.href}` : l.href}
               className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
             >
               {l.label}
@@ -61,13 +64,13 @@ export function LandingNav() {
           >
             Log in
           </Link>
-          <a
-            href="#signup"
+          <Link
+            href="/signup"
             className="rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-md transition-all hover:opacity-90 hover:shadow-lg"
-            style={{ backgroundColor: "var(--system-green)" }}
+            style={{ backgroundColor: "var(--system-primary)" }}
           >
             Get started free
-          </a>
+          </Link>
         </nav>
 
         {/* Mobile toggle */}
@@ -92,7 +95,7 @@ export function LandingNav() {
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
-                href={l.href}
+                href={l.href.startsWith("#") ? `${homePrefix}${l.href}` : l.href}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
               >
@@ -106,14 +109,14 @@ export function LandingNav() {
             >
               Log in
             </Link>
-            <a
-              href="#signup"
+            <Link
+              href="/signup"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-xl px-3 py-3 text-center text-sm font-semibold text-white"
-              style={{ backgroundColor: "var(--system-green)" }}
+              style={{ backgroundColor: "var(--system-primary)" }}
             >
               Get started free
-            </a>
+            </Link>
           </nav>
         </div>
       )}

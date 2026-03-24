@@ -13,7 +13,7 @@ const FOOTER_LINKS = [
   {
     group: "Account",
     items: [
-      { label: "Sign up", href: "#signup" },
+      { label: "Sign up", href: "/signup" },
       { label: "Log in", href: "/dashboard/login" },
       { label: "Dashboard", href: "/dashboard" },
     ],
@@ -21,7 +21,11 @@ const FOOTER_LINKS = [
   {
     group: "Built by",
     items: [
-      { label: "Code Wars Egypt", href: "https://codewarsegypt.com", external: true },
+      {
+        label: "Code Wars Egypt",
+        href: "https://codewarsegypt.com",
+        external: true,
+      },
     ],
   },
 ];
@@ -34,13 +38,20 @@ export function LandingFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-white">
-              <img src="/logos/3.svg" alt="Qrixa" className="h-9 w-9 object-contain" />
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 font-bold text-white"
+            >
+              <img
+                src="/logos/3.svg"
+                alt="Qrixa"
+                className="h-9 w-9 object-contain"
+              />
               <span className="text-lg tracking-tight">Qrixa</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-500">
-              Smart QR ordering system for restaurants and cafés. No app download,
-              no hardware lock-in.
+              Smart QR ordering system for restaurants and cafés. No app
+              download, no hardware lock-in.
             </p>
 
             {/* Powered by Code Wars */}
@@ -52,7 +63,7 @@ export function LandingFooter() {
             >
               <span
                 className="flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-black text-white"
-                style={{ backgroundColor: "var(--system-green)" }}
+                style={{ backgroundColor: "var(--system-primary)" }}
               >
                 ⚔
               </span>
@@ -99,7 +110,7 @@ export function LandingFooter() {
                         </a>
                       )}
                     </li>
-                  )
+                  ),
                 )}
               </ul>
             </div>
@@ -122,7 +133,7 @@ export function LandingFooter() {
             Built by{" "}
             <span
               className="font-semibold"
-              style={{ color: "var(--system-green)" }}
+              style={{ color: "var(--system-primary)" }}
             >
               Code Wars Egypt
             </span>

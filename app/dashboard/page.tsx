@@ -233,31 +233,31 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-teal-100 bg-linear-to-r from-system-green to-system-green  p-5 text-white shadow-sm shadow-teal-200">
+      <div className="overflow-hidden rounded-2xl border border-teal-100 bg-linear-to-r  bg-system-primary  p-5 text-white shadow-sm shadow-teal-200">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
             <div>
-              <p className="text-sm font-medium text-teal-100">
+              <p className="text-sm font-medium text-system-sage">
                 Dashboard overview
               </p>
               <h1 className="text-2xl font-bold tracking-tight">
                 Welcome back, {user?.name}
               </h1>
-              <p className="mt-1 text-sm text-teal-100">
+                <p className="mt-1 text-sm text-system-sage">
                 Monitor orders, sales, tables, and branch activity from one
                 place.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-medium">
-              <span className="rounded-full bg-white/15 px-3 py-1.5 text-white/95 backdrop-blur">
+              <span className="rounded-full bg-system-cream px-3 py-1.5 text-system-primary backdrop-blur">
                 {user?.merchant_name ?? "Merchant"}
               </span>
               {user?.branch_name && (
-                <span className="rounded-full bg-white/15 px-3 py-1.5 text-white/95 backdrop-blur">
+                <span className="rounded-full bg-system-cream px-3 py-1.5 text-system-primary backdrop-blur">
                   {user.branch_name}
                 </span>
               )}
-              <span className="rounded-full bg-white/15 px-3 py-1.5 capitalize text-white/95 backdrop-blur">
+              <span className="rounded-full bg-system-cream px-3 py-1.5 capitalize text-system-primary backdrop-blur">
                 {user?.role}
               </span>
             </div>
@@ -550,7 +550,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-3">
                 <div className="card p-5 xl:col-span-2">
                   <div className="mb-4 flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4 text-system-green" />
+                    <BarChart3 className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Daily sales</h2>
                   </div>
                   <div className="space-y-3">
@@ -571,7 +571,7 @@ export default function DashboardPage() {
                           </div>
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                             <div
-                              className="h-full rounded-full bg-system-green"
+                              className="h-full rounded-full bg-system-primary"
                               style={{
                                 width: `${Math.max((item.total_sales / maxDailySales) * 100, item.total_sales > 0 ? 6 : 0)}%`,
                               }}
@@ -588,7 +588,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-system-green" />
+                    <TrendingUp className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Highlights</h2>
                   </div>
                   <div className="space-y-4 text-sm">
@@ -639,7 +639,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-2">
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-system-green" />
+                    <MapPin className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Branch performance</h2>
                   </div>
                   <div className="space-y-3">
@@ -672,7 +672,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <Table2 className="h-4 w-4 text-system-green" />
+                    <Table2 className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Table activity</h2>
                   </div>
                   <div className="space-y-3">
@@ -708,7 +708,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 xl:grid-cols-2">
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                    <UtensilsCrossed className="h-4 w-4 text-system-green" />
+                    <UtensilsCrossed className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Top menu items</h2>
                   </div>
                   <div className="space-y-3">
@@ -750,7 +750,7 @@ export default function DashboardPage() {
 
                 <div className="card p-5">
                   <div className="mb-4 flex items-center gap-2">
-                      <Store className="h-4 w-4 text-system-green" />
+                      <Store className="h-4 w-4 text-system-primary" />
                     <h2 className="section-title">Operations snapshot</h2>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">

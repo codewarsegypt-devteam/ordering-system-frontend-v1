@@ -4,10 +4,23 @@ import * as React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { fetchPublicMenuById, createTableServiceRequest, getApiError } from "@/lib/api";
+import {
+  fetchPublicMenuById,
+  createTableServiceRequest,
+  getApiError,
+} from "@/lib/api";
 import { useCart, useCurrency } from "@/contexts";
 import { recomputeMenuPrices } from "@/lib/utils/currency.utils";
-import { Search, ShoppingBag, Hash, ChevronLeft, X, UserCircle2, Receipt, ChevronDown } from "lucide-react";
+import {
+  Search,
+  ShoppingBag,
+  Hash,
+  ChevronLeft,
+  X,
+  UserCircle2,
+  Receipt,
+  ChevronDown,
+} from "lucide-react";
 import { toast } from "sonner";
 import { MenuItemCard } from "../MenuItemCard";
 import { CartDrawer } from "../CartDrawer";
@@ -42,7 +55,7 @@ export default function MenuByIdPage() {
     if (data?.currency_info) {
       initFromCurrencyInfo(data.currency_info);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.currency_info]);
 
   const { totalItems } = useCart();
@@ -51,7 +64,9 @@ export default function MenuByIdPage() {
     null,
   );
   const [cartOpen, setCartOpen] = React.useState(false);
-  const [serviceSending, setServiceSending] = React.useState<"call_waiter" | "request_bill" | null>(null);
+  const [serviceSending, setServiceSending] = React.useState<
+    "call_waiter" | "request_bill" | null
+  >(null);
   const [serviceCooldown, setServiceCooldown] = React.useState(false);
   const sectionRefs = React.useRef<Record<string, HTMLElement | null>>({});
 
@@ -59,7 +74,7 @@ export default function MenuByIdPage() {
   const rawCategories = data?.categories ?? [];
   const categories = React.useMemo(
     () => recomputeMenuPrices(rawCategories, selectedRate),
-    [rawCategories, selectedRate]
+    [rawCategories, selectedRate],
   );
 
   const sendTableService = async (type: "call_waiter" | "request_bill") => {
@@ -67,7 +82,11 @@ export default function MenuByIdPage() {
     setServiceSending(type);
     try {
       await createTableServiceRequest(token, type);
-      toast.success(type === "call_waiter" ? "Call waiter request sent" : "Request bill sent");
+      toast.success(
+        type === "call_waiter"
+          ? "Call waiter request sent"
+          : "Request bill sent",
+      );
       setServiceCooldown(true);
       setTimeout(() => setServiceCooldown(false), 8000);
     } catch (err) {
@@ -239,7 +258,7 @@ export default function MenuByIdPage() {
                   value={selectedCurrency?.id ?? ""}
                   onChange={(e) => {
                     const chosen = availableCurrencies.find(
-                      (c) => c.currency_id === Number(e.target.value)
+                      (c) => c.currency_id === Number(e.target.value),
                     );
                     if (chosen) setCurrency(chosen);
                   }}
@@ -292,12 +311,16 @@ export default function MenuByIdPage() {
               {serviceSending === "call_waiter" ? (
                 <span
                   className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                  style={{
+                    borderColor: `${primary} transparent transparent transparent`,
+                  }}
                 />
               ) : (
                 <UserCircle2 className="h-4 w-4" style={{ color: primary }} />
               )}
-              {serviceCooldown && serviceSending === null ? "Sent" : "Call waiter"}
+              {serviceCooldown && serviceSending === null
+                ? "Sent"
+                : "Call waiter"}
             </button>
             <button
               type="button"
@@ -308,12 +331,16 @@ export default function MenuByIdPage() {
               {serviceSending === "request_bill" ? (
                 <span
                   className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                  style={{ borderColor: `${primary} transparent transparent transparent` }}
+                  style={{
+                    borderColor: `${primary} transparent transparent transparent`,
+                  }}
                 />
               ) : (
                 <Receipt className="h-4 w-4" style={{ color: primary }} />
               )}
-              {serviceCooldown && serviceSending === null ? "Sent" : "Request bill"}
+              {serviceCooldown && serviceSending === null
+                ? "Sent"
+                : "Request bill"}
             </button>
           </div>
 
@@ -354,7 +381,9 @@ export default function MenuByIdPage() {
                         scrollToCategory(t.id);
                       }}
                       className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                        active ? "text-white shadow-sm" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        active
+                          ? "text-white shadow-sm"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                       style={active ? { backgroundColor: primary } : {}}
                     >
@@ -424,7 +453,7 @@ export default function MenuByIdPage() {
 
       {totalItems > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-        <button
+          <button
             type="button"
             onClick={() => setCartOpen(true)}
             className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-2xl px-5 py-4 text-white shadow-lg transition-colors"

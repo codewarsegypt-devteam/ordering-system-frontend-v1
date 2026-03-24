@@ -1,12 +1,12 @@
 import {
   QrCode,
-  LayoutDashboard,
-  MapPin,
-  Coins,
-  Layers,
+  Monitor,
   ClipboardList,
+  MapPin,
+  Layers,
+  Coins,
+  BarChart3,
   Users,
-  Zap,
   ShieldCheck,
 } from "lucide-react";
 
@@ -20,66 +20,51 @@ export const STATS = [
 export const FEATURES = [
   {
     icon: QrCode,
-    title: "QR code ordering",
+    title: "QR Ordering",
     description:
-      "Guests scan a table QR, browse your menu, and order from their phone. Zero app download—just a link.",
-    badge: "Core",
+      "Guests scan and order instantly - zero app downloads, zero friction.",
   },
   {
-    icon: LayoutDashboard,
-    title: "Staff dashboard",
+    icon: Monitor,
+    title: "Real-time Kitchen Display",
     description:
-      "Manage menus, orders, branches and team from one place. Real-time flow from placed to completed.",
-    badge: "Core",
-  },
-  {
-    icon: MapPin,
-    title: "Multi-branch & tables",
-    description:
-      "Add multiple locations and tables. Every table gets its own QR code so orders are always tied to the right seat.",
-    badge: "Core",
-  },
-  {
-    icon: Coins,
-    title: "Multi-currency display",
-    description:
-      "Set a base currency and let guests view prices in their preferred currency. No duplicate menus needed.",
-    badge: "Pro",
-  },
-  {
-    icon: Layers,
-    title: "Modifiers & variants",
-    description:
-      "Sizes, add-ons, extras. Attach modifier groups to items and enforce min/max selection rules.",
-    badge: "Core",
+      "Orders flash on screen the moment they're placed. WebSocket-powered, no refresh.",
   },
   {
     icon: ClipboardList,
-    title: "Orders & table services",
+    title: "Smart Table Sessions",
     description:
-      "Track orders in real time. Let guests call the waiter or request the bill straight from the menu.",
-    badge: "Core",
+      "Track every order per table. Cashiers see running totals and close bills with one tap.",
+  },
+  {
+    icon: MapPin,
+    title: "Multi-Branch Support",
+    description:
+      "Manage menus, staff, and analytics across your locations from one dashboard.",
+  },
+  {
+    icon: Layers,
+    title: "Customizable Menu",
+    description:
+      "Build menus with categories, variants, and modifiers. Update prices in real time.",
+  },
+  {
+    icon: Coins,
+    title: "Multi-Currency",
+    description:
+      "Show prices in your customers' preferred currency. Perfect for tourist-heavy areas.",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics & Reports",
+    description:
+      "Track revenue, popular items, peak hours, and order trends with clear charts.",
   },
   {
     icon: Users,
-    title: "Role-based access",
+    title: "Role-based Access",
     description:
-      "Owner, manager, cashier, kitchen—each role sees exactly what they need and nothing they don't.",
-    badge: "Core",
-  },
-  {
-    icon: Zap,
-    title: "Instant setup",
-    description:
-      "Create your account, set up a menu, and print QR codes in under 10 minutes. No hardware required.",
-    badge: "Core",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure & reliable",
-    description:
-      "JWT-based auth, token-scoped QR sessions, and hosted on production-grade infrastructure.",
-    badge: "Core",
+      "Owner, manager, cashier, kitchen - everyone sees only what they need.",
   },
 ];
 
@@ -119,39 +104,57 @@ export const HOW_IT_WORKS = [
 export const PLANS = [
   {
     name: "Starter",
-    price: "Free",
-    period: "forever",
-    description: "Everything you need to run QR ordering for one venue.",
+    price: "$29",
+    period: "mo",
+    description: "Perfect for single-location cafes and small restaurants.",
     features: [
       "1 branch",
-      "Unlimited menus & items",
-      "QR codes per table",
-      "Live order dashboard",
-      "Multi-currency display",
-      "Modifier groups",
-      "Role-based access",
+      "Up to 50 menu items",
+      "QR ordering",
+      "Kitchen display",
+      "Basic analytics",
+      "Email support",
     ],
-    cta: "Start for free",
-    ctaHref: "#signup",
+    cta: "Get Started",
+    ctaHref: "/signup",
     highlighted: false,
   },
   {
     name: "Growth",
-    price: "Coming soon",
+    price: "$79",
+    period: "mo",
+    description: "For growing restaurants with multiple branches.",
+    features: [
+      "Up to 5 branches",
+      "Unlimited menu items",
+      "Multi-currency support",
+      "Advanced analytics",
+      "Role management",
+      "Priority support",
+      "Custom branding",
+    ],
+    cta: "Get Started",
+    ctaHref: "/signup",
+    highlighted: true,
+    badge: "Most Popular",
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
     period: "",
-    description: "For growing restaurants with multiple locations.",
+    description: "Tailored for large chains and franchises.",
     features: [
       "Unlimited branches",
-      "Advanced analytics",
-      "Priority support",
-      "Custom domain menu",
-      "Loyalty & promotions",
+      "Dedicated account manager",
       "API access",
+      "Custom integrations",
+      "SLA guarantee",
+      "On-premise option",
+      "24/7 phone support",
     ],
-    cta: "Notify me",
-    ctaHref: null,
-    highlighted: true,
-    badge: "Most popular",
+    cta: "Contact Sales",
+    ctaHref: "/signup",
+    highlighted: false,
   },
 ];
 

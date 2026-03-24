@@ -219,6 +219,7 @@ export interface OrderItem {
 
 export interface CreateOrderResponse {
   order_id: string;
+  table_session_id?: string;
   order_number: string;
   status: OrderStatus;
   total_price: number;

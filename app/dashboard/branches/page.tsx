@@ -73,7 +73,7 @@ export default function BranchesPage() {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-teal-600" />
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--system-primary)" }} />
           <p className="text-sm text-slate-500">Loading branches…</p>
         </div>
       </div>
@@ -84,43 +84,39 @@ export default function BranchesPage() {
   const branchCount = branches?.length ?? 0;
 
   return (
-    <div className="space-y-8">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl border border-teal-200/60 bg-linear-to-br from-system-green to-system-green  px-6 py-8 text-white shadow-lg shadow-teal-900/10 sm:px-8">
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-              <MapPin className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Branches</h1>
-              <p className="mt-1 text-teal-100">
-                Manage locations, tables, and QR codes in one place.
-              </p>
-              <div className="mt-4 flex items-center gap-2">
-                <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-medium">
-                  {branchCount} branch{branchCount !== 1 ? "es" : ""}
-                </span>
-              </div>
-            </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--system-primary-soft)" }}
+          >
+            <MapPin className="h-6 w-6" style={{ color: "var(--system-primary)" }} />
           </div>
-          {!creating && (
-            <button
-              type="button"
-              onClick={() => setCreating(true)}
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-teal-700 shadow-md transition-all hover:bg-teal-50 hover:shadow-lg active:scale-[0.98]"
-            >
-              <Plus className="h-5 w-5" /> New branch
-            </button>
-          )}
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Branches</h1>
+            <p className="text-sm text-slate-500">
+              {branchCount} branch{branchCount !== 1 ? "es" : ""} · Manage locations, tables, and QR codes
+            </p>
+          </div>
         </div>
+        {!creating && (
+          <button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="btn-primary shrink-0"
+          >
+            <Plus className="h-4 w-4" /> New branch
+          </button>
+        )}
       </div>
 
       {/* Create branch form */}
       {creating && (
-        <div className="form-card border-teal-200/60 bg-linear-to-b from-teal-50/80 to-white">
+        <div className="form-card">
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="section-title flex items-center gap-2 text-teal-800">
+            <h2 className="section-title flex items-center gap-2" style={{ color: "var(--system-primary)" }}>
               <Building2 className="h-5 w-5" /> New branch
             </h2>
             <button
@@ -142,8 +138,8 @@ export default function BranchesPage() {
       {/* Branch list */}
       {!branches || branches.length === 0 ? (
         <div className="card flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-slate-100">
-            <MapPin className="h-12 w-12 text-slate-400" />
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--system-primary-soft)" }}>
+            <MapPin className="h-10 w-10" style={{ color: "var(--system-primary)" }} />
           </div>
           <h2 className="text-lg font-semibold text-slate-800">No branches yet</h2>
           <p className="mt-2 max-w-sm text-sm text-slate-500">
@@ -174,7 +170,10 @@ export default function BranchesPage() {
                       href={`/dashboard/branches/${branch.id}`}
                       className="flex min-w-0 flex-1 items-center gap-3 text-left"
                     >
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
+                      <div
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                        style={{ backgroundColor: "var(--system-primary-soft)", color: "var(--system-primary)" }}
+                      >
                         <MapPin className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -202,8 +201,9 @@ export default function BranchesPage() {
                         type="button"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingBranch(editingBranch === branch.id ? null : branch.id); }}
                         className={`rounded-lg p-2 transition-colors ${
-                          editingBranch === branch.id ? "bg-teal-100 text-teal-700" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                          editingBranch === branch.id ? "text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                         }`}
+                        style={editingBranch === branch.id ? { backgroundColor: "var(--system-primary)" } : undefined}
                         title="Edit branch"
                       >
                         <Pencil className="h-4 w-4" />

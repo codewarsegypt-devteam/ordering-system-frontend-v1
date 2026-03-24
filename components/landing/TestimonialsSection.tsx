@@ -14,8 +14,8 @@ export function TestimonialsSection() {
           <span
             className="mb-4 inline-block rounded-full px-4 py-1 text-xs font-bold uppercase tracking-widest"
             style={{
-              backgroundColor: "var(--system-green-soft)",
-              color: "var(--system-green)",
+              backgroundColor: "var(--system-primary-soft)",
+              color: "var(--system-primary)",
             }}
           >
             Testimonials
@@ -41,12 +41,14 @@ export function TestimonialsSection() {
               <div className="mt-6 flex items-center gap-3">
                 <span
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ backgroundColor: "var(--system-green)" }}
+                  style={{ backgroundColor: "var(--system-primary)" }}
                 >
                   {t.avatar}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-zinc-900">{t.name}</p>
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {t.name}
+                  </p>
                   <p className="text-xs text-zinc-500">{t.role}</p>
                 </div>
               </div>

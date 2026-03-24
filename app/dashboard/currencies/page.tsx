@@ -166,18 +166,18 @@ export default function CurrenciesPage() {
   }, [addForm.currency_id, addForm.rate_from_base, baseCurrencyId]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 px-4 py-8">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Page header */}
       <div className="flex items-center gap-4">
         <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: "var(--system-green-soft)" }}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: "var(--system-primary-soft)" }}
         >
-          <Coins className="h-6 w-6" style={{ color: "var(--system-green)" }} />
+          <Coins className="h-6 w-6" style={{ color: "var(--system-primary)" }} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Currencies</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Currencies</h1>
+          <p className="text-sm text-slate-500">
             Set your base currency and configure display currencies for customers.
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function CurrenciesPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2
             className="h-8 w-8 animate-spin"
-            style={{ color: "var(--system-green)" }}
+            style={{ color: "var(--system-primary)" }}
           />
         </div>
       ) : (
@@ -201,23 +201,23 @@ export default function CurrenciesPage() {
                 borderBottom: "1px solid var(--system-sage)",
               }}
             >
-              <Coins className="h-5 w-5" style={{ color: "var(--system-green)" }} />
-              <h2 className="text-base font-bold text-gray-800">Base Currency</h2>
+              <Coins className="h-5 w-5" style={{ color: "var(--system-primary)" }} />
+              <h2 className="text-sm font-semibold text-slate-900">Base Currency</h2>
             </div>
 
             <div className="px-5 py-5">
-              <p className="mb-4 text-sm text-gray-500">
+              <p className="mb-4 text-sm text-slate-500">
                 The single source of truth for all item prices. All other currencies are
                 display-only conversions.
               </p>
 
               {setup?.base_currency ? (
-                <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-5 py-4">
+                <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-5 py-4">
                   <div>
-                    <p className="font-bold text-gray-900">
+                    <p className="font-semibold text-slate-900">
                       {setup.base_currency.name}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-500">
                       {setup.base_currency.symbol} · {setup.base_currency.code}
                     </p>
                   </div>
@@ -234,8 +234,8 @@ export default function CurrenciesPage() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center justify-between rounded-xl border border-dashed border-gray-200 bg-gray-50 px-5 py-4">
-                  <p className="text-sm text-gray-400">No base currency set</p>
+                <div className="flex items-center justify-between rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 py-4">
+                  <p className="text-sm text-slate-400">No base currency set</p>
                   <button
                     type="button"
                     onClick={() => setShowBaseModal(true)}
@@ -259,8 +259,8 @@ export default function CurrenciesPage() {
               }}
             >
               <div className="flex items-center gap-3">
-                <Star className="h-5 w-5" style={{ color: "var(--system-green)" }} />
-                <h2 className="text-base font-bold text-gray-800">Display Currencies</h2>
+                <Star className="h-5 w-5" style={{ color: "var(--system-primary)" }} />
+                <h2 className="text-sm font-semibold text-slate-900">Display Currencies</h2>
               </div>
               <button
                 type="button"
@@ -274,16 +274,16 @@ export default function CurrenciesPage() {
             </div>
 
             <div className="px-5 py-5">
-              <p className="mb-4 text-sm text-gray-500">
+              <p className="mb-4 text-sm text-slate-500">
                 Customers can view prices in these currencies. Prices are converted from
                 the base currency using the rates you set.
               </p>
 
               {displayCurrencies.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-5 py-8 text-center">
-                  <Coins className="mx-auto mb-3 h-8 w-8 text-gray-300" />
-                  <p className="text-sm text-gray-500">No display currencies configured.</p>
-                  <p className="mt-1 text-xs text-gray-400">
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 py-8 text-center">
+                  <Coins className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+                  <p className="text-sm text-slate-500">No display currencies configured.</p>
+                  <p className="mt-1 text-xs text-slate-400">
                     Add display currencies so customers can switch currency views.
                   </p>
                 </div>
@@ -323,7 +323,7 @@ export default function CurrenciesPage() {
                             {entry.is_default_display && (
                               <Star
                                 className="h-4 w-4"
-                                style={{ color: "var(--system-green)" }}
+                                style={{ color: "var(--system-primary)" }}
                                 fill="currentColor"
                               />
                             )}
@@ -377,7 +377,7 @@ export default function CurrenciesPage() {
             </p>
           </div>
 
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Select Base Currency
           </label>
           <select
@@ -423,7 +423,7 @@ export default function CurrenciesPage() {
         <Modal title="Add Display Currency" onClose={() => setShowAddModal(false)}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Currency
               </label>
               <select
@@ -444,7 +444,7 @@ export default function CurrenciesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Exchange Rate from Base
               </label>
               <input
@@ -460,7 +460,7 @@ export default function CurrenciesPage() {
                 required
               />
               {setup?.base_currency && addForm.currency_id && (
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {Number(addForm.currency_id) === baseCurrencyId ? (
                     <>
                       Same as base currency — rate is usually <strong>1</strong>.
@@ -477,7 +477,7 @@ export default function CurrenciesPage() {
               )}
             </div>
 
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700">
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={addForm.is_default_display}
@@ -528,7 +528,7 @@ export default function CurrenciesPage() {
         >
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Exchange Rate from Base
               </label>
               <input
@@ -542,13 +542,13 @@ export default function CurrenciesPage() {
                 className="input-base w-full"
               />
               {setup?.base_currency && (
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   How many {editEntry.currency.code} = 1 {setup.base_currency.code}
                 </p>
               )}
             </div>
 
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700">
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={editForm.is_active}
@@ -560,7 +560,7 @@ export default function CurrenciesPage() {
               Active (visible to customers)
             </label>
 
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700">
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={editForm.is_default_display}
@@ -608,7 +608,7 @@ export default function CurrenciesPage() {
           title="Remove Currency"
           onClose={() => setDeleteConfirm(null)}
         >
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-slate-700">
             Remove{" "}
             <strong>
               {deleteConfirm.currency.name} ({deleteConfirm.currency.code})
@@ -664,11 +664,11 @@ function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>

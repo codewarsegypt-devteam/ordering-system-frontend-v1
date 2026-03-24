@@ -133,7 +133,7 @@ export default function ModifiersPage() {
       <div className="flex items-center justify-center py-24">
         <Loader2
           className="h-8 w-8 animate-spin"
-          style={{ color: "var(--system-green)" }}
+          style={{ color: "var(--system-primary)" }}
         />
       </div>
     );
@@ -149,7 +149,7 @@ export default function ModifiersPage() {
               className="flex h-10 w-10 items-center justify-center rounded-xl"
               style={{
                 backgroundColor: "var(--system-sage-soft)",
-                color: "var(--system-green)",
+                color: "var(--system-primary)",
               }}
             >
               <Layers className="h-5 w-5" />
@@ -237,7 +237,7 @@ export default function ModifiersPage() {
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
                     style={{
                       backgroundColor: "var(--system-sage-soft)",
-                      color: "var(--system-green)",
+                      color: "var(--system-primary)",
                     }}
                   >
                     <Layers className="h-4 w-4" />
@@ -410,7 +410,7 @@ export default function ModifiersPage() {
                                   <span
                                     className="flex items-center gap-1 font-semibold"
                                     style={{
-                                      color: "var(--system-green)",
+                                      color: "var(--system-primary)",
                                     }}
                                   >
                                     <DollarSign className="h-3.5 w-3.5" />
