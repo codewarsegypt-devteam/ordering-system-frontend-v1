@@ -104,7 +104,7 @@ export const HOW_IT_WORKS = [
 export const PLANS = [
   {
     name: "Starter",
-    price: "$29",
+    price: "$10",
     period: "mo",
     description: "Perfect for single-location cafes and small restaurants.",
     features: [
@@ -121,7 +121,7 @@ export const PLANS = [
   },
   {
     name: "Growth",
-    price: "$79",
+    price: "$20",
     period: "mo",
     description: "For growing restaurants with multiple branches.",
     features: [
@@ -148,8 +148,10 @@ export const PLANS = [
       "Dedicated account manager",
       "API access",
       "Custom integrations",
-      "SLA guarantee",
-      "On-premise option",
+      "Custom branding",
+      "Unlimited menu items",
+      // "SLA guarantee",
+      // "On-premise option",
       "24/7 phone support",
     ],
     cta: "Contact Sales",

@@ -40,7 +40,7 @@ export function PlansSection() {
                   className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold text-white"
                   style={{ backgroundColor: "var(--system-primary)" }}
                 >
-                  <Sparkles className="mr-1 inline-block h-3 w-3" />
+                  {/* <Sparkles className="mr-1 inline-block h-3 w-3" /> */}
                   {plan.badge}
                 </div>
               )}

@@ -25,6 +25,11 @@
   --system-primary-hover: #2e3115;
   --system-primary-soft: rgba(109, 158, 81, 0.15);
 
+  /* Dashboard shell (neutral canvas + surfaces — template-style) */
+  --dashboard-canvas: #f8fafc;
+  --dashboard-surface: #ffffff;
+  --dashboard-border: #e4e4e7;
+
   /* Sidebar (dashboard) – uses system primary */
   --sidebar-bg: #1e293b;
   --sidebar-fg: #e2e8f0;
@@ -258,6 +263,18 @@ body {
   }
   .page-header {
     @apply mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  /* Main content area behind cards (SaaS admin look) */
+  .dashboard-main {
+    background-color: var(--dashboard-canvas);
+  }
+
+  .link-dashboard-primary {
+    @apply font-semibold text-slate-800 transition-colors;
+  }
+  .link-dashboard-primary:hover {
+    color: var(--system-primary);
   }
   .breadcrumb {
     @apply flex items-center gap-1.5 text-sm text-slate-500;

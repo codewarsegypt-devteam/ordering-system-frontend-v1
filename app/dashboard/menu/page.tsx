@@ -27,8 +27,16 @@ import {
   Check,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { DataCard } from "@/components/dashboard/DataCard";
+import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
+import { DashboardListSkeleton } from "@/components/dashboard/DashboardListSkeleton";
+import {
+  PageToolbar,
+  PageToolbarSearch,
+} from "@/components/dashboard/PageToolbar";
 
 const canEdit = (role: string) => role === "owner" || role === "manager";
 
@@ -46,6 +54,7 @@ export default function DashboardMenuPage() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [search, setSearch] = useState("");
 
   const {
     data: menus,
@@ -56,6 +65,17 @@ export default function DashboardMenuPage() {
     queryFn: fetchMenus,
     enabled: !!user?.merchant_id,
   });
+
+  const filteredMenus = useMemo(() => {
+    if (!menus?.length) return [];
+    const q = search.trim().toLowerCase();
+    if (!q) return menus;
+    return menus.filter((m) => {
+      const en = (m.name_en ?? "").toLowerCase();
+      const ar = (m.name_ar ?? "").toLowerCase();
+      return en.includes(q) || ar.includes(q);
+    });
+  }, [menus, search]);
 
   const createMut = useMutation({
     mutationFn: createMenu,
@@ -106,54 +126,64 @@ export default function DashboardMenuPage() {
 
   const editable = canEdit(user?.role ?? "");
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-        <p className="text-sm text-slate-500">Loading menus…</p>
+      <div className="space-y-6">
+        <PageHeader
+          title="Menus"
+          description="Loading…"
+          icon={
+            <UtensilsCrossed
+              className="h-5 w-5"
+              style={{ color: "var(--system-primary)" }}
+            />
+          }
+        />
+        <DataCard>
+          <DashboardListSkeleton rows={6} />
+        </DataCard>
       </div>
     );
+  }
 
   if (error) return <div className="alert-error">{getApiError(error)}</div>;
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-            <UtensilsCrossed className="h-5 w-5 text-amber-600" />
-          </div>
-          <div>
-            <h1 className="page-title">Menus</h1>
-            <p className="text-sm text-slate-500">
-              {menus?.length ?? 0} menu{menus?.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {editable && (
-            <Link href="/dashboard/modifiers" className="btn-secondary">
-              <Layers className="h-4 w-4" />
-              Modifier groups
-            </Link>
-          )}
-          {editable && !creating && (
-            <button
-              type="button"
-              onClick={() => setCreating(true)}
-              className="btn-primary"
-            >
-              <Plus className="h-4 w-4" />
-              New menu
-            </button>
-          )}
-        </div>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Menus"
+        description={`${menus?.length ?? 0} menu${menus?.length !== 1 ? "s" : ""} · Manage lists and categories`}
+        icon={
+          <UtensilsCrossed
+            className="h-5 w-5"
+            style={{ color: "var(--system-primary)" }}
+          />
+        }
+        actions={
+          <>
+            {editable && (
+              <Link href="/dashboard/modifiers" className="btn-secondary">
+                <Layers className="h-4 w-4" />
+                Modifier groups
+              </Link>
+            )}
+            {editable && !creating && (
+              <button
+                type="button"
+                onClick={() => setCreating(true)}
+                className="btn-primary"
+              >
+                <Plus className="h-4 w-4" />
+                New menu
+              </button>
+            )}
+          </>
+        }
+      />
 
       {/* Create form */}
       {creating && (
-        <div className="form-card">
+        <div className="form-card shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="section-title">Create menu</h2>
             <button
@@ -174,103 +204,141 @@ export default function DashboardMenuPage() {
 
       {/* Menu list */}
       {!menus || menus.length === 0 ? (
-        <div className="card flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <UtensilsCrossed className="h-8 w-8 text-slate-400" />
-          </div>
-          <p className="font-medium text-slate-700">No menus yet</p>
-          <p className="mt-1 text-sm text-slate-400">
-            Create your first menu to get started.
-          </p>
-          {editable && !creating && (
-            <button
-              type="button"
-              onClick={() => setCreating(true)}
-              className="btn-primary mt-5"
-            >
-              <Plus className="h-4 w-4" /> Create menu
-            </button>
-          )}
-        </div>
+        <DataCard>
+          <DashboardEmptyState
+            icon={<UtensilsCrossed className="h-8 w-8 text-slate-400" />}
+            title="No menus yet"
+            description="Create your first menu to add categories and items."
+            action={
+              editable && !creating ? (
+                <button
+                  type="button"
+                  onClick={() => setCreating(true)}
+                  className="btn-primary"
+                >
+                  <Plus className="h-4 w-4" /> Create menu
+                </button>
+              ) : undefined
+            }
+          />
+        </DataCard>
       ) : (
-        <div className="card overflow-hidden divide-y divide-slate-100">
-          {menus.map((menu) => (
-            <div key={menu.id}>
-              <div className="flex items-center gap-4 px-5 py-4">
-                {/* Cover image or icon */}
-                <div className="hidden h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-amber-50 sm:flex sm:items-center sm:justify-center">
-                  {menu.img_url_1 ? (
-                    <img
-                      src={menu.img_url_1}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <Globe className="h-6 w-6 text-amber-500" />
-                  )}
-                </div>
-                {/* Info */}
-                <div className="min-w-0 flex-1">
-                  <Link
-                    href={`/dashboard/menu/${menu.id}`}
-                    className="font-semibold text-slate-800 hover:text-teal-700 transition-colors"
-                  >
-                    {menu.name_en ?? menu.name_ar ?? menu.id}
-                  </Link>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-slate-400">
-                      {menu.currancy ?? menu.currency ?? "EGP"}
-                    </span>
-                    <ActiveBadge active={menu.is_active} />
-                  </div>
-                </div>
-                {/* Actions */}
-                <div className="flex items-center gap-1">
-                  {editable && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setEditingId(editingId === menu.id ? null : menu.id)
-                      }
-                      className={`btn-ghost btn-sm ${editingId === menu.id ? "bg-slate-100 text-teal-700" : ""}`}
-                      title="Edit menu"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                  )}
-                  <Link
-                    href={`/dashboard/menu/${menu.id}`}
-                    className="btn-ghost btn-sm"
-                    title="View categories"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </div>
+        <>
+          <PageToolbar>
+            <PageToolbarSearch
+              value={search}
+              onChange={setSearch}
+              placeholder="Search menus by name…"
+            />
+          </PageToolbar>
+          <DataCard className="overflow-hidden">
+            {filteredMenus.length === 0 ? (
+              <div className="px-5 py-12 text-center text-sm text-slate-500">
+                No menus match &ldquo;{search.trim()}&rdquo;.
               </div>
-              {editingId === menu.id && (
-                <div className="border-t border-slate-100 bg-slate-50 px-5 py-4">
-                  <h3 className="mb-4 text-sm font-semibold text-slate-700">
-                    Edit menu
-                  </h3>
-                  <MenuEditForm
-                    menu={menu}
-                    onSave={(body) =>
-                      updateMut.mutate({ menuId: menu.id, body })
-                    }
-                    onCancel={() => setEditingId(null)}
-                    isPending={updateMut.isPending}
-                    onUploadImage={(file) =>
-                      uploadImageMut.mutate({ menuId: menu.id, file })
-                    }
-                    onDeleteImage={() => deleteImageMut.mutate(menu.id)}
-                    isUploadingImage={uploadImageMut.isPending}
-                    isDeletingImage={deleteImageMut.isPending}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            ) : (
+              <div
+                className="divide-y"
+                style={{ borderColor: "var(--dashboard-border)" }}
+              >
+                {filteredMenus.map((menu) => (
+                  <div key={menu.id}>
+                    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-slate-50/80">
+                {/* Cover image or icon */}
+                      <div className="hidden h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 sm:flex sm:items-center sm:justify-center"
+                        style={{ borderColor: "var(--dashboard-border)" }}
+                      >
+                        {menu.img_url_1 ? (
+                          <img
+                            src={menu.img_url_1}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <Globe
+                            className="h-6 w-6"
+                            style={{ color: "var(--system-primary)" }}
+                          />
+                        )}
+                      </div>
+                      {/* Info */}
+                      <div className="min-w-0 flex-1">
+                        <Link
+                          href={`/dashboard/menu/${menu.id}`}
+                          className="link-dashboard-primary"
+                        >
+                          {menu.name_en ?? menu.name_ar ?? menu.id}
+                        </Link>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="text-xs text-slate-400">
+                            {menu.currancy ?? menu.currency ?? "EGP"}
+                          </span>
+                          <ActiveBadge active={menu.is_active} />
+                        </div>
+                      </div>
+                      {/* Actions */}
+                      <div className="flex items-center gap-1">
+                        {editable && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditingId(
+                                editingId === menu.id ? null : menu.id,
+                              )
+                            }
+                            className={`btn-ghost btn-sm ${editingId === menu.id ? "bg-slate-100" : ""}`}
+                            style={
+                              editingId === menu.id
+                                ? { color: "var(--system-primary)" }
+                                : undefined
+                            }
+                            title="Edit menu"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        )}
+                        <Link
+                          href={`/dashboard/menu/${menu.id}`}
+                          className="btn-ghost btn-sm"
+                          title="View categories"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </div>
+                    {editingId === menu.id && (
+                      <div
+                        className="border-t px-5 py-4"
+                        style={{
+                          borderColor: "var(--dashboard-border)",
+                          backgroundColor: "var(--dashboard-canvas)",
+                        }}
+                      >
+                        <h3 className="mb-4 text-sm font-semibold text-slate-700">
+                          Edit menu
+                        </h3>
+                        <MenuEditForm
+                          menu={menu}
+                          onSave={(body) =>
+                            updateMut.mutate({ menuId: menu.id, body })
+                          }
+                          onCancel={() => setEditingId(null)}
+                          isPending={updateMut.isPending}
+                          onUploadImage={(file) =>
+                            uploadImageMut.mutate({ menuId: menu.id, file })
+                          }
+                          onDeleteImage={() => deleteImageMut.mutate(menu.id)}
+                          isUploadingImage={uploadImageMut.isPending}
+                          isDeletingImage={deleteImageMut.isPending}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </DataCard>
+        </>
       )}
     </div>
   );

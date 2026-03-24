@@ -216,7 +216,7 @@ function Sidebar({
         <img
           src="/logos/4.svg"
           alt="Qrixa"
-          className="h-14 w-auto shrink-0 object-contain"
+          className="h-10 w-auto shrink-0 object-contain"
         />
         {onClose && (
           <button
@@ -355,7 +355,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+      <div className="dashboard-main flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-9 w-9 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--system-primary)", borderTopColor: "transparent" }} />
           <p className="text-sm text-slate-500">Loading…</p>
@@ -372,7 +372,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
   if (path?.endsWith("/login")) return <>{children}</>;
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="dashboard-main flex min-h-screen">
       <LiveOrdersPoller />
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -547,8 +547,8 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          {children}
+        <main className="flex-1 overflow-auto bg-slate-50/95 p-4 sm:p-6 lg:p-8 xl:p-10">
+          <div className="mx-auto w-full max-w-[1400px]">{children}</div>
         </main>
       </div>
     </div>
