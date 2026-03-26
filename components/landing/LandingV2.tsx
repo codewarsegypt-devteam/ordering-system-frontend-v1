@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 
 // function TopBar() {
 //   return (
@@ -23,9 +24,15 @@ function Hero() {
   const t = useTranslations("Landing");
 
   return (
-    <section className="relative overflow-hidden px-6 pb-20 pt-20 md:pb-28 md:pt-25">
+    <section className="relative px-6 pb-20 pt-20 md:pb-28 md:pt-25 overflow-hidden">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-12">
-        <div className="z-10 lg:col-span-7">
+        <motion.div
+          className="z-10 lg:col-span-7"
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        > 
           <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-800">
             {t("heroBadge")}
           </span>
@@ -48,18 +55,24 @@ function Hero() {
               {t("watchDemo")}
             </button>
           </div>
-        </div>
-        <div className="relative lg:col-span-5">
-          <div className="overflow-hidden rounded-2xl shadow-2xl">
+        </motion.div>
+        <motion.div
+          className="relative lg:col-span-5"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <div className="overflow-hidden rounded-2xl ">
             <Image
-              src="/image2.png"
+              src="/img3.png"
               alt="Qrixa dashboard preview"
               className="aspect-4/5 w-full object-cover"
-              width={500}
-              height={500}
+              width={1000}
+              height={1000}
             />
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -71,55 +84,73 @@ function ValueGrid() {
   return (
     <section id="features" className="px-6 py-24 md:py-28">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 max-w-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="mb-12 max-w-2xl"
+        >
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
             {t("valueTitle")}
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            {t("valueDescription")}
-          </p>
-        </div>
+          <p className="mt-4 text-lg text-slate-600">{t("valueDescription")}</p>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
-          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm md:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm md:col-span-7"
+          >
             <Building2 className="h-10 w-10 text-emerald-700" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
               {t("multiBranchTitle")}
             </h3>
-            <p className="mt-3 text-slate-600">
-              {t("multiBranchText")}
-            </p>
-          </div>
-          <div
+            <p className="mt-3 text-slate-600">{t("multiBranchText")}</p>
+          </motion.div>
+          <motion.div
+            viewport={{ once: true }}
             className="rounded-xl p-8 text-white shadow-sm md:col-span-5"
             style={{ backgroundColor: "var(--system-primary)" }}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
           >
             <Utensils className="h-10 w-10 text-emerald-200" />
             <h3 className="mt-5 text-2xl font-bold">
               {t("tableOrderingTitle")}
             </h3>
-            <p className="mt-3 text-slate-200">
-              {t("tableOrderingText")}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 shadow-sm md:col-span-5">
+            <p className="mt-3 text-slate-200">{t("tableOrderingText")}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="rounded-xl border border-slate-200 bg-slate-50 p-8 shadow-sm md:col-span-5"
+          >
             <Globe className="h-10 w-10 text-slate-800" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
               {t("multiCurrencyTitle")}
             </h3>
-            <p className="mt-3 text-slate-600">
-              {t("multiCurrencyText")}
-            </p>
-          </div>
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-8 shadow-sm md:col-span-7">
+            <p className="mt-3 text-slate-600">{t("multiCurrencyText")}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+              className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-8 shadow-sm md:col-span-7"
+          >
             <BarChart3 className="h-10 w-10 text-emerald-700" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
               {t("analyticsTitle")}
             </h3>
-            <p className="mt-3 text-slate-600">
-              {t("analyticsText")}
-            </p>
-          </div>
+            <p className="mt-3 text-slate-600">{t("analyticsText")}</p>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -201,9 +232,7 @@ function Cta() {
         className="rounded-3xl px-8 py-16 text-center text-white md:px-16"
         style={{ backgroundColor: "var(--system-primary)" }}
       >
-        <h2 className="text-3xl font-extrabold md:text-5xl">
-          {t("ctaTitle")}
-        </h2>
+        <h2 className="text-3xl font-extrabold md:text-5xl">{t("ctaTitle")}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-slate-200">
           {t("ctaDescription")}
         </p>
