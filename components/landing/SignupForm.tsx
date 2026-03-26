@@ -47,10 +47,21 @@ export function SignupForm() {
   }, [form.password]);
 
   const passwordStrength = useMemo(() => {
-    if (passwordScore <= 1) return { label: "Weak", color: "text-red-600", bar: "bg-red-500" };
-    if (passwordScore === 2) return { label: "Fair", color: "text-amber-600", bar: "bg-amber-500" };
-    if (passwordScore === 3) return { label: "Good", color: "text-emerald-600", bar: "bg-emerald-500" };
-    return { label: "Strong", color: "text-emerald-800", bar: "bg-emerald-600" };
+    if (passwordScore <= 1)
+      return { label: "Weak", color: "text-red-600", bar: "bg-red-500" };
+    if (passwordScore === 2)
+      return { label: "Fair", color: "text-amber-600", bar: "bg-amber-500" };
+    if (passwordScore === 3)
+      return {
+        label: "Good",
+        color: "text-emerald-600",
+        bar: "bg-emerald-500",
+      };
+    return {
+      label: "Strong",
+      color: "text-emerald-800",
+      bar: "bg-emerald-600",
+    };
   }, [passwordScore]);
 
   const hasBasicErrors = useMemo(() => {
@@ -58,7 +69,9 @@ export function SignupForm() {
     const nameOk = !!form.name.trim();
     const merchantOk = !!form.merchant_name.trim();
     const passwordOk = form.password.length >= 8;
-    const confirmOk = form.confirm_password.length > 0 && form.confirm_password === form.password;
+    const confirmOk =
+      form.confirm_password.length > 0 &&
+      form.confirm_password === form.password;
     const termsOk = form.terms_accepted;
     return {
       emailOk,
@@ -67,7 +80,8 @@ export function SignupForm() {
       passwordOk,
       confirmOk,
       termsOk,
-      canSubmit: emailOk && nameOk && merchantOk && passwordOk && confirmOk && termsOk,
+      canSubmit:
+        emailOk && nameOk && merchantOk && passwordOk && confirmOk && termsOk,
     };
   }, [form]);
 
@@ -75,7 +89,9 @@ export function SignupForm() {
     e.preventDefault();
 
     if (!hasBasicErrors.canSubmit) {
-      toast.error("Please complete the required fields and confirm your password.");
+      toast.error(
+        "Please complete the required fields and confirm your password.",
+      );
       return;
     }
 
@@ -120,12 +136,12 @@ export function SignupForm() {
 
   if (showSuccess && successEmail) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-[var(--system-primary)] bg-[var(--system-primary-soft)] px-6 py-8 text-center">
-        <Mail className="mb-3 h-14 w-14 text-[var(--system-primary)]" />
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-(--system-primary) bg-(--system-primary-soft) px-6 py-8 text-center">
+        <Mail className="mb-3 h-14 w-14 text-(--system-primary)" />
         <h3 className="text-lg font-bold text-zinc-900">Verify your email</h3>
         <p className="mt-2 text-sm text-zinc-600">
-          We sent a verification link to <strong>{successEmail}</strong>.
-          After you verify, you can sign in.
+          We sent a verification link to <strong>{successEmail}</strong>. After
+          you verify, you can sign in.
         </p>
         <p className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -160,17 +176,16 @@ export function SignupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-xs text-slate-600">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-[var(--system-primary)]" />
+          <ShieldCheck className="h-4 w-4 text-(--system-primary)" />
           <span>
             Email verification is required for sign in. Keep your inbox handy.
           </span>
         </div>
       </div>
 
-      {/* Fields (two-by-two on desktop to reduce height) */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label
@@ -184,11 +199,9 @@ export function SignupForm() {
             type="text"
             autoComplete="name"
             value={form.name}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, name: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="e.g. Reyad"
-            className={`input-base w-full ${
+            className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.name.length > 0 && !hasBasicErrors.nameOk
                 ? "input-error"
                 : ""
@@ -209,11 +222,9 @@ export function SignupForm() {
             type="email"
             autoComplete="email"
             value={form.email}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, email: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             placeholder="you@restaurant.com"
-            className={`input-base w-full ${
+            className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.email.length > 0 && !hasBasicErrors.emailOk
                 ? "input-error"
                 : ""
@@ -238,7 +249,7 @@ export function SignupForm() {
               setForm((f) => ({ ...f, merchant_name: e.target.value }))
             }
             placeholder="e.g. My Restaurant"
-            className={`input-base w-full ${
+            className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.merchant_name.length > 0 && !hasBasicErrors.merchantOk
                 ? "input-error"
                 : ""
@@ -264,7 +275,7 @@ export function SignupForm() {
                 setForm((f) => ({ ...f, password: e.target.value }))
               }
               placeholder="At least 8 characters"
-              className={`input-base w-full pr-11 ${
+              className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white pr-11 focus:border-(--system-primary) ${
                 form.password.length > 0 && !hasBasicErrors.passwordOk
                   ? "input-error"
                   : ""
@@ -275,7 +286,7 @@ export function SignupForm() {
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               tabIndex={-1}
               aria-label={showPw ? "Hide password" : "Show password"}
             >
@@ -287,18 +298,20 @@ export function SignupForm() {
             </button>
           </div>
 
-          <div className="mt-1.5">
+          <div className="mt-2">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 Strength
               </p>
-              <span className={`text-[11px] font-bold ${passwordStrength.color}`}>
+              <span
+                className={`text-[11px] font-bold ${passwordStrength.color}`}
+              >
                 {passwordStrength.label}
               </span>
             </div>
-            <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-200/80">
               <div
-                className={`h-full ${passwordStrength.bar}`}
+                className={`h-full transition-all duration-300 ${passwordStrength.bar}`}
                 style={{ width: `${(passwordScore / 4) * 100}%` }}
               />
             </div>
@@ -325,7 +338,7 @@ export function SignupForm() {
                 }))
               }
               placeholder="Repeat your password"
-              className={`input-base w-full pr-11 ${
+              className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white pr-11 focus:border-(--system-primary) ${
                 form.confirm_password.length > 0 && !hasBasicErrors.confirmOk
                   ? "input-error"
                   : ""
@@ -336,7 +349,7 @@ export function SignupForm() {
             <button
               type="button"
               onClick={() => setShowConfirmPw((v) => !v)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               tabIndex={-1}
               aria-label={
                 showConfirmPw
@@ -359,11 +372,12 @@ export function SignupForm() {
         </div>
       </div>
 
-      <div className="flex items-start gap-3">
+      <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5">
+        <div className="flex items-start gap-3">
         <input
           id="signup-terms"
           type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--system-primary)] focus:ring-[var(--system-primary-soft)]"
+          className="mt-1 h-4 w-4 rounded border-slate-300 text-(--system-primary) focus:ring-(--system-primary-soft)"
           checked={form.terms_accepted}
           onChange={(e) =>
             setForm((f) => ({ ...f, terms_accepted: e.target.checked }))
@@ -371,15 +385,16 @@ export function SignupForm() {
           required
         />
         <label htmlFor="signup-terms" className="text-sm text-slate-600">
-          I agree to the terms and understand sign-in requires email verification.
+          I agree to the terms and understand sign-in requires email
+          verification.
         </label>
+        </div>
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white transition-colors disabled:opacity-70"
-        style={{ backgroundColor: "var(--system-primary)" }}
+        className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-(--system-primary) font-semibold text-white shadow-sm transition-all hover:brightness-95 disabled:opacity-70"
       >
         {submitting ? (
           <Loader2 className="h-5 w-5 animate-spin" />

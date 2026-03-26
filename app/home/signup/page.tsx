@@ -4,10 +4,8 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-white text-zinc-900">
-      <LandingNav />
+    <div className="">
       <SignupSection />
-      <LandingFooter />
     </div>
   );
 }

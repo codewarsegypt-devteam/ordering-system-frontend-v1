@@ -1,89 +1,85 @@
 import Link from "next/link";
 import { SignupForm } from "./SignupForm";
-import { ShieldCheck, Clock, Zap, Sparkles } from "lucide-react";
+import { ShieldCheck, Clock3, Zap, CheckCircle2 } from "lucide-react";
 
 const REASSURANCES = [
   { icon: Zap, text: "Set up in under 10 minutes" },
   { icon: ShieldCheck, text: "No credit card required" },
-  { icon: Clock, text: "Free forever on the Starter plan" },
+  { icon: Clock3, text: "Start free, upgrade anytime" },
 ];
 
 export function SignupSection() {
   return (
-    <section id="signup" className="px-4 py-16 sm:py-20 h-screen">
-      <div
-        className="mx-auto max-w-7xl rounded-3xl  px-4 py-10 "
-       
-      >
-        <div className="flex  items-stretch justify-center  lg:flex-row lg:items-start ">
-          {/* Left: minimal pitch (keep it side-by-side, but remove the long text) */}
-          {/* <div className="hidden flex-1 px-2 lg:block lg:max-w-[360px]">
-            <div
-              className="rounded-3xl border border-slate-200/80 bg-white/60 p-6 shadow-sm"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,243,225,0.55) 100%)",
-              }}
-            >
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 shadow-sm">
-                <Sparkles
-                  className="h-4 w-4"
-                  style={{ color: "var(--system-primary)" }}
-                />
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-600">
-                  Fast setup
-                </span>
-              </div>
-
-              <h3 className="mt-5 text-base font-extrabold text-zinc-900">
-                Secure owner access
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-600">
-                Email verification required before signing in to the dashboard.
-              </p>
-
-        
-              <div className="mt-5 space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-zinc-700">
-                  <ShieldCheck className="h-4 w-4 text-[var(--system-primary)]" />
-                  <span>No vendor lock-in</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-medium text-zinc-700">
-                  <Clock className="h-4 w-4 text-[var(--system-primary)]" />
-                  <span>Set up in minutes</span>
-                </div>
-              </div>
+    <section
+      id="signup"
+      className="relative overflow-hidden bg-[#F8FAFC] px-4 pb-16 pt-8 sm:pb-20 sm:pt-10"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className="grid items-stretch gap-6 lg:grid-cols-[1.05fr_1fr]">
+          <div
+            className="rounded-3xl border border-slate-200/70 p-6 sm:p-8"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.92))",
+              boxShadow: "0 10px 35px rgba(15, 23, 42, 0.06)",
+            }}
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                Fast onboarding
+              </span>
             </div>
-          </div> */}
 
-          {/* Right: form */}
-          <div className="w-full max-w-md lg:self-start">
+            <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl">
+              Start your digital menu in minutes
+            </h2>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-600 sm:text-base">
+              Create an owner account, verify your email, and publish your menu
+              with a modern dashboard built for restaurants and cafes.
+            </p>
+
+            <div className="mt-6 space-y-3">
+              {REASSURANCES.map(({ icon: Icon, text }) => (
+                <div
+                  key={text}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5"
+                >
+                  <Icon className="h-4.5 w-4.5 shrink-0 text-(--system-primary)" />
+                  <span className="text-sm font-medium text-zinc-700">{text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-7 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3">
+              <p className="flex items-start gap-2 text-sm text-zinc-600">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                Email verification protects your account before dashboard access.
+              </p>
+            </div>
+          </div>
+
+          <div className="w-full lg:self-start">
             <div
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
-              style={{ boxShadow: "0 6px 30px rgba(2, 6, 23, 0.04)" }}
+              className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8"
+              style={{ boxShadow: "0 12px 34px rgba(2, 6, 23, 0.07)" }}
             >
-              <div className="mb-2">
+              <div className="mb-5">
                 <h3 className="text-xl font-extrabold text-zinc-900">
                   Create your account
                 </h3>
                 <p className="mt-1 text-sm text-zinc-500">
-                  Set up in minutes. We’ll send a verification link to your email.
+                  Use your business details and get an instant verification
+                  email.
                 </p>
               </div>
 
-              {/* <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-xs text-slate-600">
-                <span className="font-semibold text-slate-800">Tip:</span>{" "}
-                Use the owner email you want to manage your restaurant.
-              </div> */}
-
               <SignupForm />
 
-              <p className="mt-6 text-center text-sm text-slate-500">
+              <p className="mt-5 text-center text-sm text-slate-500">
                 Already have an account?{" "}
                 <Link
                   href="/dashboard/login"
-                  className="font-semibold hover:underline"
-                  style={{ color: "blue" }}
+                  className="font-semibold text-(--system-primary) hover:underline"
                 >
                   Log in
                 </Link>
