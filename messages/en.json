@@ -61,5 +61,174 @@
     "ctaDescription": "Join high-performing restaurants using Qrixa to streamline operations.",
     "joinToday": "Join Qrixa Today",
     "talkToSales": "Talk to Sales"
+  },
+  "SignupSection": {
+    "badge": "Fast onboarding",
+    "title": "Start your digital menu in minutes",
+    "description": "Create an owner account, verify your email, and publish your menu with a modern dashboard built for restaurants and cafes.",
+    "verificationNote": "Email verification protects your account before dashboard access.",
+    "formTitle": "Create your account",
+    "formDescription": "Use your business details and get an instant verification email.",
+    "alreadyHaveAccount": "Already have an account?",
+    "logIn": "Log in",
+    "reassurances": {
+      "setupFast": "Set up in under 10 minutes",
+      "noCard": "No credit card required",
+      "startFree": "Start free, upgrade anytime"
+    }
+  },
+  "SignupForm": {
+    "verificationRequired": "Email verification is required for sign in. Keep your inbox handy.",
+    "termsAgreement": "I agree to the terms and understand sign-in requires email verification.",
+    "footerNote": "By creating an account, you will receive a verification email.",
+    "strength": { "weak": "Weak", "fair": "Fair", "good": "Good", "strong": "Strong" },
+    "fields": {
+      "ownerName": "Owner name",
+      "email": "Email address",
+      "merchant": "Restaurant / Merchant name",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "strength": "Strength"
+    },
+    "placeholders": {
+      "ownerName": "e.g. Reyad",
+      "email": "you@restaurant.com",
+      "merchant": "e.g. My Restaurant",
+      "password": "At least 8 characters",
+      "confirmPassword": "Repeat your password"
+    },
+    "aria": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "showConfirmPassword": "Show confirm password",
+      "hideConfirmPassword": "Hide confirm password"
+    },
+    "errors": {
+      "completeFields": "Please complete the required fields and confirm your password.",
+      "strongerPassword": "Choose a stronger password (at least fair).",
+      "passwordsMismatch": "Passwords do not match."
+    },
+    "actions": { "createAccount": "Create account" },
+    "toasts": {
+      "checkInbox": "Check your inbox to verify your account.",
+      "verificationSent": "Verification email sent."
+    },
+    "success": {
+      "verifyTitle": "Verify your email",
+      "verifyDescription": "We sent a verification link to",
+      "verifyAfter": "After you verify, you can sign in.",
+      "redirecting": "Redirecting to sign in...",
+      "goToSignIn": "Go to sign in",
+      "resendVerification": "Resend verification email",
+      "sending": "Sending..."
+    }
+  },
+  "AboutV2": {
+    "visionBadge": "Our vision",
+    "heroTitle": "We are on a mission to modernize restaurant operations.",
+    "heroDescription": "Precision concierge architecture designed for the high-stakes world of multi-unit hospitality.",
+    "precisionTitle": "Automated Precision",
+    "precisionText": "Architecture that anticipates demand before it happens.",
+    "complexityTitle": "The Complexity Solution",
+    "originLead": "Qrixa was born in the chaos of the kitchen and the spreadsheets of the back office.",
+    "originParagraph1": "Restaurant groups needed more than tools. They needed one architectural layer to sync procurement, staffing, and floor management across every branch.",
+    "originParagraph2": "Today, Qrixa powers ambitious restaurant operations, turning friction into a seamless guest experience.",
+    "contactTitle": "Let's build your architecture together.",
+    "contactDescription": "Whether you are scaling your third branch or managing fifty, our team is ready to assist.",
+    "supportArchitecture": "Support Architecture",
+    "directLine": "Direct Line",
+    "connect": "Connect",
+    "form": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Alex Rivera",
+      "emailAddress": "Email Address",
+      "emailPlaceholder": "alex@restaurant.com",
+      "restaurantName": "Restaurant Name",
+      "restaurantPlaceholder": "The Glass Kitchen",
+      "numberOfBranches": "Number of Branches",
+      "branches1to5": "1-5 Branches",
+      "branches6to20": "6-20 Branches",
+      "branches21Plus": "21+ Branches",
+      "message": "Message",
+      "messagePlaceholder": "How can we help optimize your operations?",
+      "initiateConsultation": "Initiate Consultation",
+      "privacyNote": "By submitting this form, you agree to our Privacy Policy."
+    }
+  },
+  "PricingV2": {
+    "heroTitle": "Simple Pricing for Any Restaurant Size.",
+    "heroDescription": "From local bistros to global hospitality chains, Qrixa provides the precision your operations demand. No hidden fees.",
+    "starter": {
+      "subtitle": "Perfect for independent, single-branch restaurants.",
+      "cta": "Choose Starter",
+      "feature1": "Single Branch Access",
+      "feature2": "Core Ordering System",
+      "feature3": "Basic Table Management",
+      "feature4": "Multi-currency Support"
+    },
+    "professional": {
+      "subtitle": "For growing businesses scaling across multiple locations.",
+      "cta": "Go Professional",
+      "feature1": "Up to 5 Branches",
+      "feature2": "Multi-currency Engine",
+      "feature3": "Advanced Performance Analytics",
+      "feature4": "Priority Email Support"
+    },
+    "enterprise": {
+      "subtitle": "Full-scale infrastructure for global chains.",
+      "cta": "Contact Sales",
+      "feature1": "Unlimited Branches",
+      "feature2": "Full API & Webhook Access",
+      "feature3": "Dedicated Success Manager",
+      "feature4": "24/7 Phone Support"
+    },
+    "technicalSpecifications": "Technical Specifications",
+    "table": { "feature": "Feature" },
+    "faqTitle": "Frequently Asked Questions",
+    "faqAnswer": "Qrixa keeps pricing transparent and supports scale paths as your business grows.",
+    "faq": {
+      "question1": "How does multi-currency support work?",
+      "question2": "Can I add more branches to Professional later?",
+      "question3": "Is there a setup fee for new accounts?"
+    },
+    "ctaTitle": "Ready to architect your growth?",
+    "ctaDescription": "Join 1,200+ restaurants scaling with Qrixa today.",
+    "startFreeTrial": "Start 14-Day Free Trial",
+    "bookDemo": "Book a Demo"
+  },
+  "SolutionsV2": {
+    "badge": "Precision Architecture",
+    "heroTitle": "Solutions built for scaling restaurants.",
+    "heroDescription": "Qrixa provides the architectural foundation for global hospitality groups. Manage complexity with elegance.",
+    "exploreEnterprise": "Explore Enterprise",
+    "viewDemo": "View Demo",
+    "activeCurrency": "Active Currency",
+    "multiBranchTitle": "Multi-Branch Command Center",
+    "multiBranchDescription": "Manage all your locations from a single dashboard with real-time performance aggregation and staff synchronization.",
+    "multiBranchPoint1": "Real-time performance aggregation",
+    "multiBranchPoint2": "Centralized employee management",
+    "multiBranchPoint3": "Unified brand configuration",
+    "globalReadyTitle": "Global Ready, Locally Focused",
+    "globalReadyDescription": "Multi-currency support for international operations with localized pricing and reporting.",
+    "currencies": "Currencies",
+    "fxSync": "FX Sync",
+    "tableManagementTitle": "Intelligent Table Management",
+    "tableManagementDescription": "Optimize your floor plan with real-time table status and digital ordering.",
+    "occupied": "Occupied",
+    "delayed": "Delayed",
+    "implementationTitle": "The Precision Implementation",
+    "implementationDescription": "Scaling your restaurant group is a process of refinement, not friction.",
+    "steps": {
+      "connectTitle": "Connect",
+      "connectDescription": "Plug in your existing systems and unify your data.",
+      "configureTitle": "Configure",
+      "configureDescription": "Define regional rules and deploy standards globally.",
+      "scaleTitle": "Scale",
+      "scaleDescription": "Launch locations faster using proven architecture."
+    },
+    "finalCtaTitle": "Ready to orchestrate your growth?",
+    "finalCtaDescription": "Join 500+ global restaurant groups using Qrixa.",
+    "startIntegration": "Start Your Integration",
+    "speakWithArchitect": "Speak with an Architect"
   }
 }

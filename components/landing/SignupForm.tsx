@@ -13,8 +13,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export function SignupForm() {
+  const t = useTranslations("SignupForm");
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [successEmail, setSuccessEmail] = useState<string | null>(null);
@@ -48,21 +50,21 @@ export function SignupForm() {
 
   const passwordStrength = useMemo(() => {
     if (passwordScore <= 1)
-      return { label: "Weak", color: "text-red-600", bar: "bg-red-500" };
+      return { label: t("strength.weak"), color: "text-red-600", bar: "bg-red-500" };
     if (passwordScore === 2)
-      return { label: "Fair", color: "text-amber-600", bar: "bg-amber-500" };
+      return { label: t("strength.fair"), color: "text-amber-600", bar: "bg-amber-500" };
     if (passwordScore === 3)
       return {
-        label: "Good",
+        label: t("strength.good"),
         color: "text-emerald-600",
         bar: "bg-emerald-500",
       };
     return {
-      label: "Strong",
+      label: t("strength.strong"),
       color: "text-emerald-800",
       bar: "bg-emerald-600",
     };
-  }, [passwordScore]);
+  }, [passwordScore, t]);
 
   const hasBasicErrors = useMemo(() => {
     const emailOk = !!form.email && form.email.includes("@");
@@ -90,13 +92,13 @@ export function SignupForm() {
 
     if (!hasBasicErrors.canSubmit) {
       toast.error(
-        "Please complete the required fields and confirm your password.",
+        t("errors.completeFields"),
       );
       return;
     }
 
     if (passwordScore < 2) {
-      toast.error("Choose a stronger password (at least fair).");
+      toast.error(t("errors.strongerPassword"));
       return;
     }
 
@@ -110,7 +112,7 @@ export function SignupForm() {
         password: form.password,
       });
       setSuccessEmail(email);
-      toast.success("Check your inbox to verify your account.");
+      toast.success(t("toasts.checkInbox"));
       setTimeout(() => router.push("/dashboard/login?pending=1"), 2200);
     } catch (err) {
       toast.error(getApiError(err));
@@ -126,7 +128,7 @@ export function SignupForm() {
     setResendBusy(true);
     try {
       const res = await resendVerification(successEmail);
-      toast.success(res.message || "Verification email sent.");
+      toast.success(res.message || t("toasts.verificationSent"));
     } catch (err) {
       toast.error(getApiError(err));
     } finally {
@@ -138,14 +140,14 @@ export function SignupForm() {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-(--system-primary) bg-(--system-primary-soft) px-6 py-8 text-center">
         <Mail className="mb-3 h-14 w-14 text-(--system-primary)" />
-        <h3 className="text-lg font-bold text-zinc-900">Verify your email</h3>
+        <h3 className="text-lg font-bold text-zinc-900">{t("success.verifyTitle")}</h3>
         <p className="mt-2 text-sm text-zinc-600">
-          We sent a verification link to <strong>{successEmail}</strong>. After
-          you verify, you can sign in.
+          {t("success.verifyDescription")} <strong>{successEmail}</strong>.{" "}
+          {t("success.verifyAfter")}
         </p>
         <p className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-          Redirecting to sign in…
+          {t("success.redirecting")}
         </p>
 
         <div className="mt-5 flex w-full flex-col gap-2">
@@ -153,7 +155,7 @@ export function SignupForm() {
             href="/dashboard/login?pending=1"
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
           >
-            Go to sign in
+            {t("success.goToSignIn")}
           </Link>
           <button
             type="button"
@@ -164,10 +166,10 @@ export function SignupForm() {
             {resendBusy ? (
               <span className="inline-flex items-center gap-2 justify-center">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Sending…
+                {t("success.sending")}
               </span>
             ) : (
-              "Resend verification email"
+              t("success.resendVerification")
             )}
           </button>
         </div>
@@ -181,7 +183,7 @@ export function SignupForm() {
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-(--system-primary)" />
           <span>
-            Email verification is required for sign in. Keep your inbox handy.
+            {t("verificationRequired")}
           </span>
         </div>
       </div>
@@ -192,7 +194,7 @@ export function SignupForm() {
             htmlFor="signup-name"
             className="mb-1 block text-sm font-medium text-zinc-700"
           >
-            Owner name
+            {t("fields.ownerName")}
           </label>
           <input
             id="signup-name"
@@ -200,7 +202,7 @@ export function SignupForm() {
             autoComplete="name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="e.g. Reyad"
+            placeholder={t("placeholders.ownerName")}
             className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.name.length > 0 && !hasBasicErrors.nameOk
                 ? "input-error"
@@ -215,7 +217,7 @@ export function SignupForm() {
             htmlFor="signup-email"
             className="mb-1 block text-sm font-medium text-zinc-700"
           >
-            Email address
+            {t("fields.email")}
           </label>
           <input
             id="signup-email"
@@ -223,7 +225,7 @@ export function SignupForm() {
             autoComplete="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-            placeholder="you@restaurant.com"
+            placeholder={t("placeholders.email")}
             className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.email.length > 0 && !hasBasicErrors.emailOk
                 ? "input-error"
@@ -238,7 +240,7 @@ export function SignupForm() {
             htmlFor="signup-merchant"
             className="mb-1 block text-sm font-medium text-zinc-700"
           >
-            Restaurant / Merchant name
+            {t("fields.merchant")}
           </label>
           <input
             id="signup-merchant"
@@ -248,7 +250,7 @@ export function SignupForm() {
             onChange={(e) =>
               setForm((f) => ({ ...f, merchant_name: e.target.value }))
             }
-            placeholder="e.g. My Restaurant"
+            placeholder={t("placeholders.merchant")}
             className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white focus:border-(--system-primary) ${
               form.merchant_name.length > 0 && !hasBasicErrors.merchantOk
                 ? "input-error"
@@ -263,7 +265,7 @@ export function SignupForm() {
             htmlFor="signup-password"
             className="mb-1 block text-sm font-medium text-zinc-700"
           >
-            Password
+            {t("fields.password")}
           </label>
           <div className="relative">
             <input
@@ -274,7 +276,7 @@ export function SignupForm() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, password: e.target.value }))
               }
-              placeholder="At least 8 characters"
+              placeholder={t("placeholders.password")}
               className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white pr-11 focus:border-(--system-primary) ${
                 form.password.length > 0 && !hasBasicErrors.passwordOk
                   ? "input-error"
@@ -288,7 +290,7 @@ export function SignupForm() {
               onClick={() => setShowPw((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               tabIndex={-1}
-              aria-label={showPw ? "Hide password" : "Show password"}
+              aria-label={showPw ? t("aria.hidePassword") : t("aria.showPassword")}
             >
               {showPw ? (
                 <EyeOff className="h-4.5 w-4.5" />
@@ -301,7 +303,7 @@ export function SignupForm() {
           <div className="mt-2">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                Strength
+                {t("fields.strength")}
               </p>
               <span
                 className={`text-[11px] font-bold ${passwordStrength.color}`}
@@ -323,7 +325,7 @@ export function SignupForm() {
             htmlFor="signup-confirm-password"
             className="mb-1 block text-sm font-medium text-zinc-700"
           >
-            Confirm password
+            {t("fields.confirmPassword")}
           </label>
           <div className="relative">
             <input
@@ -337,7 +339,7 @@ export function SignupForm() {
                   confirm_password: e.target.value,
                 }))
               }
-              placeholder="Repeat your password"
+              placeholder={t("placeholders.confirmPassword")}
               className={`input-base h-11 w-full rounded-xl border-slate-300 bg-white pr-11 focus:border-(--system-primary) ${
                 form.confirm_password.length > 0 && !hasBasicErrors.confirmOk
                   ? "input-error"
@@ -353,8 +355,8 @@ export function SignupForm() {
               tabIndex={-1}
               aria-label={
                 showConfirmPw
-                  ? "Hide confirm password"
-                  : "Show confirm password"
+                  ? t("aria.hideConfirmPassword")
+                  : t("aria.showConfirmPassword")
               }
             >
               {showConfirmPw ? (
@@ -366,7 +368,7 @@ export function SignupForm() {
           </div>
           {form.confirm_password.length > 0 && !hasBasicErrors.confirmOk && (
             <p className="mt-1 text-[12px] font-medium text-red-600">
-              Passwords do not match.
+              {t("errors.passwordsMismatch")}
             </p>
           )}
         </div>
@@ -385,8 +387,7 @@ export function SignupForm() {
           required
         />
         <label htmlFor="signup-terms" className="text-sm text-slate-600">
-          I agree to the terms and understand sign-in requires email
-          verification.
+          {t("termsAgreement")}
         </label>
         </div>
       </div>
@@ -399,12 +400,12 @@ export function SignupForm() {
         {submitting ? (
           <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          "Create account"
+          t("actions.createAccount")
         )}
       </button>
 
       <p className="text-center text-[12px] text-slate-500">
-        By creating an account, you’ll receive a verification email.
+        {t("footerNote")}
       </p>
     </form>
   );

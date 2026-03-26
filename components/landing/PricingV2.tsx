@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // function PricingTopBar() {
 //   return (
@@ -62,7 +63,7 @@ function PlanCard({
     >
       {highlighted && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-emerald-400 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-950">
-          Most Popular
+          Popular
         </span>
       )}
 
@@ -113,17 +114,17 @@ function PlanCard({
 }
 
 export function PricingV2() {
+  const t = useTranslations("PricingV2");
   return (
     <div className="bg-slate-50 text-slate-900">
 
       <main className="pb-24 pt-32">
         <header className="mx-auto mb-16 max-w-7xl px-8 text-center">
           <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 md:text-6xl">
-            Simple Pricing for Any Restaurant Size.
+            {t("heroTitle")}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600">
-            From local bistros to global hospitality chains, Qrixa provides the
-            precision your operations demand. No hidden fees.
+            {t("heroDescription")}
           </p>
         </header>
 
@@ -131,51 +132,51 @@ export function PricingV2() {
           <PlanCard
             title="Starter"
             price="$10/mo"
-            subtitle="Perfect for independent, single-branch restaurants."
-            cta="Choose Starter"
+            subtitle={t("starter.subtitle")}
+            cta={t("starter.cta")}
             features={[
-              { text: "Single Branch Access" },
-              { text: "Core Ordering System" },
-              { text: "Basic Table Management" },
-              { text: "Multi-currency Support", disabled: true },
+              { text: t("starter.feature1") },
+              { text: t("starter.feature2") },
+              { text: t("starter.feature3") },
+              { text: t("starter.feature4"), disabled: true },
             ]}
           />
           <PlanCard
             title="Professional"
             price="$20/mo"
-            subtitle="For growing businesses scaling across multiple locations."
-            cta="Go Professional"
+            subtitle={t("professional.subtitle")}
+            cta={t("professional.cta")}
             highlighted
             features={[
-              { text: "Up to 5 Branches" },
-              { text: "Multi-currency Engine" },
-              { text: "Advanced Performance Analytics" },
-              { text: "Priority Email Support" },
+              { text: t("professional.feature1") },
+              { text: t("professional.feature2") },
+              { text: t("professional.feature3") },
+              { text: t("professional.feature4") },
             ]}
           />
           <PlanCard
             title="Enterprise"
             price="Custom"
-            subtitle="Full-scale infrastructure for global chains."
-            cta="Contact Sales"
+            subtitle={t("enterprise.subtitle")}
+            cta={t("enterprise.cta")}
             features={[
-              { text: "Unlimited Branches" },
-              { text: "Full API & Webhook Access" },
-              { text: "Dedicated Success Manager" },
-              { text: "24/7 Phone Support" },
+              { text: t("enterprise.feature1") },
+              { text: t("enterprise.feature2") },
+              { text: t("enterprise.feature3") },
+              { text: t("enterprise.feature4") },
             ]}
           />
         </section>
 
         <section className="mx-auto mb-20 max-w-5xl px-8">
           <h3 className="mb-8 text-center text-3xl font-bold tracking-tight">
-            Technical Specifications
+            {t("technicalSpecifications")}
           </h3>
           <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
             <table className="w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="px-5 py-4 font-bold">Feature</th>
+                  <th className="px-5 py-4 font-bold">{t("table.feature")}</th>
                   <th className="px-5 py-4 text-center font-bold">Starter</th>
                   <th className="bg-emerald-50 px-5 py-4 text-center font-bold text-emerald-800">
                     Professional
@@ -205,19 +206,18 @@ export function PricingV2() {
 
         <section className="mx-auto mb-20 max-w-4xl px-8">
           <h3 className="mb-8 text-center text-3xl font-bold tracking-tight">
-            Frequently Asked Questions
+            {t("faqTitle")}
           </h3>
           <div className="grid gap-4">
             {[
-              "How does multi-currency support work?",
-              "Can I add more branches to Professional later?",
-              "Is there a setup fee for new accounts?",
+              t("faq.question1"),
+              t("faq.question2"),
+              t("faq.question3"),
             ].map((q) => (
               <div key={q} className="rounded-lg bg-white p-6 shadow-sm">
                 <h4 className="mb-2 font-bold">{q}</h4>
                 <p className="text-sm leading-relaxed text-slate-600">
-                  Qrixa keeps pricing transparent and supports scale paths as your
-                  business grows.
+                  {t("faqAnswer")}
                 </p>
               </div>
             ))}
@@ -229,10 +229,10 @@ export function PricingV2() {
             <div className="relative z-10 flex flex-col items-center justify-between gap-6 md:flex-row">
               <div className="text-center md:text-left">
                 <h3 className="text-4xl font-extrabold tracking-tight text-emerald-950">
-                  Ready to architect your growth?
+                  {t("ctaTitle")}
                 </h3>
                 <p className="mt-3 text-lg text-emerald-900/80">
-                  Join 1,200+ restaurants scaling with Qrixa today.
+                  {t("ctaDescription")}
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -240,10 +240,10 @@ export function PricingV2() {
                   href="/home/signup"
                   className="rounded-lg bg-slate-900 px-7 py-3 text-sm font-bold text-white"
                 >
-                  Start 14-Day Free Trial
+                  {t("startFreeTrial")}
                 </Link>
                 <button className="rounded-lg border border-emerald-900/20 bg-white/30 px-7 py-3 text-sm font-bold text-emerald-950">
-                  Book a Demo
+                  {t("bookDemo")}
                 </button>
               </div>
             </div>

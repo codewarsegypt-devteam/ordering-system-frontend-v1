@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { Cog, Mail, Phone, Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 
 export function AboutV2() {
+  const t = useTranslations("AboutV2");
   return (
     <div className="bg-slate-50 text-slate-900">
 
@@ -12,14 +14,13 @@ export function AboutV2() {
         <section className="mx-auto grid max-w-7xl items-center gap-14 overflow-hidden px-8 py-24 md:py-25 lg:grid-cols-2">
           <div>
             <span className="inline-block rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-emerald-800">
-              Our vision
+              {t("visionBadge")}
             </span>
             <h1 className="mt-6 text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
-              We&apos;re on a Mission to Modernize Restaurant Operations.
+              {t("heroTitle")}
             </h1>
             <p className="mt-8 max-w-xl text-xl leading-relaxed text-slate-600">
-              Precision concierge architecture designed for the high-stakes world
-              of multi-unit hospitality.
+              {t("heroDescription")}
             </p>
           </div>
           <div className="relative">
@@ -35,10 +36,10 @@ export function AboutV2() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
                   <Cog className="h-5 w-5 text-emerald-700" />
                 </div>
-                <p className="font-bold text-slate-900">Automated Precision</p>
+                <p className="font-bold text-slate-900">{t("precisionTitle")}</p>
               </div>
               <p className="text-sm text-slate-600">
-                Architecture that anticipates demand before it happens.
+                {t("precisionText")}
               </p>
             </div>
           </div>
@@ -48,24 +49,20 @@ export function AboutV2() {
           <div className="mx-auto grid max-w-7xl gap-12 px-8 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
-                The Complexity Solution
+                {t("complexityTitle")}
               </h2>
               <div className="mt-8 h-1 w-20 bg-emerald-600" />
             </div>
             <div className="space-y-8 lg:col-span-7">
               <p className="text-2xl leading-snug text-slate-900">
-                Qrixa was born in the chaos of the kitchen and the spreadsheets
-                of the back office.
+                {t("originLead")}
               </p>
               <div className="grid gap-8 pt-4 md:grid-cols-2">
                 <p className="leading-relaxed text-slate-600">
-                  Restaurant groups needed more than tools. They needed one
-                  architectural layer to sync procurement, staffing, and floor
-                  management across every branch.
+                  {t("originParagraph1")}
                 </p>
                 <p className="leading-relaxed text-slate-600">
-                  Today, Qrixa powers ambitious restaurant operations, turning
-                  friction into a seamless guest experience.
+                  {t("originParagraph2")}
                 </p>
               </div>
             </div>
@@ -76,11 +73,10 @@ export function AboutV2() {
           <div className="space-y-12">
             <div>
               <h2 className="text-4xl font-extrabold tracking-tight text-slate-900">
-                Let&apos;s build your architecture together.
+                {t("contactTitle")}
               </h2>
               <p className="mt-5 text-lg text-slate-600">
-                Whether you are scaling your third branch or managing fifty, our
-                team is ready to assist.
+                {t("contactDescription")}
               </p>
             </div>
 
@@ -90,7 +86,7 @@ export function AboutV2() {
                   <Mail className="h-5 w-5 text-slate-700" />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Support Architecture</p>
+                  <p className="font-bold text-slate-900">{t("supportArchitecture")}</p>
                   <a href="mailto:codewarsegypt@gmail.com" className="text-emerald-700 hover:underline">
                     codewarsegypt@gmail.com
                   </a>
@@ -101,7 +97,7 @@ export function AboutV2() {
                   <Phone className="h-5 w-5 text-slate-700" />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Direct Line</p>
+                  <p className="font-bold text-slate-900">{t("directLine")}</p>
                   <a href="tel:+201225330675" className="text-slate-600">+20 1225330675 (Egypt)</a>
                 </div>
               </div>
@@ -110,7 +106,7 @@ export function AboutV2() {
                   <Share2 className="h-5 w-5 text-slate-700" />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Connect</p>
+                  <p className="font-bold text-slate-900">{t("connect")}</p>
                   <div className="mt-2 flex gap-4 text-xs font-bold uppercase tracking-wider text-slate-500">
                     <a href="#" className="hover:text-emerald-700">LinkedIn</a>
                     <a href="#" className="hover:text-emerald-700">Twitter</a>
@@ -126,42 +122,42 @@ export function AboutV2() {
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Full Name
+                    {t("form.fullName")}
                   </label>
-                  <input className="input-base bg-slate-100/90" placeholder="Alex Rivera" />
+                  <input className="input-base bg-slate-100/90" placeholder={t("form.fullNamePlaceholder")} />
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Email Address
+                    {t("form.emailAddress")}
                   </label>
-                  <input className="input-base bg-slate-100/90" placeholder="alex@restaurant.com" type="email" />
+                  <input className="input-base bg-slate-100/90" placeholder={t("form.emailPlaceholder")} type="email" />
                 </div>
               </div>
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Restaurant Name
+                    {t("form.restaurantName")}
                   </label>
-                  <input className="input-base bg-slate-100/90" placeholder="The Glass Kitchen" />
+                  <input className="input-base bg-slate-100/90" placeholder={t("form.restaurantPlaceholder")} />
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Number of Branches
+                    {t("form.numberOfBranches")}
                   </label>
                   <select className="input-base bg-slate-100/90">
-                    <option>1-5 Branches</option>
-                    <option>6-20 Branches</option>
-                    <option>21+ Branches</option>
+                    <option>{t("form.branches1to5")}</option>
+                    <option>{t("form.branches6to20")}</option>
+                    <option>{t("form.branches21Plus")}</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Message
+                  {t("form.message")}
                 </label>
                 <textarea
                   className="input-base min-h-[120px] resize-none bg-slate-100/90"
-                  placeholder="How can we help optimize your operations?"
+                  placeholder={t("form.messagePlaceholder")}
                 />
               </div>
               <button
@@ -169,10 +165,10 @@ export function AboutV2() {
                 style={{ backgroundColor: "var(--system-primary)" }}
                 type="button"
               >
-                Initiate Consultation
+                {t("form.initiateConsultation")}
               </button>
               <p className="px-2 text-center text-xs leading-relaxed text-slate-500">
-                By submitting this form, you agree to our Privacy Policy.
+                {t("form.privacyNote")}
               </p>
             </form>
           </div>

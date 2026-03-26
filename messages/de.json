@@ -61,5 +61,183 @@
     "ctaDescription": "Schließen Sie sich leistungsstarken Restaurants an, die Qrixa zur Optimierung ihrer Abläufe nutzen.",
     "joinToday": "Heute Qrixa beitreten",
     "talkToSales": "Mit Vertrieb sprechen"
+  },
+  "SignupSection": {
+    "badge": "Schnelles Onboarding",
+    "title": "Starten Sie Ihr digitales Menü in wenigen Minuten",
+    "description": "Erstellen Sie ein Inhaber-Konto, bestätigen Sie Ihre E-Mail und veröffentlichen Sie Ihr Menü über ein modernes Dashboard für Restaurants und Cafés.",
+    "verificationNote": "Die E-Mail-Verifizierung schützt Ihr Konto vor dem Dashboard-Zugriff.",
+    "formTitle": "Konto erstellen",
+    "formDescription": "Verwenden Sie Ihre Unternehmensdaten und erhalten Sie sofort eine Verifizierungs-E-Mail.",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "logIn": "Anmelden",
+    "reassurances": {
+      "setupFast": "In weniger als 10 Minuten eingerichtet",
+      "noCard": "Keine Kreditkarte erforderlich",
+      "startFree": "Kostenlos starten, jederzeit upgraden"
+    }
+  },
+  "SignupForm": {
+    "verificationRequired": "Für die Anmeldung ist eine E-Mail-Verifizierung erforderlich. Halten Sie Ihren Posteingang bereit.",
+    "termsAgreement": "Ich stimme den Bedingungen zu und verstehe, dass für die Anmeldung eine E-Mail-Verifizierung erforderlich ist.",
+    "footerNote": "Durch das Erstellen eines Kontos erhalten Sie eine Verifizierungs-E-Mail.",
+    "strength": {
+      "weak": "Schwach",
+      "fair": "Ausreichend",
+      "good": "Gut",
+      "strong": "Stark"
+    },
+    "fields": {
+      "ownerName": "Name des Inhabers",
+      "email": "E-Mail-Adresse",
+      "merchant": "Restaurant- / Händlername",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "strength": "Stärke"
+    },
+    "placeholders": {
+      "ownerName": "z. B. Reyad",
+      "email": "you@restaurant.com",
+      "merchant": "z. B. Mein Restaurant",
+      "password": "Mindestens 8 Zeichen",
+      "confirmPassword": "Passwort wiederholen"
+    },
+    "aria": {
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort ausblenden",
+      "showConfirmPassword": "Passwortbestätigung anzeigen",
+      "hideConfirmPassword": "Passwortbestätigung ausblenden"
+    },
+    "errors": {
+      "completeFields": "Bitte füllen Sie die erforderlichen Felder aus und bestätigen Sie Ihr Passwort.",
+      "strongerPassword": "Wählen Sie ein stärkeres Passwort (mindestens ausreichend).",
+      "passwordsMismatch": "Die Passwörter stimmen nicht überein."
+    },
+    "actions": {
+      "createAccount": "Konto erstellen"
+    },
+    "toasts": {
+      "checkInbox": "Prüfen Sie Ihren Posteingang, um Ihr Konto zu verifizieren.",
+      "verificationSent": "Verifizierungs-E-Mail wurde gesendet."
+    },
+    "success": {
+      "verifyTitle": "E-Mail verifizieren",
+      "verifyDescription": "Wir haben einen Verifizierungslink gesendet an",
+      "verifyAfter": "Nach der Verifizierung können Sie sich anmelden.",
+      "redirecting": "Weiterleitung zur Anmeldung...",
+      "goToSignIn": "Zur Anmeldung",
+      "resendVerification": "Verifizierungs-E-Mail erneut senden",
+      "sending": "Wird gesendet..."
+    }
+  },
+  "AboutV2": {
+    "visionBadge": "Unsere Vision",
+    "heroTitle": "Unsere Mission ist es, Restaurantabläufe zu modernisieren.",
+    "heroDescription": "Präzise Concierge-Architektur für die anspruchsvolle Welt der Multi-Unit-Gastronomie.",
+    "precisionTitle": "Automatisierte Präzision",
+    "precisionText": "Architektur, die Nachfrage antizipiert, bevor sie entsteht.",
+    "complexityTitle": "Die Lösung für Komplexität",
+    "originLead": "Qrixa entstand aus dem Chaos der Küche und den Tabellen des Backoffice.",
+    "originParagraph1": "Restaurantgruppen brauchten mehr als Tools. Sie brauchten eine einheitliche Architekturschicht, um Einkauf, Personal und Flächenmanagement über alle Standorte zu synchronisieren.",
+    "originParagraph2": "Heute unterstützt Qrixa ambitionierte Restaurantbetriebe und verwandelt Reibung in ein nahtloses Gästeerlebnis.",
+    "contactTitle": "Lassen Sie uns Ihre Architektur gemeinsam aufbauen.",
+    "contactDescription": "Ob Sie Ihren dritten Standort ausbauen oder fünfzig Standorte führen - unser Team ist bereit zu helfen.",
+    "supportArchitecture": "Support-Architektur",
+    "directLine": "Direktkontakt",
+    "connect": "Vernetzen",
+    "form": {
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "Alex Rivera",
+      "emailAddress": "E-Mail-Adresse",
+      "emailPlaceholder": "alex@restaurant.com",
+      "restaurantName": "Restaurantname",
+      "restaurantPlaceholder": "The Glass Kitchen",
+      "numberOfBranches": "Anzahl der Standorte",
+      "branches1to5": "1-5 Standorte",
+      "branches6to20": "6-20 Standorte",
+      "branches21Plus": "21+ Standorte",
+      "message": "Nachricht",
+      "messagePlaceholder": "Wie können wir Ihre Abläufe optimieren?",
+      "initiateConsultation": "Beratung starten",
+      "privacyNote": "Durch das Absenden dieses Formulars stimmen Sie unserer Datenschutzerklärung zu."
+    }
+  },
+  "PricingV2": {
+    "heroTitle": "Einfache Preise für jede Restaurantgröße.",
+    "heroDescription": "Vom lokalen Bistro bis zur globalen Gastronomiekette liefert Qrixa die Präzision, die Ihr Betrieb braucht. Keine versteckten Gebühren.",
+    "starter": {
+      "subtitle": "Perfekt für unabhängige Restaurants mit einem Standort.",
+      "cta": "Starter wählen",
+      "feature1": "Zugang für einen Standort",
+      "feature2": "Kern-Bestellsystem",
+      "feature3": "Grundlegendes Tischmanagement",
+      "feature4": "Mehrwährungsunterstützung"
+    },
+    "professional": {
+      "subtitle": "Für wachsende Unternehmen mit mehreren Standorten.",
+      "cta": "Professional wählen",
+      "feature1": "Bis zu 5 Standorte",
+      "feature2": "Mehrwährungs-Engine",
+      "feature3": "Erweiterte Leistungsanalysen",
+      "feature4": "Priorisierter E-Mail-Support"
+    },
+    "enterprise": {
+      "subtitle": "Vollständige Infrastruktur für globale Ketten.",
+      "cta": "Vertrieb kontaktieren",
+      "feature1": "Unbegrenzte Standorte",
+      "feature2": "Voller API- und Webhook-Zugriff",
+      "feature3": "Dedizierter Success Manager",
+      "feature4": "24/7 Telefonsupport"
+    },
+    "technicalSpecifications": "Technische Spezifikationen",
+    "table": {
+      "feature": "Funktion"
+    },
+    "faqTitle": "Häufig gestellte Fragen",
+    "faqAnswer": "Qrixa hält Preise transparent und unterstützt Wachstumspfade, wenn Ihr Unternehmen wächst.",
+    "faq": {
+      "question1": "Wie funktioniert die Mehrwährungsunterstützung?",
+      "question2": "Kann ich später weitere Standorte im Professional-Tarif hinzufügen?",
+      "question3": "Gibt es eine Einrichtungsgebühr für neue Konten?"
+    },
+    "ctaTitle": "Bereit, Ihr Wachstum zu strukturieren?",
+    "ctaDescription": "Schließen Sie sich 1.200+ Restaurants an, die heute mit Qrixa skalieren.",
+    "startFreeTrial": "14-Tage-Test starten",
+    "bookDemo": "Demo buchen"
+  },
+  "SolutionsV2": {
+    "badge": "Präzisionsarchitektur",
+    "heroTitle": "Lösungen für wachsende Restaurantbetriebe.",
+    "heroDescription": "Qrixa bietet das architektonische Fundament für globale Hospitality-Gruppen. Komplexität elegant steuern.",
+    "exploreEnterprise": "Enterprise entdecken",
+    "viewDemo": "Demo ansehen",
+    "activeCurrency": "Aktive Währung",
+    "multiBranchTitle": "Leitzentrale für mehrere Standorte",
+    "multiBranchDescription": "Verwalten Sie alle Standorte in einem Dashboard mit Echtzeit-Performance und synchronisierten Teams.",
+    "multiBranchPoint1": "Echtzeit-Performance-Aggregation",
+    "multiBranchPoint2": "Zentralisierte Mitarbeiterverwaltung",
+    "multiBranchPoint3": "Einheitliche Marken-Konfiguration",
+    "globalReadyTitle": "Global einsetzbar, lokal optimiert",
+    "globalReadyDescription": "Mehrwährungsunterstützung für internationale Abläufe mit lokaler Preis- und Berichtslogik.",
+    "currencies": "Währungen",
+    "fxSync": "FX-Sync",
+    "tableManagementTitle": "Intelligentes Tischmanagement",
+    "tableManagementDescription": "Optimieren Sie Ihre Fläche mit Echtzeit-Tischstatus und digitaler Bestellung.",
+    "occupied": "Belegt",
+    "delayed": "Verzögert",
+    "implementationTitle": "Die präzise Umsetzung",
+    "implementationDescription": "Die Skalierung Ihrer Restaurantgruppe ist ein Prozess der Verfeinerung, nicht der Reibung.",
+    "steps": {
+      "connectTitle": "Verbinden",
+      "connectDescription": "Binden Sie bestehende Systeme an und vereinheitlichen Sie Ihre Daten.",
+      "configureTitle": "Konfigurieren",
+      "configureDescription": "Definieren Sie regionale Regeln und rollen Sie Standards global aus.",
+      "scaleTitle": "Skalieren",
+      "scaleDescription": "Starten Sie neue Standorte schneller mit bewährter Architektur."
+    },
+    "finalCtaTitle": "Bereit, Ihr Wachstum zu orchestrieren?",
+    "finalCtaDescription": "Schließen Sie sich 500+ globalen Restaurantgruppen an, die Qrixa nutzen.",
+    "startIntegration": "Integration starten",
+    "speakWithArchitect": "Mit einem Architekten sprechen"
   }
 }

@@ -61,5 +61,174 @@
     "ctaDescription": "انضم لمطاعم عالية الأداء تستخدم Qrixa لتبسيط التشغيل.",
     "joinToday": "انضم إلى Qrixa اليوم",
     "talkToSales": "تحدث مع المبيعات"
+  },
+  "SignupSection": {
+    "badge": "تجهيز سريع",
+    "title": "ابدأ قائمتك الرقمية خلال دقائق",
+    "description": "أنشئ حساب المالك، أكد بريدك الإلكتروني، ثم انشر قائمتك عبر لوحة تحكم حديثة للمطاعم والكافيهات.",
+    "verificationNote": "تأكيد البريد يحمي حسابك قبل دخول لوحة التحكم.",
+    "formTitle": "أنشئ حسابك",
+    "formDescription": "استخدم بيانات نشاطك وسيصلك بريد تحقق فورًا.",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "logIn": "تسجيل الدخول",
+    "reassurances": {
+      "setupFast": "إعداد خلال أقل من 10 دقائق",
+      "noCard": "لا حاجة لبطاقة ائتمانية",
+      "startFree": "ابدأ مجانًا وارقِ وقتما تشاء"
+    }
+  },
+  "SignupForm": {
+    "verificationRequired": "التحقق عبر البريد مطلوب لتسجيل الدخول. احتفظ بصندوق الوارد قريبًا.",
+    "termsAgreement": "أوافق على الشروط وأفهم أن تسجيل الدخول يتطلب التحقق من البريد.",
+    "footerNote": "بإنشاء الحساب ستتلقى بريد تحقق.",
+    "strength": { "weak": "ضعيف", "fair": "مقبول", "good": "جيد", "strong": "قوي" },
+    "fields": {
+      "ownerName": "اسم المالك",
+      "email": "البريد الإلكتروني",
+      "merchant": "اسم المطعم / التاجر",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "strength": "القوة"
+    },
+    "placeholders": {
+      "ownerName": "مثال: رياض",
+      "email": "you@restaurant.com",
+      "merchant": "مثال: مطعمي",
+      "password": "على الأقل 8 أحرف",
+      "confirmPassword": "أعد إدخال كلمة المرور"
+    },
+    "aria": {
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "showConfirmPassword": "إظهار تأكيد كلمة المرور",
+      "hideConfirmPassword": "إخفاء تأكيد كلمة المرور"
+    },
+    "errors": {
+      "completeFields": "من فضلك أكمل الحقول المطلوبة وتأكد من كلمة المرور.",
+      "strongerPassword": "اختر كلمة مرور أقوى (على الأقل مقبولة).",
+      "passwordsMismatch": "كلمتا المرور غير متطابقتين."
+    },
+    "actions": { "createAccount": "إنشاء حساب" },
+    "toasts": {
+      "checkInbox": "تحقق من بريدك الإلكتروني لتفعيل الحساب.",
+      "verificationSent": "تم إرسال بريد التحقق."
+    },
+    "success": {
+      "verifyTitle": "تحقق من بريدك الإلكتروني",
+      "verifyDescription": "لقد أرسلنا رابط تحقق إلى",
+      "verifyAfter": "بعد التحقق يمكنك تسجيل الدخول.",
+      "redirecting": "جاري التحويل لتسجيل الدخول...",
+      "goToSignIn": "الذهاب لتسجيل الدخول",
+      "resendVerification": "إعادة إرسال بريد التحقق",
+      "sending": "جاري الإرسال..."
+    }
+  },
+  "AboutV2": {
+    "visionBadge": "رؤيتنا",
+    "heroTitle": "مهمتنا هي تحديث عمليات المطاعم.",
+    "heroDescription": "هندسة تشغيل دقيقة مصممة لعالم الضيافة متعدد الفروع عالي التحديات.",
+    "precisionTitle": "دقة مؤتمتة",
+    "precisionText": "بنية تتوقع الطلب قبل حدوثه.",
+    "complexityTitle": "حل تعقيدات التشغيل",
+    "originLead": "وُلِدت Qrixa من فوضى المطبخ وجداول المكتب الخلفي.",
+    "originParagraph1": "احتاجت مجموعات المطاعم لأكثر من أدوات؛ احتاجت طبقة تشغيل موحّدة تربط المشتريات والموظفين وإدارة الصالة عبر كل الفروع.",
+    "originParagraph2": "اليوم تمكّن Qrixa عمليات مطاعم طموحة وتحول الاحتكاك إلى تجربة ضيافة سلسة.",
+    "contactTitle": "لنَبْنِ بنية تشغيلك معًا.",
+    "contactDescription": "سواء تتوسع للفرع الثالث أو تدير خمسين فرعًا، فريقنا جاهز للمساعدة.",
+    "supportArchitecture": "دعم البنية التشغيلية",
+    "directLine": "الخط المباشر",
+    "connect": "تواصل معنا",
+    "form": {
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "Alex Rivera",
+      "emailAddress": "البريد الإلكتروني",
+      "emailPlaceholder": "alex@restaurant.com",
+      "restaurantName": "اسم المطعم",
+      "restaurantPlaceholder": "The Glass Kitchen",
+      "numberOfBranches": "عدد الفروع",
+      "branches1to5": "1-5 فروع",
+      "branches6to20": "6-20 فرعًا",
+      "branches21Plus": "أكثر من 21 فرعًا",
+      "message": "الرسالة",
+      "messagePlaceholder": "كيف يمكننا مساعدتك في تحسين التشغيل؟",
+      "initiateConsultation": "ابدأ الاستشارة",
+      "privacyNote": "بتقديم هذا النموذج، أنت توافق على سياسة الخصوصية."
+    }
+  },
+  "PricingV2": {
+    "heroTitle": "تسعير بسيط لأي حجم مطعم.",
+    "heroDescription": "من المطاعم الصغيرة إلى سلاسل الضيافة العالمية، توفر Qrixa الدقة التي تحتاجها عملياتك بدون رسوم مخفية.",
+    "starter": {
+      "subtitle": "مثالي للمطاعم المستقلة ذات الفرع الواحد.",
+      "cta": "اختر المبتدئ",
+      "feature1": "وصول لفرع واحد",
+      "feature2": "نظام طلبات أساسي",
+      "feature3": "إدارة طاولات أساسية",
+      "feature4": "دعم العملات المتعددة"
+    },
+    "professional": {
+      "subtitle": "للأعمال المتنامية عبر عدة مواقع.",
+      "cta": "اختر الاحترافي",
+      "feature1": "حتى 5 فروع",
+      "feature2": "محرك عملات متعددة",
+      "feature3": "تحليلات أداء متقدمة",
+      "feature4": "دعم بريد إلكتروني أولوية"
+    },
+    "enterprise": {
+      "subtitle": "بنية متكاملة للسلاسل العالمية.",
+      "cta": "تواصل مع المبيعات",
+      "feature1": "فروع غير محدودة",
+      "feature2": "وصول كامل API وWebhook",
+      "feature3": "مدير نجاح مخصص",
+      "feature4": "دعم هاتفي 24/7"
+    },
+    "technicalSpecifications": "المواصفات التقنية",
+    "table": { "feature": "الميزة" },
+    "faqTitle": "الأسئلة الشائعة",
+    "faqAnswer": "تحافظ Qrixa على شفافية التسعير وتدعم مسارات التوسع مع نمو عملك.",
+    "faq": {
+      "question1": "كيف يعمل دعم العملات المتعددة؟",
+      "question2": "هل يمكنني إضافة فروع لاحقًا في الاحترافي؟",
+      "question3": "هل توجد رسوم إعداد للحسابات الجديدة؟"
+    },
+    "ctaTitle": "جاهز لبناء توسعك؟",
+    "ctaDescription": "انضم إلى أكثر من 1200 مطعم يتوسع مع Qrixa اليوم.",
+    "startFreeTrial": "ابدأ تجربة مجانية 14 يومًا",
+    "bookDemo": "احجز عرضًا توضيحيًا"
+  },
+  "SolutionsV2": {
+    "badge": "هندسة دقيقة",
+    "heroTitle": "حلول مصممة لتوسّع المطاعم.",
+    "heroDescription": "توفر Qrixa الأساس المعماري لمجموعات الضيافة العالمية لإدارة التعقيد بسلاسة.",
+    "exploreEnterprise": "استكشف نسخة المؤسسات",
+    "viewDemo": "شاهد العرض",
+    "activeCurrency": "العملة النشطة",
+    "multiBranchTitle": "مركز قيادة متعدد الفروع",
+    "multiBranchDescription": "أدر جميع مواقعك من لوحة تحكم واحدة مع تجميع أداء لحظي ومزامنة الموظفين.",
+    "multiBranchPoint1": "تجميع أداء لحظي",
+    "multiBranchPoint2": "إدارة مركزية للموظفين",
+    "multiBranchPoint3": "تهيئة علامة موحّدة",
+    "globalReadyTitle": "جاهز عالميًا، مركز محليًا",
+    "globalReadyDescription": "دعم العملات المتعددة للعمليات الدولية مع تسعير وتقارير محلية.",
+    "currencies": "العملات",
+    "fxSync": "مزامنة الصرف",
+    "tableManagementTitle": "إدارة ذكية للطاولات",
+    "tableManagementDescription": "حسّن خطة الصالة بحالة الطاولات اللحظية والطلبات الرقمية.",
+    "occupied": "مشغول",
+    "delayed": "متأخر",
+    "implementationTitle": "تنفيذ دقيق للتوسع",
+    "implementationDescription": "توسيع مجموعة مطاعمك عملية تحسين مستمرة وليست احتكاكًا.",
+    "steps": {
+      "connectTitle": "الربط",
+      "connectDescription": "اربط أنظمتك الحالية ووحّد بياناتك.",
+      "configureTitle": "التهيئة",
+      "configureDescription": "حدد القواعد الإقليمية وطبّق المعايير عالميًا.",
+      "scaleTitle": "التوسع",
+      "scaleDescription": "أطلق فروعًا أسرع ببنية مجربة."
+    },
+    "finalCtaTitle": "جاهز لتنظيم نموك؟",
+    "finalCtaDescription": "انضم إلى أكثر من 500 مجموعة مطاعم عالمية تستخدم Qrixa.",
+    "startIntegration": "ابدأ التكامل",
+    "speakWithArchitect": "تحدث مع مهندس حلول"
   }
 }

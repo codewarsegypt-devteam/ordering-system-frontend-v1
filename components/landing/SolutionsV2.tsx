@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { CheckCircle2, Globe, Grid3X3, GitBranch } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function SolutionsV2() {
+  const t = useTranslations("SolutionsV2");
   return (
     <div className="bg-slate-50 text-slate-900">
       <main className="pt-24">
@@ -11,24 +13,23 @@ export function SolutionsV2() {
           <div className="grid items-center gap-12 lg:grid-cols-12">
             <div className="space-y-8 lg:col-span-7">
               <span className="inline-block rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-emerald-800">
-                Precision Architecture
+                {t("badge")}
               </span>
               <h1 className="text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
-                Solutions Built for Scaling Restaurants.
+                {t("heroTitle")}
               </h1>
               <p className="max-w-2xl text-xl leading-relaxed text-slate-600">
-                Qrixa provides the architectural foundation for global
-                hospitality groups. Manage complexity with elegance.
+                {t("heroDescription")}
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <button
                   className="rounded-xl px-8 py-4 text-base font-bold text-white shadow-xl"
                   style={{ backgroundColor: "var(--system-primary)" }}
                 >
-                  Explore Enterprise
+                  {t("exploreEnterprise")}
                 </button>
                 <button className="rounded-xl bg-slate-200 px-8 py-4 text-base font-bold text-slate-900 hover:bg-slate-300">
-                  View Demo
+                  {t("viewDemo")}
                 </button>
               </div>
             </div>
@@ -44,7 +45,7 @@ export function SolutionsV2() {
                 <div className="mb-2 flex items-center gap-3">
                   <Globe className="h-5 w-5 text-emerald-700" />
                   <span className="text-sm font-bold text-slate-900">
-                    Active Currency
+                    {t("activeCurrency")}
                   </span>
                 </div>
                 <div className="text-2xl font-black text-slate-900">
@@ -86,24 +87,23 @@ export function SolutionsV2() {
                 <GitBranch className="h-6 w-6" />
               </div>
               <h2 className="text-4xl font-bold tracking-tight">
-                Multi-Branch Command Center
+                {t("multiBranchTitle")}
               </h2>
               <p className="text-lg leading-relaxed text-slate-600">
-                Manage all your locations from a single dashboard with real-time
-                performance aggregation and staff synchronization.
+                {t("multiBranchDescription")}
               </p>
               <ul className="space-y-3 pt-3">
                 <li className="flex items-center gap-2.5 font-semibold">
                   <CheckCircle2 className="h-5 w-5 text-emerald-700" />
-                  Real-time performance aggregation
+                  {t("multiBranchPoint1")}
                 </li>
                 <li className="flex items-center gap-2.5 font-semibold">
                   <CheckCircle2 className="h-5 w-5 text-emerald-700" />
-                  Centralized employee management
+                  {t("multiBranchPoint2")}
                 </li>
                 <li className="flex items-center gap-2.5 font-semibold">
                   <CheckCircle2 className="h-5 w-5 text-emerald-700" />
-                  Unified brand configuration
+                  {t("multiBranchPoint3")}
                 </li>
               </ul>
             </div>
@@ -117,23 +117,22 @@ export function SolutionsV2() {
                 <Globe className="h-6 w-6" />
               </div>
               <h2 className="text-4xl font-bold tracking-tight">
-                Global Ready, Locally Focused
+                {t("globalReadyTitle")}
               </h2>
               <p className="text-lg leading-relaxed text-slate-600">
-                Multi-currency support for international operations with
-                localized pricing and reporting.
+                {t("globalReadyDescription")}
               </p>
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="rounded-2xl bg-white p-5 shadow-sm">
                   <p className="text-3xl font-black text-emerald-700">140+</p>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Currencies
+                    {t("currencies")}
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white p-5 shadow-sm">
                   <p className="text-3xl font-black text-emerald-700">24/7</p>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    FX Sync
+                    {t("fxSync")}
                   </p>
                 </div>
               </div>
@@ -184,18 +183,17 @@ export function SolutionsV2() {
                 <Grid3X3 className="h-6 w-6" />
               </div>
               <h2 className="text-4xl font-bold tracking-tight">
-                Intelligent Table Management
+                {t("tableManagementTitle")}
               </h2>
               <p className="text-lg leading-relaxed text-slate-300">
-                Optimize your floor plan with real-time table status and digital
-                ordering.
+                {t("tableManagementDescription")}
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <div className="rounded-full border border-emerald-300/30 bg-emerald-300/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-200">
-                  Occupied
+                  {t("occupied")}
                 </div>
                 <div className="rounded-full border border-red-300/30 bg-red-400/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-200">
-                  Delayed
+                  {t("delayed")}
                 </div>
               </div>
             </div>
@@ -205,29 +203,28 @@ export function SolutionsV2() {
         <section className="mx-auto max-w-7xl px-8 py-28">
           <div className="mb-14 text-center">
             <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">
-              The Precision Implementation
+              {t("implementationTitle")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-              Scaling your restaurant group is a process of refinement, not
-              friction.
+              {t("implementationDescription")}
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             {[
               [
                 "01",
-                "Connect",
-                "Plug in your existing systems and unify your data.",
+                t("steps.connectTitle"),
+                t("steps.connectDescription"),
               ],
               [
                 "02",
-                "Configure",
-                "Define regional rules and deploy standards globally.",
+                t("steps.configureTitle"),
+                t("steps.configureDescription"),
               ],
               [
                 "03",
-                "Scale",
-                "Launch locations faster using proven architecture.",
+                t("steps.scaleTitle"),
+                t("steps.scaleDescription"),
               ],
             ].map(([n, t, d]) => (
               <div
@@ -247,17 +244,17 @@ export function SolutionsV2() {
         <section className="px-8 pb-28">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-4xl bg-emerald-300 p-12 text-center md:p-20">
             <h2 className="text-4xl font-extrabold tracking-tight text-emerald-950 md:text-6xl">
-              Ready to orchestrate your growth?
+              {t("finalCtaTitle")}
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-xl text-emerald-900/80">
-              Join 500+ global restaurant groups using Qrixa.
+              {t("finalCtaDescription")}
             </p>
             <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
               <button className="rounded-2xl bg-slate-900 px-10 py-4 text-lg font-bold text-white shadow-2xl">
-                Start Your Integration
+                {t("startIntegration")}
               </button>
               <button className="rounded-2xl bg-white/60 px-10 py-4 text-lg font-bold text-emerald-950">
-                Speak with an Architect
+                {t("speakWithArchitect")}
               </button>
             </div>
           </div>

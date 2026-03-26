@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { SignupForm } from "./SignupForm";
 import { ShieldCheck, Clock3, Zap, CheckCircle2 } from "lucide-react";
-
-const REASSURANCES = [
-  { icon: Zap, text: "Set up in under 10 minutes" },
-  { icon: ShieldCheck, text: "No credit card required" },
-  { icon: Clock3, text: "Start free, upgrade anytime" },
-];
+import { useTranslations } from "next-intl";
 
 export function SignupSection() {
+  const t = useTranslations("SignupSection");
+  const REASSURANCES = [
+    { icon: Zap, text: t("reassurances.setupFast") },
+    { icon: ShieldCheck, text: t("reassurances.noCard") },
+    { icon: Clock3, text: t("reassurances.startFree") },
+  ];
   return (
     <section
       id="signup"
@@ -26,16 +27,15 @@ export function SignupSection() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                Fast onboarding
+                {t("badge")}
               </span>
             </div>
 
             <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl">
-              Start your digital menu in minutes
+              {t("title")}
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-600 sm:text-base">
-              Create an owner account, verify your email, and publish your menu
-              with a modern dashboard built for restaurants and cafes.
+              {t("description")}
             </p>
 
             <div className="mt-6 space-y-3">
@@ -53,7 +53,7 @@ export function SignupSection() {
             <div className="mt-7 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3">
               <p className="flex items-start gap-2 text-sm text-zinc-600">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                Email verification protects your account before dashboard access.
+                {t("verificationNote")}
               </p>
             </div>
           </div>
@@ -65,23 +65,22 @@ export function SignupSection() {
             >
               <div className="mb-5">
                 <h3 className="text-xl font-extrabold text-zinc-900">
-                  Create your account
+                  {t("formTitle")}
                 </h3>
                 <p className="mt-1 text-sm text-zinc-500">
-                  Use your business details and get an instant verification
-                  email.
+                  {t("formDescription")}
                 </p>
               </div>
 
               <SignupForm />
 
               <p className="mt-5 text-center text-sm text-slate-500">
-                Already have an account?{" "}
+                {t("alreadyHaveAccount")}{" "}
                 <Link
                   href="/dashboard/login"
                   className="font-semibold text-(--system-primary) hover:underline"
                 >
-                  Log in
+                  {t("logIn")}
                 </Link>
               </p>
             </div>
