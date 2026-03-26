@@ -26,10 +26,11 @@ apiClient.interceptors.request.use((config) => {
 
 export function getApiError(err: unknown): string {
   if (axios.isAxiosError(err)) {
-    const ax = err as AxiosError<ApiError>;
-    const msg = ax.response?.data?.error;
-    const details = ax.response?.data?.details;
-    if (msg) return details ? `${msg}: ${details}` : msg;
+    const ax = err as AxiosError<ApiError & { message?: string }>;
+    const data = ax.response?.data;
+    const msg = data?.error ?? data?.message;
+    const details = data?.details;
+    if (msg) return details ? `${msg}: ${details}` : String(msg);
     return ax.message || "Request failed";
   }
   return err instanceof Error ? err.message : "Unknown error";

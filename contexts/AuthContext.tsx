@@ -19,7 +19,11 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (name: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    redirectTo?: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refetchUser: () => Promise<void>;
 }
@@ -54,8 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refetchUser]);
 
   const login = useCallback(
-    async (name: string, password: string) => {
-      const res = await authApi.login(name, password);
+    async (email: string, password: string, redirectTo = "/dashboard") => {
+      const res = await authApi.login(email, password);
       setToken(res.access_token);
       const userWithNames = {
         ...res.user,
@@ -67,8 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         isAuthenticated: true,
       });
-      // انتظر تحديث الـ state قبل الانتقال عشان الـ dashboard يلاقي الـ user
-      queueMicrotask(() => router.push("/dashboard"));
+      queueMicrotask(() => router.push(redirectTo));
     },
     [router],
   );

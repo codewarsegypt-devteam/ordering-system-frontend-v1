@@ -1,10 +1,11 @@
 // Auth & User
 export type UserRole = "owner" | "manager" | "cashier" | "kitchen";
-export type UserStatus = "active" | "disabled";
+export type UserStatus = "active" | "disabled" | "pending_verification";
 
 export interface User {
   id: string;
   name: string;
+  email?: string | null;
   merchant_id: string;
   branch_id: string | null;
   role: UserRole;
@@ -246,6 +247,7 @@ export interface OrdersListResponse {
 
 // API error
 export interface ApiError {
-  error: string;
+  error?: string;
+  message?: string;
   details?: string;
 }
