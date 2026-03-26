@@ -4,11 +4,44 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { locales } from "@/lib/i18n";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const items = [
+  { label: "EN", value: "en" },
+  { label: "AR", value: "ar" },
+  { label: "DE", value: "de" },
+  { label: "RU", value: "ru" },
+];
 
 const TopBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations("TopBar");
+  const locale = useLocale();
+  const router = useRouter();
 
   const closeMenu = () => setIsMenuOpen(false);
+  const localeLabel: Record<(typeof locales)[number], string> = {
+    en: "EN",
+    ar: "AR",
+    de: "DE",
+    ru: "RU",
+  };
+
+  const setLanguage = (nextLocale: (typeof locales)[number]) => {
+    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
+    router.refresh();
+  };
 
   return (
     <div className="relative">
@@ -23,31 +56,50 @@ const TopBar = () => {
           </Link>
           <div className="hidden items-center gap-7 text-sm font-semibold text-slate-600 md:flex">
             <Link href="/home/#features" className="hover:text-slate-900">
-              Features
+              {t("features")}
             </Link>
             <Link href="/home/pricing" className="hover:text-slate-900">
-              Pricing
+              {t("pricing")}
             </Link>
             <Link href="/home/solutions" className="hover:text-slate-900">
-              Solutions
+              {t("solutions")}
             </Link>
             <Link href="/home/about" className="hover:text-slate-900">
-              About
+              {t("about")}
             </Link>
           </div>
           <div className="hidden items-center gap-2 md:flex">
+            <Select
+              value={locale}
+              onValueChange={(value) =>
+                setLanguage(value as (typeof locales)[number])
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {items.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <Link
               href="/dashboard/login"
               className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
             >
-              Sign in
+              {t("signIn")}
             </Link>
             <Link
               href="/home/signup"
               className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
               style={{ backgroundColor: "var(--system-primary)" }}
             >
-              Get Started
+              {t("getStarted")}
             </Link>
           </div>
 
@@ -55,16 +107,22 @@ const TopBar = () => {
             type="button"
             onClick={() => setIsMenuOpen((v) => !v)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMenuOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={isMenuOpen}
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
         </div>
 
         <div
           className={`overflow-hidden border-t border-slate-200 bg-white px-4 transition-all duration-300 md:hidden ${
-            isMenuOpen ? "max-h-[380px] py-4 opacity-100" : "max-h-0 py-0 opacity-0"
+            isMenuOpen
+              ? "max-h-[380px] py-4 opacity-100"
+              : "max-h-0 py-0 opacity-0"
           }`}
         >
           <div className="flex flex-col gap-2 text-sm font-semibold text-slate-700">
@@ -73,38 +131,57 @@ const TopBar = () => {
               className="rounded-lg px-3 py-2 hover:bg-slate-50"
               onClick={closeMenu}
             >
-              Features
+              {t("features")}
             </Link>
             <Link
               href="/home/pricing"
               className="rounded-lg px-3 py-2 hover:bg-slate-50"
               onClick={closeMenu}
             >
-              Pricing
+              {t("pricing")}
             </Link>
             <Link
               href="/home/solutions"
               className="rounded-lg px-3 py-2 hover:bg-slate-50"
               onClick={closeMenu}
             >
-              Solutions
+              {t("solutions")}
             </Link>
             <Link
               href="/home/about"
               className="rounded-lg px-3 py-2 hover:bg-slate-50"
               onClick={closeMenu}
             >
-              About
+              {t("about")}
             </Link>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-3 gap-2">
+          <Select
+              value={locale}
+              onValueChange={(value) =>
+                setLanguage(value as (typeof locales)[number])
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {items.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <Link
               href="/dashboard/login"
               className="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
               onClick={closeMenu}
             >
-              Sign in
+              {t("signIn")}
             </Link>
             <Link
               href="/home/signup"
@@ -112,7 +189,7 @@ const TopBar = () => {
               style={{ backgroundColor: "var(--system-primary)" }}
               onClick={closeMenu}
             >
-              Get Started
+              {t("getStarted")}
             </Link>
           </div>
         </div>

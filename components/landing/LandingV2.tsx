@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 // function TopBar() {
 //   return (
@@ -19,19 +20,20 @@ import Image from "next/image";
 // }
 
 function Hero() {
+  const t = useTranslations("Landing");
+
   return (
     <section className="relative overflow-hidden px-6 pb-20 pt-20 md:pb-28 md:pt-25">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-12">
         <div className="z-10 lg:col-span-7">
           <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-800">
-            The future of restaurant management
+            {t("heroBadge")}
           </span>
           <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-slate-900 md:text-6xl">
-            Qrixa: Powerful Menu Ordering & Table Management
+            {t("heroTitle")}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600">
-            Seamlessly manage orders, tables, and branches across multiple
-            currencies with our intuitive SaaS platform.
+            {t("heroDescription")}
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
@@ -39,11 +41,11 @@ function Hero() {
               className="rounded-xl px-7 py-3.5 text-center text-base font-bold text-white shadow-lg"
               style={{ backgroundColor: "var(--system-primary)" }}
             >
-              Get Started Now
+              {t("getStartedNow")}
             </Link>
             <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-base font-bold text-slate-800 hover:bg-slate-50">
               <PlayCircle className="h-5 w-5" />
-              Watch Demo
+              {t("watchDemo")}
             </button>
           </div>
         </div>
@@ -64,15 +66,17 @@ function Hero() {
 }
 
 function ValueGrid() {
+  const t = useTranslations("Landing");
+
   return (
     <section id="features" className="px-6 py-24 md:py-28">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 max-w-2xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
-            Designed for Growth. Built for Precision.
+            {t("valueTitle")}
           </h2>
           <p className="mt-4 text-lg text-slate-600">
-            Everything you need to orchestrate a world-class dining experience.
+            {t("valueDescription")}
           </p>
         </div>
 
@@ -80,10 +84,10 @@ function ValueGrid() {
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm md:col-span-7">
             <Building2 className="h-10 w-10 text-emerald-700" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
-              Multi-Branch Management
+              {t("multiBranchTitle")}
             </h3>
             <p className="mt-3 text-slate-600">
-              Centralize operations across cities with one clean dashboard.
+              {t("multiBranchText")}
             </p>
           </div>
           <div
@@ -92,28 +96,28 @@ function ValueGrid() {
           >
             <Utensils className="h-10 w-10 text-emerald-200" />
             <h3 className="mt-5 text-2xl font-bold">
-              Real-Time Table Ordering
+              {t("tableOrderingTitle")}
             </h3>
             <p className="mt-3 text-slate-200">
-              Sync table-side orders with kitchen displays instantly.
+              {t("tableOrderingText")}
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 shadow-sm md:col-span-5">
             <Globe className="h-10 w-10 text-slate-800" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
-              Multi-Currency Support
+              {t("multiCurrencyTitle")}
             </h3>
             <p className="mt-3 text-slate-600">
-              Process payments and reporting in local currencies automatically.
+              {t("multiCurrencyText")}
             </p>
           </div>
           <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-8 shadow-sm md:col-span-7">
             <BarChart3 className="h-10 w-10 text-emerald-700" />
             <h3 className="mt-5 text-2xl font-bold text-slate-900">
-              Insightful Analytics
+              {t("analyticsTitle")}
             </h3>
             <p className="mt-3 text-slate-600">
-              Understand peak hours, top items, and service performance.
+              {t("analyticsText")}
             </p>
           </div>
         </div>
@@ -123,18 +127,20 @@ function ValueGrid() {
 }
 
 function KitchenHighlight() {
+  const t = useTranslations("Landing");
+
   const points = [
     {
-      title: "Smart Queue Management",
-      text: "Automated load balancing between kitchen stations to prevent bottlenecks.",
+      title: t("points.queueTitle"),
+      text: t("points.queueText"),
     },
     {
-      title: "Dynamic Menu Control",
-      text: "Update prices or disable items instantly across all digital platforms and physical QR menus.",
+      title: t("points.menuTitle"),
+      text: t("points.menuText"),
     },
     {
-      title: "Staff Performance Scoring",
-      text: "Identify your top performers and optimize scheduling based on real-world order velocity.",
+      title: t("points.staffTitle"),
+      text: t("points.staffText"),
     },
   ];
 
@@ -151,18 +157,17 @@ function KitchenHighlight() {
           </div>
           <div className="absolute -bottom-8 left-10 max-w-xs rounded-2xl bg-emerald-300 px-6 py-5 shadow-xl">
             <p className="text-xl font-bold italic leading-snug text-emerald-950">
-              “Qrixa transformed our workflow in the first week. We&apos;ve seen
-              a 22% increase in table turnover.”
+              "{t("quote")}"
             </p>
             <p className="mt-3 text-sm font-semibold text-emerald-800">
-              — Chef Reyad, Le Marois
+              - {t("quoteAuthor")}
             </p>
           </div>
         </div>
 
         <div>
           <h2 className="text-4xl font-extrabold leading-tight tracking-tight text-slate-900">
-            The Precision Concierge for Your Kitchen.
+            {t("kitchenTitle")}
           </h2>
           <ul className="mt-9 space-y-7">
             {points.map((point) => (
@@ -188,6 +193,8 @@ function KitchenHighlight() {
 }
 
 function Cta() {
+  const t = useTranslations("Landing");
+
   return (
     <section id="pricing" className="mx-auto max-w-7xl px-6 py-24">
       <div
@@ -195,20 +202,20 @@ function Cta() {
         style={{ backgroundColor: "var(--system-primary)" }}
       >
         <h2 className="text-3xl font-extrabold md:text-5xl">
-          Ready to scale your restaurant business?
+          {t("ctaTitle")}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-slate-200">
-          Join high-performing restaurants using Qrixa to streamline operations.
+          {t("ctaDescription")}
         </p>
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href="/home/signup"
             className="rounded-xl bg-white px-8 py-3.5 text-lg font-bold text-slate-900"
           >
-            Join Qrixa Today
+            {t("joinToday")}
           </Link>
           <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-8 py-3.5 text-lg font-bold text-white hover:bg-white/20">
-            Talk to Sales <ArrowUpRight className="h-5 w-5" />
+            {t("talkToSales")} <ArrowUpRight className="h-5 w-5" />
           </button>
         </div>
       </div>
