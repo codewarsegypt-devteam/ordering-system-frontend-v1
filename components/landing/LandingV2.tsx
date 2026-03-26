@@ -35,7 +35,7 @@ function Hero() {
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/signup"
+              href="/home/signup"
               className="rounded-xl px-7 py-3.5 text-center text-base font-bold text-white shadow-lg"
               style={{ backgroundColor: "var(--system-primary)" }}
             >
