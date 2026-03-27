@@ -21,7 +21,6 @@ import {
   CalendarRange,
   ClipboardList,
   Layers,
-  Loader2,
   MapPin,
   RotateCcw,
   Settings2,
@@ -31,6 +30,15 @@ import {
   Users,
   UtensilsCrossed,
 } from "lucide-react";
+import { OverviewStatsSkeleton } from "@/components/dashboard/OverviewStatsSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 
 interface QuickLinkProps {
   href: string;
@@ -524,28 +532,38 @@ export default function DashboardPage() {
                 <label className="mb-1 block text-xs font-medium text-zinc-600">
                   Branch
                 </label>
-                <select
-                  className="input-base py-2 text-sm"
+                <Select
                   value={
-                    isOwner ? filters.branch_id : String(user?.branch_id ?? "")
+                    isOwner
+                      ? filters.branch_id || "__all__"
+                      : String(user?.branch_id ?? "")
                   }
-                  onChange={(e) =>
+                  onValueChange={(v) =>
                     setFilters((current) => ({
                       ...current,
-                      branch_id: e.target.value,
+                      branch_id: v === "__all__" || v == null ? "" : v,
                     }))
                   }
                   disabled={!isOwner}
                 >
-                  <option value="">
-                    {isOwner ? "All branches" : "Your branch"}
-                  </option>
-                  {branches?.map((branch) => (
-                    <option key={branch.id} value={String(branch.id)}>
-                      {branch.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger
+                    className={`${formSelectTriggerClassName} py-2 text-sm`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isOwner ? (
+                      <SelectItem value="__all__">All branches</SelectItem>
+                    ) : (
+                      <SelectItem value="">Your branch</SelectItem>
+                    )}
+                    {branches?.map((branch) => (
+                      <SelectItem key={branch.id} value={String(branch.id)}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="lg:col-span-3">
                 <label className="mb-1 block text-xs font-medium text-zinc-600">
@@ -583,22 +601,28 @@ export default function DashboardPage() {
                 <label className="mb-1 block text-xs font-medium text-zinc-600">
                   List size
                 </label>
-                <select
-                  className="input-base py-2 text-sm"
+                <Select
                   value={filters.top_limit}
-                  onChange={(e) =>
+                  onValueChange={(v) =>
                     setFilters((current) => ({
                       ...current,
-                      top_limit: e.target.value,
+                      top_limit: v ?? current.top_limit,
                     }))
                   }
                 >
-                  {[5, 10, 15, 20].map((value) => (
-                    <option key={value} value={String(value)}>
-                      Top {value} rows
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger
+                    className={`${formSelectTriggerClassName} py-2 text-sm`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[5, 10, 15, 20].map((value) => (
+                      <SelectItem key={value} value={String(value)}>
+                        Top {value} rows
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {hasActiveFilters && (
@@ -623,10 +647,7 @@ export default function DashboardPage() {
           </div>
 
           {isLoadingStats ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-24">
-              <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-              <p className="text-sm text-slate-500">Loading analytics…</p>
-            </div>
+            <OverviewStatsSkeleton />
           ) : statsError ? (
             <div className="alert-error">{getApiError(statsError)}</div>
           ) : (

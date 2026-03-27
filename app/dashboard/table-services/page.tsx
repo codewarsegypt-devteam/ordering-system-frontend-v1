@@ -29,6 +29,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
+import { OrdersPageSkeleton } from "@/components/dashboard/OrdersPageSkeleton";
 
 const TYPE_LABELS: Record<string, string> = {
   call_waiter: "Call waiter",
@@ -362,11 +371,7 @@ export default function TableServicesPage() {
     hasAdvancedFilters;
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-10 w-10 animate-spin text-teal-600" />
-      </div>
-    );
+    return <OrdersPageSkeleton />;
   }
 
   if (error) {
@@ -425,19 +430,36 @@ export default function TableServicesPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <div>
             <label className="label">Branch</label>
-            <select
-              className="input-base"
-              value={isOwner ? filters.branch_id : String(user?.branch_id ?? "")}
-              onChange={(e) => updateFilter("branch_id", e.target.value)}
+            <Select
+              value={
+                isOwner
+                  ? filters.branch_id || "__all__"
+                  : String(user?.branch_id ?? "")
+              }
+              onValueChange={(v) =>
+                updateFilter(
+                  "branch_id",
+                  v === "__all__" || v == null ? "" : v,
+                )
+              }
               disabled={!isOwner}
             >
-              <option value="">{isOwner ? "All branches" : "Your branch"}</option>
-              {branches?.map((branch) => (
-                <option key={branch.id} value={String(branch.id)}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className={formSelectTriggerClassName}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {isOwner ? (
+                  <SelectItem value="__all__">All branches</SelectItem>
+                ) : (
+                  <SelectItem value="">Your branch</SelectItem>
+                )}
+                {branches?.map((branch) => (
+                  <SelectItem key={branch.id} value={String(branch.id)}>
+                    {branch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="md:col-span-2 xl:col-span-1">
             <label className="label">Quick date range</label>
@@ -537,17 +559,21 @@ export default function TableServicesPage() {
             </div>
             <div>
               <label className="label">Page size</label>
-              <select
-                className="input-base"
+              <Select
                 value={String(filters.limit)}
-                onChange={(e) => updateFilter("limit", Number(e.target.value))}
+                onValueChange={(v) => updateFilter("limit", Number(v))}
               >
-                {[10, 20, 50, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100].map((size) => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}

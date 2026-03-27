@@ -2,7 +2,15 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 import { useAuth } from "@/contexts";
 import {
   fetchMenus, fetchMenuCategories, fetchCategoryItems,
@@ -218,7 +226,7 @@ function CreateItemForm({ onAdd, onCancel, isPending }: {
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit } = useForm<{
+  const { register, handleSubmit, control } = useForm<{
     name_ar: string; name_en: string;
     base_price: number; description_ar: string;
     description_en: string; status: string;
@@ -255,11 +263,22 @@ function CreateItemForm({ onAdd, onCancel, isPending }: {
         </div>
         <div>
           <label className="label">Status</label>
-          <select className="input-base" {...register("status")}>
-            <option value="active">Active</option>
-            <option value="hidden">Hidden</option>
-            <option value="out_of_stock">Out of stock</option>
-          </select>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="hidden">Hidden</SelectItem>
+                  <SelectItem value="out_of_stock">Out of stock</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
       </div>
       <div className="mt-4 flex gap-2">

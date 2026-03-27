@@ -4,7 +4,10 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/contexts";
-import { LiveOrdersProvider, useLiveOrders } from "@/contexts/LiveOrdersContext";
+import {
+  LiveOrdersProvider,
+  useLiveOrders,
+} from "@/contexts/LiveOrdersContext";
 import { LiveOrdersPoller } from "@/components/dashboard/LiveOrdersPoller";
 import {
   LayoutDashboard,
@@ -36,7 +39,11 @@ const NAV_MAIN = [
 const NAV_PAGES = [
   { href: "/dashboard/orders", label: "Orders", icon: ClipboardList },
   { href: "/dashboard/table-sessions", label: "Table Sessions", icon: Table2 },
-  { href: "/dashboard/table-services", label: "Table Services", icon: UserCircle2 },
+  {
+    href: "/dashboard/table-services",
+    label: "Table Services",
+    icon: UserCircle2,
+  },
   { href: "/dashboard/menu", label: "Menu", icon: UtensilsCrossed },
   {
     href: "/dashboard/modifiers",
@@ -47,10 +54,25 @@ const NAV_PAGES = [
 ] as const;
 
 const NAV_SETTINGS = [
-  { href: "/dashboard/merchant", label: "Merchant", icon: Store, roles: ["owner"] },
-  { href: "/dashboard/branches", label: "Branches", icon: MapPin, roles: ["owner"] },
+  {
+    href: "/dashboard/merchant",
+    label: "Merchant",
+    icon: Store,
+    roles: ["owner"],
+  },
+  {
+    href: "/dashboard/branches",
+    label: "Branches",
+    icon: MapPin,
+    roles: ["owner"],
+  },
   { href: "/dashboard/users", label: "Users", icon: Users, roles: ["owner"] },
-  { href: "/dashboard/currencies", label: "Currencies", icon: Coins, roles: ["owner"] },
+  {
+    href: "/dashboard/currencies",
+    label: "Currencies",
+    icon: Coins,
+    roles: ["owner"],
+  },
 ] as const;
 
 function NavItem({
@@ -101,11 +123,9 @@ function SettingsDropdown({
   role: string;
 }) {
   const visibleSettings = NAV_SETTINGS.filter((item) =>
-    (item.roles as readonly string[]).includes(role)
+    (item.roles as readonly string[]).includes(role),
   );
-  const hasActive = visibleSettings.some((item) =>
-    path?.startsWith(item.href)
-  );
+  const hasActive = visibleSettings.some((item) => path?.startsWith(item.href));
   const [open, setOpen] = React.useState(hasActive);
 
   React.useEffect(() => {
@@ -138,7 +158,9 @@ function SettingsDropdown({
             hasActive ? undefined : { border: "1px solid var(--system-sage)" }
           }
         >
-          <Settings className={`h-3.5 w-3.5 ${hasActive ? "text-white" : ""}`} />
+          <Settings
+            className={`h-3.5 w-3.5 ${hasActive ? "text-white" : ""}`}
+          />
         </span>
         <span className="min-w-0 flex-1 truncate text-left">Settings</span>
         <ChevronDown
@@ -266,7 +288,7 @@ function Sidebar({
         </div>
 
         {/* Settings */}
-        {(role === "owner") && (
+        {role === "owner" && (
           <>
             <SectionLabel>Config</SectionLabel>
             <div className="space-y-0.5">
@@ -299,9 +321,7 @@ function Sidebar({
             <p className="truncate text-sm font-semibold text-slate-800">
               {user?.name}
             </p>
-            <p className="truncate text-xs capitalize text-slate-400">
-              {role}
-            </p>
+            <p className="truncate text-xs capitalize text-slate-400">{role}</p>
           </div>
         </div>
       </div>
@@ -357,7 +377,13 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
     return (
       <div className="dashboard-main flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--system-primary)", borderTopColor: "transparent" }} />
+          <div
+            className="h-9 w-9 animate-spin rounded-full border-2 border-t-transparent"
+            style={{
+              borderColor: "var(--system-primary)",
+              borderTopColor: "transparent",
+            }}
+          />
           <p className="text-sm text-slate-500">Loading…</p>
         </div>
       </div>
@@ -424,21 +450,27 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
                 Live paused (3 min). Start live to resume.
               </span>
             )}
-            {(liveOrders.isPolling) && (
+            {liveOrders.isPolling && (
               <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
                 <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
               </div>
             )}
             <button
               type="button"
-              onClick={() =>
-                liveOrders.setLivePollingEnabled((v) => !v)
-              }
+              onClick={() => liveOrders.setLivePollingEnabled((v) => !v)}
               className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
               style={
                 liveOrders.livePollingEnabled
-                  ? { borderColor: "var(--system-sage)", backgroundColor: "white", color: "var(--system-primary)" }
-                  : { backgroundColor: "var(--system-primary)", color: "white", borderColor: "var(--system-primary)" }
+                  ? {
+                      borderColor: "var(--system-sage)",
+                      backgroundColor: "white",
+                      color: "var(--system-primary)",
+                    }
+                  : {
+                      backgroundColor: "var(--system-primary)",
+                      color: "white",
+                      borderColor: "var(--system-primary)",
+                    }
               }
             >
               {liveOrders.livePollingEnabled ? (
@@ -469,14 +501,20 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50"
                 aria-expanded={userMenuOpen}
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white" style={{ backgroundColor: "var(--system-primary)" }}>
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
+                  style={{ backgroundColor: "var(--system-primary)" }}
+                >
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </div>
                 <div className="hidden text-left sm:block">
                   <p className="text-sm font-semibold leading-tight text-slate-800">
                     {user?.name}
                   </p>
-                  <p className="text-[11px] capitalize leading-tight" style={{ color: "var(--system-primary)" }}>
+                  <p
+                    className="text-[11px] capitalize leading-tight"
+                    style={{ color: "var(--system-primary)" }}
+                  >
                     {user?.role}
                   </p>
                 </div>
@@ -498,7 +536,10 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
                       <p className="font-semibold text-slate-800">
                         {user?.name}
                       </p>
-                      <p className="text-xs capitalize" style={{ color: "var(--system-primary)" }}>
+                      <p
+                        className="text-xs capitalize"
+                        style={{ color: "var(--system-primary)" }}
+                      >
                         {user?.role}
                       </p>
                       {user?.merchant_name && (
@@ -507,6 +548,14 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
                         </p>
                       )}
                     </div>
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                    >
+                      <UserCircle2 className="h-4 w-4" />
+                      Profile
+                    </Link>
                     <button
                       type="button"
                       onClick={() => {

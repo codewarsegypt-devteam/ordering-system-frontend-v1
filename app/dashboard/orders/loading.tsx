@@ -1,10 +1,5 @@
-import { PageHeaderSkeleton, TableSkeleton } from "@/components/ui/Skeleton";
+import { OrdersPageSkeleton } from "@/components/dashboard/OrdersPageSkeleton";
 
 export default function OrdersLoading() {
-  return (
-    <div className="space-y-5">
-      <PageHeaderSkeleton />
-      <TableSkeleton rows={8} />
-    </div>
-  );
+  return <OrdersPageSkeleton />;
 }

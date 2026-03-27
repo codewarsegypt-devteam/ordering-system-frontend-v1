@@ -11,14 +11,23 @@ export async function fetchUser(userId: string): Promise<User> {
   return data;
 }
 
+/** POST /users — requires auth; body per API: name, email, password, role; optional branch_id, status */
 export async function createUser(body: {
-  merchant_id: string;
   name: string;
+  email: string;
   password: string;
   role: UserRole;
-  branch_id?: string | null;
+  branch_id?: number | null;
+  status?: "active" | "disabled";
 }): Promise<User> {
-  const { data } = await apiClient.post<User>("/users", body);
+  const { data } = await apiClient.post<User>("/users", {
+    name: body.name,
+    email: body.email.trim(),
+    password: body.password,
+    role: body.role,
+    branch_id: body.branch_id ?? null,
+    ...(body.status ? { status: body.status } : {}),
+  });
   return data;
 }
 

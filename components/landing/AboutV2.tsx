@@ -1,12 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Cog, Mail, Phone, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 
 export function AboutV2() {
   const t = useTranslations("AboutV2");
+  const [branchRange, setBranchRange] = useState("1-5");
   return (
     <div className="bg-slate-50 text-slate-900">
 
@@ -144,11 +153,23 @@ export function AboutV2() {
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
                     {t("form.numberOfBranches")}
                   </label>
-                  <select className="input-base bg-slate-100/90">
-                    <option>{t("form.branches1to5")}</option>
-                    <option>{t("form.branches6to20")}</option>
-                    <option>{t("form.branches21Plus")}</option>
-                  </select>
+                  <Select
+                    value={branchRange}
+                    onValueChange={(v) => {
+                      if (v) setBranchRange(v);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={`${formSelectTriggerClassName} bg-slate-100/90`}
+                    >
+                      <SelectValue placeholder={t("form.branches1to5")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">{t("form.branches1to5")}</SelectItem>
+                      <SelectItem value="6-20">{t("form.branches6to20")}</SelectItem>
+                      <SelectItem value="21+">{t("form.branches21Plus")}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div>

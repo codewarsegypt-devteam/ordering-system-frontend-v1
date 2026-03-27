@@ -24,6 +24,14 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 
 export default function CurrenciesPage() {
   const { user } = useAuth();
@@ -380,18 +388,26 @@ export default function CurrenciesPage() {
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Select Base Currency
           </label>
-          <select
-            value={selectedBaseId ?? ""}
-            onChange={(e) => setSelectedBaseId(Number(e.target.value))}
-            className="input-base w-full"
+          <Select
+            value={
+              selectedBaseId != null ? String(selectedBaseId) : "__none__"
+            }
+            onValueChange={(v) =>
+              setSelectedBaseId(v === "__none__" ? null : Number(v))
+            }
           >
-            <option value="">— choose currency —</option>
-            {allCurrencies.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.code})
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className={formSelectTriggerClassName}>
+              <SelectValue placeholder="— choose currency —" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none__">— choose currency —</SelectItem>
+              {allCurrencies.map((c) => (
+                <SelectItem key={c.id} value={String(c.id)}>
+                  {c.name} ({c.code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <div className="mt-5 flex justify-end gap-3">
             <button
@@ -426,21 +442,29 @@ export default function CurrenciesPage() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Currency
               </label>
-              <select
-                value={addForm.currency_id}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, currency_id: e.target.value }))
+              <Select
+                value={addForm.currency_id ? String(addForm.currency_id) : "__none__"}
+                onValueChange={(v) =>
+                  setAddForm((f) => ({
+                    ...f,
+                    currency_id:
+                      v == null || v === "__none__" ? "" : v,
+                  }))
                 }
-                className="input-base w-full"
                 required
               >
-                <option value="">— select currency —</option>
-                {availableToAdd.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} ({c.code})
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue placeholder="— select currency —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— select currency —</SelectItem>
+                  {availableToAdd.map((c) => (
+                    <SelectItem key={c.id} value={String(c.id)}>
+                      {c.name} ({c.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>

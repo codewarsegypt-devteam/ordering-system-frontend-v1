@@ -8,18 +8,34 @@ import {
 } from "@/lib/api";
 import { fetchBranches } from "@/lib/api";
 import type { UserRole } from "@/lib/types";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 import {
   Users as UsersIcon, Loader2, Plus, Pencil, Trash2,
   Check, X, ShieldAlert, UserCircle2, MapPin,
-  ToggleLeft, ToggleRight, KeyRound,
+  ToggleLeft, ToggleRight, KeyRound, Mail,
 } from "lucide-react";
+import { UsersPageSkeleton } from "@/components/dashboard/UsersPageSkeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface UserForm {
+interface CreateUserFormValues {
   name: string;
+  email: string;
   password: string;
+  role: UserRole;
+  branch_id: string;
+}
+
+interface EditUserFormValues {
+  name: string;
   role: UserRole;
   branch_id: string;
 }
@@ -57,8 +73,20 @@ export default function UsersPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: (body: { name: string; password: string; role: UserRole; branch_id?: string | null }) =>
-      createUser({ merchant_id: String(currentUser!.merchant_id), name: body.name, password: body.password, role: body.role, branch_id: body.branch_id || null }),
+    mutationFn: (body: {
+      name: string;
+      email: string;
+      password: string;
+      role: UserRole;
+      branch_id?: string | null;
+    }) =>
+      createUser({
+        name: body.name.trim(),
+        email: body.email.trim().toLowerCase(),
+        password: body.password,
+        role: body.role,
+        branch_id: body.branch_id ? Number(body.branch_id) : null,
+      }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["users"] }); setCreating(false); toast.success("User created."); },
     onError: (e) => toast.error(getApiError(e)),
   });
@@ -91,12 +119,7 @@ export default function UsersPage() {
     );
   }
 
-  if (isLoading) return (
-    <div className="flex flex-col items-center justify-center gap-3 py-24">
-      <Loader2 className="h-7 w-7 animate-spin" style={{ color: "var(--system-primary)" }} />
-      <p className="text-sm text-slate-500">Loading users…</p>
-    </div>
-  );
+  if (isLoading) return <UsersPageSkeleton />;
 
   if (error) return <div className="alert-error">{getApiError(error)}</div>;
 
@@ -137,7 +160,15 @@ export default function UsersPage() {
           </div>
           <CreateUserForm
             branches={branches ?? []}
-            onSubmit={(data) => createMut.mutate({ name: data.name, password: data.password, role: data.role, branch_id: data.branch_id || null })}
+            onSubmit={(data) =>
+              createMut.mutate({
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                role: data.role,
+                branch_id: data.branch_id || null,
+              })
+            }
             onCancel={() => setCreating(false)}
             isPending={createMut.isPending}
           />
@@ -183,6 +214,9 @@ export default function UsersPage() {
                               <span className="ml-1.5 text-[10px] font-medium text-teal-600">(you)</span>
                             )}
                           </p>
+                          {u.email ? (
+                            <p className="text-xs text-slate-500">{u.email}</p>
+                          ) : null}
                         </div>
                       </div>
                     </td>
@@ -287,21 +321,37 @@ export default function UsersPage() {
 /* ─── Create user form ─── */
 function CreateUserForm({ branches, onSubmit, onCancel, isPending }: {
   branches: { id: string; name: string }[];
-  onSubmit: (data: UserForm) => void;
+  onSubmit: (data: CreateUserFormValues) => void;
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit, reset } = useForm<UserForm>({ defaultValues: { role: "cashier" } });
+  const { register, handleSubmit, reset, control } = useForm<CreateUserFormValues>({
+    defaultValues: { role: "cashier", email: "", branch_id: "" },
+  });
   return (
     <form onSubmit={handleSubmit((d) => { onSubmit(d); reset(); })}>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label">
             <span className="flex items-center gap-1.5">
-              <UserCircle2 className="h-3.5 w-3.5" /> Username *
+              <UserCircle2 className="h-3.5 w-3.5" /> Display name *
             </span>
           </label>
-          <input className="input-base" placeholder="e.g. john_doe" {...register("name", { required: true })} />
+          <input className="input-base" placeholder="e.g. John Doe" {...register("name", { required: true })} />
+        </div>
+        <div>
+          <label className="label">
+            <span className="flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5" /> Email *
+            </span>
+          </label>
+          <input
+            type="email"
+            autoComplete="email"
+            className="input-base"
+            placeholder="staff@restaurant.com"
+            {...register("email", { required: true })}
+          />
         </div>
         <div>
           <label className="label">
@@ -313,11 +363,23 @@ function CreateUserForm({ branches, onSubmit, onCancel, isPending }: {
         </div>
         <div>
           <label className="label">Role *</label>
-          <select className="input-base" {...register("role", { required: true })}>
-            <option value="manager">Manager</option>
-            <option value="cashier">Cashier</option>
-            <option value="kitchen">Kitchen</option>
-          </select>
+          <Controller
+            name="role"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="cashier">Cashier</SelectItem>
+                  <SelectItem value="kitchen">Kitchen</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
         <div>
           <label className="label">
@@ -325,12 +387,30 @@ function CreateUserForm({ branches, onSubmit, onCancel, isPending }: {
               <MapPin className="h-3.5 w-3.5" /> Branch
             </span>
           </label>
-          <select className="input-base" {...register("branch_id")}>
-            <option value="">— No branch —</option>
-            {branches.map((b) => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
+          <Controller
+            name="branch_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ? field.value : "__none__"}
+                onValueChange={(v) =>
+                  field.onChange(v === "__none__" ? "" : v)
+                }
+              >
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue placeholder="— No branch —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— No branch —</SelectItem>
+                  {branches.map((b) => (
+                    <SelectItem key={b.id} value={b.id}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
       </div>
       <div className="mt-5 flex gap-2">
@@ -351,8 +431,8 @@ function EditUserForm({ user, branches, onSave, onCancel, isPending }: {
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit } = useForm<UserForm>({
-    defaultValues: { name: user.name, role: user.role, branch_id: user.branch_id ?? "", password: "" },
+  const { register, handleSubmit, control } = useForm<EditUserFormValues>({
+    defaultValues: { name: user.name, role: user.role, branch_id: user.branch_id ?? "" },
   });
   return (
     <form onSubmit={handleSubmit((d) => onSave({ name: d.name, role: d.role, branch_id: d.branch_id || null }))}>
@@ -363,20 +443,49 @@ function EditUserForm({ user, branches, onSave, onCancel, isPending }: {
         </div>
         <div>
           <label className="label text-xs">Role</label>
-          <select className="input-base" {...register("role")}>
-            <option value="manager">Manager</option>
-            <option value="cashier">Cashier</option>
-            <option value="kitchen">Kitchen</option>
-          </select>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="cashier">Cashier</SelectItem>
+                  <SelectItem value="kitchen">Kitchen</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
         <div>
           <label className="label text-xs">Branch</label>
-          <select className="input-base" {...register("branch_id")}>
-            <option value="">— No branch —</option>
-            {branches.map((b) => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
+          <Controller
+            name="branch_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ? field.value : "__none__"}
+                onValueChange={(v) =>
+                  field.onChange(v === "__none__" ? "" : v)
+                }
+              >
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue placeholder="— No branch —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— No branch —</SelectItem>
+                  {branches.map((b) => (
+                    <SelectItem key={b.id} value={b.id}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
       </div>
       <div className="mt-3 flex gap-2">

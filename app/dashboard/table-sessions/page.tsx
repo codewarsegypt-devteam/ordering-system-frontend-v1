@@ -30,6 +30,15 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 const statusLabels: Record<OrderStatus, string> = {
   draft: "Draft",
@@ -346,7 +355,7 @@ export default function DashboardTableSessionsPage() {
           className="btn-secondary btn-sm"
           disabled={sessionsQuery.isFetching}
         >
-          {sessionsQuery.isFetching ? (
+          {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <RefreshCcw className="h-4 w-4" />
@@ -392,38 +401,47 @@ export default function DashboardTableSessionsPage() {
           {isOwner && (
             <div>
               <label className="label">Branch</label>
-              <select
-                className="input-base"
-                value={selectedBranchId}
-                onChange={(event) => {
-                  setSelectedBranchId(event.target.value);
+              <Select
+                value={selectedBranchId || "__all__"}
+                onValueChange={(v) => {
+                  setSelectedBranchId(
+                    v === "__all__" || v == null ? "" : v,
+                  );
                   setPage(1);
                 }}
               >
-                <option value="">All branches</option>
-                {(branches ?? []).map((branch) => (
-                  <option key={String(branch.id)} value={String(branch.id)}>
-                    {branch.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All branches</SelectItem>
+                  {(branches ?? []).map((branch) => (
+                    <SelectItem key={String(branch.id)} value={String(branch.id)}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
           <div>
             <label className="label">Status</label>
-            <select
-              className="input-base"
-              value={selectedStatus}
-              onChange={(event) => {
-                setSelectedStatus(event.target.value);
+            <Select
+              value={selectedStatus || "__all__"}
+              onValueChange={(v) => {
+                setSelectedStatus(v === "__all__" || v == null ? "" : v);
                 setPage(1);
               }}
             >
-              <option value="">All</option>
-              <option value="active">Active</option>
-              <option value="closed">Closed</option>
-              {/* <option value="active,closed">Active + Closed</option> */}
-            </select>
+              <SelectTrigger className={formSelectTriggerClassName}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="md:col-span-2 xl:col-span-1">
             <label className="label">Quick date range</label>
@@ -479,18 +497,24 @@ export default function DashboardTableSessionsPage() {
           <div className="grid gap-4 border-t border-slate-100 pt-4 md:grid-cols-2 xl:grid-cols-4">
             <div>
               <label className="label">Opened by type</label>
-              <select
-                className="input-base"
-                value={selectedOpenedByType}
-                onChange={(event) => {
-                  setSelectedOpenedByType(event.target.value);
+              <Select
+                value={selectedOpenedByType || "__all__"}
+                onValueChange={(v) => {
+                  setSelectedOpenedByType(
+                    v === "__all__" || v == null ? "" : v,
+                  );
                   setPage(1);
                 }}
               >
-                <option value="">All</option>
-                <option value="customer">Customer</option>
-                <option value="staff">Staff</option>
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All</SelectItem>
+                  <SelectItem value="customer">Customer</SelectItem>
+                  <SelectItem value="staff">Staff</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="label">From date</label>
@@ -518,47 +542,59 @@ export default function DashboardTableSessionsPage() {
             </div>
             <div>
               <label className="label">Sort by</label>
-              <select
-                className="input-base"
+              <Select
                 value={sortBy}
-                onChange={(event) => {
-                  setSortBy(event.target.value as "opened_at" | "closed_at" | "created_at");
+                onValueChange={(v) => {
+                  setSortBy(v as "opened_at" | "closed_at" | "created_at");
                   setPage(1);
                 }}
               >
-                <option value="opened_at">Opened at</option>
-                <option value="closed_at">Closed at</option>
-                <option value="created_at">Created at</option>
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="opened_at">Opened at</SelectItem>
+                  <SelectItem value="closed_at">Closed at</SelectItem>
+                  <SelectItem value="created_at">Created at</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="label">Sort direction</label>
-              <select
-                className="input-base"
+              <Select
                 value={sortDir}
-                onChange={(event) => {
-                  setSortDir(event.target.value as "asc" | "desc");
+                onValueChange={(v) => {
+                  setSortDir(v as "asc" | "desc");
                   setPage(1);
                 }}
               >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Descending</SelectItem>
+                  <SelectItem value="asc">Ascending</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="label">Page size</label>
-              <select
-                className="input-base"
+              <Select
                 value={String(limit)}
-                onChange={(event) => {
-                  setLimit(Number(event.target.value));
+                onValueChange={(v) => {
+                  setLimit(Number(v));
                   setPage(1);
                 }}
               >
-                <option value="20">20 / page</option>
-                <option value="50">50 / page</option>
-                <option value="100">100 / page</option>
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="20">20 / page</SelectItem>
+                  <SelectItem value="50">50 / page</SelectItem>
+                  <SelectItem value="100">100 / page</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}
@@ -583,7 +619,7 @@ export default function DashboardTableSessionsPage() {
       )}
 
       {sessionsQuery.isLoading ? (
-        <div className="card p-8 text-center text-slate-500">Loading sessions...</div>
+        <TableSkeleton rows={6} />
       ) : sessionsQuery.error ? (
         <div className="card p-8 text-center text-red-600">
           {getApiError(sessionsQuery.error)}

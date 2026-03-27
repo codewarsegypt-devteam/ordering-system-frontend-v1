@@ -13,7 +13,15 @@ import {
 import { fetchModifierGroups } from "@/lib/api/modifiers";
 import type { ItemDto, ItemVariantDto, ItemModifierGroupLinkDto } from "@/lib/api/items";
 import type { ModifierGroupDto } from "@/lib/api/modifiers";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 import {
   Loader2, Plus, Trash2, Package, ChevronRight,
   Pencil, Check, X, Layers, Tag, DollarSign, Settings2, ImageIcon, Upload,
@@ -337,7 +345,7 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
 }) {
   const queryClient = useQueryClient();
   const { currencyCode } = useMerchantBaseCurrency();
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, control } = useForm({
     defaultValues: {
       name_en: item.name_en ?? "",
       name_ar: item.name_ar ?? "",
@@ -384,11 +392,22 @@ function ItemEditForm({ item, onSave, onCancel, onError }: {
         </div>
         <div>
           <label className="label">Status</label>
-          <select className="input-base" {...register("status")}>
-            <option value="active">Active</option>
-            <option value="hidden">Hidden</option>
-            <option value="out_of_stock">Out of stock</option>
-          </select>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="hidden">Hidden</SelectItem>
+                  <SelectItem value="out_of_stock">Out of stock</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
       </div>
       <div className="mt-4 flex gap-2">
@@ -680,19 +699,38 @@ function AttachForm({ available, onAttach, onCancel, isPending }: {
   onCancel: () => void;
   isPending: boolean;
 }) {
-  const { register, handleSubmit } = useForm<{ modifier_group_id: string; min_select: number; max_select: number }>({
-    defaultValues: { min_select: 0, max_select: 1 },
+  const { register, handleSubmit, control } = useForm<{ modifier_group_id: string; min_select: number; max_select: number }>({
+    defaultValues: { modifier_group_id: "", min_select: 0, max_select: 1 },
   });
   return (
     <form onSubmit={handleSubmit(onAttach)} className="flex flex-wrap items-end gap-3">
       <div className="flex-1 min-w-36">
         <label className="label text-xs">Modifier group</label>
-        <select className="input-base" {...register("modifier_group_id", { required: true })}>
-          <option value="">Select group…</option>
-          {available.map((g) => (
-            <option key={g.id} value={g.id}>{g.name_en ?? g.name_ar ?? g.id}</option>
-          ))}
-        </select>
+        <Controller
+          name="modifier_group_id"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Select
+              value={field.value ? field.value : "__none__"}
+              onValueChange={(v) =>
+                field.onChange(v === "__none__" ? "" : v)
+              }
+            >
+              <SelectTrigger className={formSelectTriggerClassName}>
+                <SelectValue placeholder="Select group…" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Select group…</SelectItem>
+                {available.map((g) => (
+                  <SelectItem key={g.id} value={g.id}>
+                    {g.name_en ?? g.name_ar ?? g.id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
       <div className="w-20">
         <label className="label text-xs">Min select</label>

@@ -34,6 +34,15 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import { OrdersPageSkeleton } from "@/components/dashboard/OrdersPageSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  formSelectTriggerClassName,
+} from "@/components/ui/select";
 
 const statusLabels: Record<OrderStatus, string> = {
   draft: "Draft",
@@ -298,12 +307,7 @@ export default function DashboardOrdersPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-        <p className="text-sm text-slate-500">Loading orders…</p>
-      </div>
-    );
+    return <OrdersPageSkeleton />;
   }
 
   if (error) {
@@ -479,23 +483,36 @@ export default function DashboardOrdersPage() {
 
           <div>
             <label className="label">Branch</label>
-            <select
-              className="input-base"
+            <Select
               value={
-                isOwner ? filters.branch_id : String(user?.branch_id ?? "")
+                isOwner
+                  ? filters.branch_id || "__all__"
+                  : String(user?.branch_id ?? "")
               }
-              onChange={(e) => updateFilter("branch_id", e.target.value)}
+              onValueChange={(v) =>
+                updateFilter(
+                  "branch_id",
+                  v === "__all__" || v == null ? "" : v,
+                )
+              }
               disabled={!isOwner}
             >
-              <option value="">
-                {isOwner ? "All branches" : "Your branch"}
-              </option>
-              {branches?.map((branch) => (
-                <option key={branch.id} value={String(branch.id)}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className={formSelectTriggerClassName}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {isOwner ? (
+                  <SelectItem value="__all__">All branches</SelectItem>
+                ) : (
+                  <SelectItem value="">Your branch</SelectItem>
+                )}
+                {branches?.map((branch) => (
+                  <SelectItem key={branch.id} value={String(branch.id)}>
+                    {branch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="md:col-span-2 xl:col-span-1">
             <label className="label">Quick date range</label>
@@ -647,46 +664,60 @@ export default function DashboardOrdersPage() {
 
             <div>
               <label className="label">Sort by</label>
-              <select
-                className="input-base"
+              <Select
                 value={filters.sort_by}
-                onChange={(e) => updateFilter("sort_by", e.target.value)}
+                onValueChange={(v) => {
+                  if (v != null) updateFilter("sort_by", v);
+                }}
               >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <label className="label">Sort direction</label>
-              <select
-                className="input-base"
+              <Select
                 value={filters.sort_dir}
-                onChange={(e) =>
-                  updateFilter("sort_dir", e.target.value as "asc" | "desc")
+                onValueChange={(v) =>
+                  updateFilter("sort_dir", v as "asc" | "desc")
                 }
               >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Descending</SelectItem>
+                  <SelectItem value="asc">Ascending</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <label className="label">Page size</label>
-              <select
-                className="input-base"
+              <Select
                 value={String(filters.limit)}
-                onChange={(e) => updateFilter("limit", Number(e.target.value))}
+                onValueChange={(v) => updateFilter("limit", Number(v))}
               >
-                {[10, 20, 50, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} / page
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={formSelectTriggerClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100].map((size) => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size} / page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}

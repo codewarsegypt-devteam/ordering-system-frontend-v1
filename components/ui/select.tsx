@@ -187,6 +187,10 @@ function SelectScrollDownButton({
   )
 }
 
+/** Matches dashboard `.input-base` row height and full width. */
+export const formSelectTriggerClassName =
+  "input-base !h-auto min-h-[2.625rem] w-full justify-between gap-2 py-2.5 data-[size=default]:!h-auto [&_svg]:size-4"
+
 export {
   Select,
   SelectContent,
