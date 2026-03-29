@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useCart, useCurrency } from "@/contexts";
-import { createOrder, getApiError } from "@/lib/api";
+import { createAtomicOrder, getApiError } from "@/lib/api";
 import {
   X,
   Minus,
@@ -65,7 +65,12 @@ export function CartDrawer({
     setOrderError(null);
     setPlacing(true);
     try {
-      const res = await createOrder(token, lineItems, selectedCurrency?.id);
+      // Atomic: POST /create-atomic-order?t=… — legacy was createOrder() → POST /orders
+      const res = await createAtomicOrder(
+        token,
+        lineItems,
+        selectedCurrency?.id,
+      );
       if (res.table_session_id) {
         sessionStorage.setItem("active_table_session_id", res.table_session_id);
       }

@@ -136,9 +136,8 @@ function buildCreateOrderBody(
 }
 
 /**
- * Create order using table token (from QR scan).
- * POST /orders?t=TOKEN with body { items: [...], display_currency_id? }.
- * Backend validates token and extracts merchant_id, branch_id, table_id from JWT.
+ * Legacy create order (non-atomic). Kept if you need to roll back from atomic flow.
+ * POST `/orders?t=TOKEN` — body `{ items, display_currency_id? }`.
  */
 export async function createOrder(
   token: string,
@@ -149,6 +148,25 @@ export async function createOrder(
   const { data } = await apiClient.post<CreateOrderResponse>("/orders", body, {
     params: { t: token },
   });
+  return data;
+}
+
+/**
+ * Atomic create order via `create_order_atomic` (single DB transaction).
+ * POST `/create-atomic-order?t=TOKEN` — same body as {@link createOrder}.
+ * Customer flow should use this; fall back to {@link createOrder} only if needed.
+ */
+export async function createAtomicOrder(
+  token: string,
+  items: CartLineItem[],
+  displayCurrencyId?: number,
+): Promise<CreateOrderResponse> {
+  const body = buildCreateOrderBody(items, displayCurrencyId);
+  const { data } = await apiClient.post<CreateOrderResponse>(
+    "/orders/create-atomic-order",
+    body,
+    { params: { t: token } },
+  );
   return data;
 }
 
