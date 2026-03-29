@@ -23,7 +23,7 @@ import {
   ToggleLeft, ToggleRight, KeyRound, Mail,
 } from "lucide-react";
 import { UsersPageSkeleton } from "@/components/dashboard/UsersPageSkeleton";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
 
 interface CreateUserFormValues {
@@ -45,6 +45,7 @@ const roleBadge: Record<string, string> = {
   manager: "badge bg-sky-100 text-sky-700",
   cashier: "badge bg-amber-100 text-amber-700",
   kitchen: "badge bg-orange-100 text-orange-700",
+  waiter:  "badge bg-teal-100 text-teal-800",
 };
 
 const roleAvatar: Record<string, string> = {
@@ -52,6 +53,7 @@ const roleAvatar: Record<string, string> = {
   manager: "bg-sky-600",
   cashier: "bg-amber-500",
   kitchen: "bg-orange-500",
+  waiter:  "bg-teal-600",
 };
 
 export default function UsersPage() {
@@ -197,10 +199,10 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              { users.map((u) => (
-                u.role !== "owner" && (
-                <>
-                  <tr key={u.id} className={editingId === Number(u.id) ? "bg-slate-50" : ""}>
+              {users.map((u) =>
+                u.role !== "owner" ? (
+                <Fragment key={u.id}>
+                  <tr className={editingId === Number(u.id) ? "bg-slate-50" : ""}>
                     {/* Avatar + name */}
                     <td>
                       <div className="flex items-center gap-3">
@@ -307,9 +309,9 @@ export default function UsersPage() {
                       </td>
                     </tr>
                   )}
-                </>
-                )
-              ))}
+                </Fragment>
+                ) : null,
+              )}
             </tbody>
           </table>
         </div>
@@ -376,6 +378,7 @@ function CreateUserForm({ branches, onSubmit, onCancel, isPending }: {
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="cashier">Cashier</SelectItem>
                   <SelectItem value="kitchen">Kitchen</SelectItem>
+                  <SelectItem value="waiter">Waiter</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -413,6 +416,9 @@ function CreateUserForm({ branches, onSubmit, onCancel, isPending }: {
           />
         </div>
       </div>
+      <p className="text-xs text-slate-500">
+        Waiters need a branch to see ready orders for that floor.
+      </p>
       <div className="mt-5 flex gap-2">
         <button type="submit" disabled={isPending} className="btn-primary">
           {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</> : <><Check className="h-4 w-4" /> Create user</>}
@@ -455,6 +461,7 @@ function EditUserForm({ user, branches, onSave, onCancel, isPending }: {
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="cashier">Cashier</SelectItem>
                   <SelectItem value="kitchen">Kitchen</SelectItem>
+                  <SelectItem value="waiter">Waiter</SelectItem>
                 </SelectContent>
               </Select>
             )}

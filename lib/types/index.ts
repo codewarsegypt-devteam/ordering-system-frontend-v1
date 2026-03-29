@@ -1,5 +1,10 @@
 // Auth & User
-export type UserRole = "owner" | "manager" | "cashier" | "kitchen";
+export type UserRole =
+  | "owner"
+  | "manager"
+  | "cashier"
+  | "kitchen"
+  | "waiter";
 export type UserStatus = "active" | "disabled" | "pending_verification";
 
 export interface User {

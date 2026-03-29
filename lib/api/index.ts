@@ -66,6 +66,7 @@ export * from "./merchants";
 export * from "./branches";
 export * from "./tables";
 export * from "./users";
+export * from "./waiter";
 
 // Currencies (admin)
 export * from "./currencies";

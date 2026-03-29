@@ -29,6 +29,7 @@ import {
   Coins,
   Table2,
   Settings,
+  ClipboardCheck,
 } from "lucide-react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
@@ -50,6 +51,15 @@ const NAV_PAGES = [
     label: "Modifier Groups",
     icon: Layers,
     roles: ["owner", "manager"],
+  },
+] as const;
+
+/** Waiter-only: mobile floor view for ready orders (no other dashboard pages). */
+const NAV_WAITER = [
+  {
+    href: "/dashboard/waiter",
+    label: "Ready orders",
+    icon: ClipboardCheck,
   },
 ] as const;
 
@@ -221,6 +231,82 @@ function Sidebar({
     return (item.roles as readonly string[]).includes(role);
   });
 
+  if (role === "waiter") {
+    return (
+      <div
+        className="flex h-full flex-col"
+        style={{
+          backgroundColor: "var(--system-cream)",
+          borderRight: "1px solid var(--system-sage)",
+          boxShadow: "2px 0 12px rgba(0,0,0,0.04)",
+        }}
+      >
+        <div
+          className="flex h-16 shrink-0 items-center justify-between px-4"
+          style={{ borderBottom: "1px solid var(--system-sage)" }}
+        >
+          <img
+            src="/logos/4.svg"
+            alt="Qrixa"
+            className="h-10 w-auto shrink-0 object-contain"
+          />
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white hover:text-slate-600 md:hidden"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+        <nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-none">
+          <SectionLabel>Service</SectionLabel>
+          <div className="space-y-0.5">
+            {NAV_WAITER.map((item) => {
+              const active = !!path?.startsWith(item.href);
+              return (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  active={active}
+                />
+              );
+            })}
+          </div>
+        </nav>
+        <div
+          className="shrink-0 p-3"
+          style={{ borderTop: "1px solid var(--system-sage)" }}
+        >
+          <div
+            className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 shadow-sm"
+            style={{ border: "1px solid var(--system-sage)" }}
+          >
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold"
+              style={{
+                backgroundColor: "var(--system-primary-soft)",
+                color: "var(--system-primary)",
+                border: "1px solid var(--system-sage)",
+              }}
+            >
+              {user?.name?.charAt(0)?.toUpperCase() ?? "W"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-slate-800">
+                {user?.name}
+              </p>
+              <p className="truncate text-xs capitalize text-slate-400">waiter</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="flex h-full flex-col"
@@ -373,6 +459,25 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
     setUserMenuOpen(false);
   }, [path]);
 
+  React.useEffect(() => {
+    if (!user || !path || path.endsWith("/login")) return;
+    if (user.role !== "waiter") return;
+    const allowed =
+      path.startsWith("/dashboard/waiter") ||
+      path.startsWith("/dashboard/profile");
+    const isDashboardHome =
+      path === "/dashboard" || path === "/dashboard/";
+    const shouldRedirect =
+      isDashboardHome ||
+      (!allowed && path.startsWith("/dashboard"));
+    if (!shouldRedirect) return;
+    // Defer so we don’t update Router during another component’s render (React warning).
+    const id = window.setTimeout(() => {
+      router.replace("/dashboard/waiter");
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [user, path, router]);
+
   if (isLoading) {
     return (
       <div className="dashboard-main flex min-h-screen items-center justify-center">
@@ -399,7 +504,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="dashboard-main flex min-h-screen">
-      <LiveOrdersPoller />
+      {user?.role !== "waiter" && <LiveOrdersPoller />}
       {/* Mobile overlay */}
       {sidebarOpen && (
         <button
@@ -444,47 +549,50 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
 
           {/* Right */}
           <div className="flex items-center gap-2">
-            {/* Live orders */}
-            {liveOrders.autoPaused && (
-              <span className="hidden text-sm text-amber-600 sm:inline">
-                Live paused (3 min). Start live to resume.
-              </span>
+            {user?.role !== "waiter" && (
+              <>
+                {liveOrders.autoPaused && (
+                  <span className="hidden text-sm text-amber-600 sm:inline">
+                    Live paused (3 min). Start live to resume.
+                  </span>
+                )}
+                {liveOrders.isPolling && (
+                  <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
+                    <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => liveOrders.setLivePollingEnabled((v) => !v)}
+                  className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+                  style={
+                    liveOrders.livePollingEnabled
+                      ? {
+                          borderColor: "var(--system-sage)",
+                          backgroundColor: "white",
+                          color: "var(--system-primary)",
+                        }
+                      : {
+                          backgroundColor: "var(--system-primary)",
+                          color: "white",
+                          borderColor: "var(--system-primary)",
+                        }
+                  }
+                >
+                  {liveOrders.livePollingEnabled ? (
+                    <>
+                      <Square className="h-4 w-4" />
+                      <span className="hidden sm:inline">Stop live</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" />
+                      <span className="hidden sm:inline">Start live updates</span>
+                    </>
+                  )}
+                </button>
+              </>
             )}
-            {liveOrders.isPolling && (
-              <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
-                <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => liveOrders.setLivePollingEnabled((v) => !v)}
-              className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
-              style={
-                liveOrders.livePollingEnabled
-                  ? {
-                      borderColor: "var(--system-sage)",
-                      backgroundColor: "white",
-                      color: "var(--system-primary)",
-                    }
-                  : {
-                      backgroundColor: "var(--system-primary)",
-                      color: "white",
-                      borderColor: "var(--system-primary)",
-                    }
-              }
-            >
-              {liveOrders.livePollingEnabled ? (
-                <>
-                  <Square className="h-4 w-4" />
-                  <span className="hidden sm:inline">Stop live</span>
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  <span className="hidden sm:inline">Start live updates</span>
-                </>
-              )}
-            </button>
             {/* <button
               type="button"
               className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
@@ -575,7 +683,7 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Global new order toast */}
-        {liveOrders.newOrderToast && (
+        {user?.role !== "waiter" && liveOrders.newOrderToast && (
           <div
             className="fixed top-20 right-6 z-50 flex items-center gap-3 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 shadow-lg"
             style={{ borderColor: "var(--system-sage)" }}
@@ -596,8 +704,22 @@ function DashboardNav({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto bg-slate-50/95 p-4 sm:p-6 lg:p-8 xl:p-10">
-          <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+        <main
+          className={`flex-1 overflow-auto bg-slate-50/95 ${
+            user?.role === "waiter"
+              ? "p-3 pb-8 sm:p-4"
+              : "p-4 sm:p-6 lg:p-8 xl:p-10"
+          }`}
+        >
+          <div
+            className={
+              user?.role === "waiter"
+                ? "mx-auto w-full max-w-lg"
+                : "mx-auto w-full max-w-[1400px]"
+            }
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>
